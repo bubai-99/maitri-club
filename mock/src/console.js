@@ -338,7 +338,7 @@ function collect(param) {
         <div class="relative bg-card border border-rule rounded-lg p-6 shadow-[0_1px_2px_rgba(29,33,64,.05),0_16px_32px_-20px_rgba(29,33,64,.35)]">
           <div class="flex items-center gap-3 border-b-2 border-ink pb-3">
             <span>${seal({ size: 48, rotate: -4 })}</span>
-            <div class="leading-tight"><p class="font-display text-xl text-sindoor">মৈত্রী ক্লাব</p><p class="text-[11px] tracking-[0.14em] font-semibold text-ink-3">NETAJI PARA · ESTD 1972</p></div>
+            <div class="leading-tight"><p class="font-display text-xl text-sindoor">${t('Maitri Club', 'মৈত্রী ক্লাব')}</p><p class="text-[11px] tracking-[0.14em] font-semibold text-ink-3">NETAJI PARA · ESTD 1972</p></div>
             <p class="ml-auto text-right text-sm"><span class="block text-ink-3">${t('Receipt', 'রসিদ')}</span><span class="font-semibold num">${col.receipt || t('next no.', 'পরের নং')}</span></p>
           </div>
           <p class="mt-4 text-[15px] leading-relaxed">${t('Received with thanks from', 'ধন্যবাদের সঙ্গে গৃহীত')} <strong>${t(f.head, f.headBn)}</strong> (${f.no}) ${t('the sum of', 'মোট')} <strong>${inr(amount)}</strong> ${t(`towards subscription for ${col.months} month${col.months > 1 ? 's' : ''}, by`, `${col.months} মাসের চাঁদা বাবদ,`)} ${col.mode === 'cash' ? t('cash', 'নগদে') : 'UPI'}.</p>
@@ -349,7 +349,7 @@ function collect(param) {
           ${col.done ? `<div class="absolute right-24 top-16 ink-stamp">${seal({ size: 120, rotate: -10, className: 'stamp-in' })}</div>` : ''}
         </div>
         ${col.done ? `<div class="mt-3 flex gap-2">
-          <a target="_blank" rel="noopener" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(`নমস্কার, মৈত্রী ক্লাবে ₹${amount} জমা হয়েছে। রসিদ নং ${col.receipt}। ধন্যবাদ।`)}" class="btn btn-line btn-sm flex-1"><i data-lucide="message-circle"></i>${t('Also send on WhatsApp', 'হোয়াটসঅ্যাপেও পাঠান')}</a>
+          <a target="_blank" rel="noopener" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(lang === 'bn' ? `নমস্কার, মৈত্রী ক্লাবে ₹${amount} জমা হয়েছে। রসিদ নং ${col.receipt}। ধন্যবাদ।` : `Namaskar, ₹${amount} received by Maitri Club. Receipt no. ${col.receipt}. Thank you.`)}" class="btn btn-line btn-sm flex-1"><i data-lucide="message-circle"></i>${t('Also send on WhatsApp', 'হোয়াটসঅ্যাপেও পাঠান')}</a>
           <button class="btn btn-line btn-sm flex-1"><i data-lucide="printer"></i>${t('Print', 'প্রিন্ট')}</button></div>` : ''}
       </div>
     </div>`);
@@ -387,7 +387,9 @@ function collect(param) {
 function dues() {
   const list = families.filter((f) => f.due).sort((a, b) => b.dueMonths - a.dueMonths);
   const total = list.reduce((a, b) => a + b.due, 0);
-  const msg = (f) => `নমস্কার ${f.headBn}, মৈত্রী ক্লাবের ${f.dueMonths} মাসের চাঁদা ₹${f.due} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।`;
+  const msg = (f) => (lang === 'bn'
+    ? `নমস্কার ${f.headBn}, মৈত্রী ক্লাবের ${f.dueMonths} মাসের চাঁদা ₹${f.due} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।`
+    : `Namaskar ${f.head}, your Maitri Club subscription of ₹${f.due} for ${f.dueMonths} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.`);
   paint(screen('dues'), `
     ${pageHead('Dues & reminders', 'বকেয়া ও তাগাদা', `${t(`${list.length} families owe`, `${list.length}টি পরিবারের বকেয়া`)} <strong class="text-sindoor">${inr(total)}</strong>`)}
     <div class="grid lg:grid-cols-12 gap-6 items-start">
@@ -407,7 +409,7 @@ function dues() {
         </table>
       </div>
       <div class="lg:col-span-4">
-        <p class="text-sm font-semibold text-ink-3 mb-2">${t('WhatsApp message (Bengali)', 'হোয়াটসঅ্যাপ বার্তা')}</p>
+        <p class="text-sm font-semibold text-ink-3 mb-2">${t('WhatsApp message', 'হোয়াটসঅ্যাপ বার্তা')}</p>
         <div class="rounded-lg bg-[#e7ddc9] p-4">
           <div class="bg-[#dcf3d0] rounded-lg rounded-tr-sm p-3.5 text-[15px] leading-relaxed ml-6 shadow-[0_1px_1px_rgba(0,0,0,.08)]">${msg(list[0])}<span class="block text-right text-[11px] text-ink-3 mt-1">7:42 pm ✓✓</span></div>
         </div>
@@ -848,7 +850,7 @@ function profile() {
     ${pageHead('My account', 'আমার অ্যাকাউন্ট')}
     <div class="grid lg:grid-cols-2 gap-6 items-start max-w-5xl">
       <form class="paper-card p-5 sm:p-6 space-y-4" data-save>
-        <div class="flex items-center gap-4"><span class="w-14 h-14 rounded-full bg-ink text-white grid place-items-center font-display text-xl" lang="bn">তা</span>
+        <div class="flex items-center gap-4"><span class="w-14 h-14 rounded-full bg-ink text-white grid place-items-center font-display text-xl">${t('T', 'তা')}</span>
           <div><p class="font-display text-2xl">${t('Tapas Mondal', 'তাপস মণ্ডল')}</p><p class="text-sm text-ink-2">${t('Treasurer · since 2021', 'কোষাধ্যক্ষ · ২০২১ থেকে')}</p></div></div>
         <label class="block"><span class="label">${t('Mobile', 'মোবাইল')}</span><input class="field num" value="+91 98314 55120" /></label>
         <label class="block"><span class="label">${t('Language', 'ভাষা')}</span><select class="field" id="pf-lang"><option value="en">English</option><option value="bn">বাংলা</option></select></label>

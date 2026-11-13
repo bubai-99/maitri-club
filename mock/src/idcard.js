@@ -1,4 +1,4 @@
-import { t, seal, qr } from './shared.js';
+import { t, seal, qr, lang } from './shared.js';
 
 /*
   Member ID card, CR80 (85.6 × 54 mm). Everything inside is sized in container-query
@@ -47,7 +47,7 @@ export function peopleOf(f, i = 0) {
   }));
 }
 
-const initials = (p) => p.nameBn.split(' ').map((w) => w[0]).join('').slice(0, 2);
+const initials = (p) => (lang === 'bn' ? p.nameBn : p.name).split(' ').map((w) => w[0]).join('').slice(0, 2);
 
 /** Card front. Wrap in an element with an explicit width; height follows the CR80 ratio. */
 export function cardFront(p) {
@@ -55,12 +55,12 @@ export function cardFront(p) {
   <div class="idc" role="img" aria-label="Member card front for ${p.name}, ${p.id}">
     <div class="idc-band">
       <span class="idc-seal">${seal({ size: 100, color: '#fff', rotate: -6 })}</span>
-      <span class="idc-club"><span lang="bn" class="font-display">মৈত্রী ক্লাব</span><span class="idc-sub">MAITRI CLUB · NETAJI PARA · ESTD 1972</span></span>
+      <span class="idc-club"><span class="font-display">${t('Maitri Club', 'মৈত্রী ক্লাব')}</span><span class="idc-sub">MAITRI CLUB · NETAJI PARA · ESTD 1972</span></span>
       <span class="idc-kind">MEMBER</span>
     </div>
     <div class="idc-body">
       <div class="idc-photo">${p.photo
-        ? `<span class="idc-initials" lang="bn">${initials(p)}</span>`
+        ? `<span class="idc-initials">${initials(p)}</span>`
         : `<span class="idc-nophoto">${t('Photo', 'ছবি')}<br>${t('needed', 'লাগবে')}</span>`}</div>
       <div class="idc-info">
         <p class="idc-name">${t(p.name, p.nameBn)}</p>

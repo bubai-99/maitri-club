@@ -74,8 +74,8 @@ export function seal({ size = 96, color = 'var(--color-sindoor)', rotate = -8, c
     <text font-family="Anek Bangla Variable, sans-serif" font-weight="700" font-size="15.5" letter-spacing="2.2" fill="currentColor">
       <textPath href="#${id}" textLength="462" lengthAdjust="spacing">${ring}</textPath>
     </text>
-    <text x="100" y="108" text-anchor="middle" font-family="Tiro Bangla, serif" font-size="40" fill="currentColor">মৈত্রী</text>
-    <text x="100" y="132" text-anchor="middle" font-family="Anek Bangla Variable, sans-serif" font-weight="600" font-size="11" letter-spacing="3" fill="currentColor">ক্লাব</text>
+    <text x="100" y="110" text-anchor="middle" font-family="DM Serif Display, Tiro Bangla, serif" font-size="${lang === 'bn' ? 40 : 33}" fill="currentColor" data-bn="মৈত্রী">Maitri</text>
+    <text x="100" y="134" text-anchor="middle" font-family="Anek Bangla Variable, sans-serif" font-weight="600" font-size="11" letter-spacing="3" fill="currentColor" data-bn="ক্লাব">CLUB</text>
   </svg>`;
 }
 

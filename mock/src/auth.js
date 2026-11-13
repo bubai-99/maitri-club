@@ -159,7 +159,7 @@ S.activate = () => `
 S.setpass = () => `
   ${head('Set a password', 'পাসওয়ার্ড দিন', 'Optional. You can always sign in with a code instead.', 'ইচ্ছে হলে। চাইলে সবসময় কোড দিয়েও লগইন করা যায়।')}
   <div class="mt-6 rounded-lg border-2 border-ink p-4 flex items-center gap-3">
-    <span class="w-10 h-10 rounded-full bg-ink text-white grid place-items-center font-display" lang="bn">অ</span>
+    <span class="w-10 h-10 rounded-full bg-ink text-white grid place-items-center font-display">${t('A', 'অ')}</span>
     <div><p class="font-semibold">${t('Ananya Mukherjee', 'অনন্যা মুখার্জি')}</p><p class="text-sm text-ink-2 num">MC-0104 · ${t('Lane 2 · 3 people', '২ নং গলি · ৩ জন')}</p></div>
     <i data-lucide="badge-check" class="ml-auto w-6 h-6"></i>
   </div>

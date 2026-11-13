@@ -280,7 +280,7 @@ function renderBasket() {
 /* Committee */
 $('#committee-list').innerHTML = committee.map((c) => `
   <li class="grid grid-cols-[56px_1fr] sm:grid-cols-[56px_1fr_1fr_auto] gap-x-5 gap-y-0.5 py-4 border-b border-rule items-center">
-    <span class="row-span-2 sm:row-span-1 w-14 h-14 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-display text-xl">${c.nameBn.slice(0, 1)}</span>
+    <span class="row-span-2 sm:row-span-1 w-14 h-14 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-display text-xl">${(lang === 'bn' ? c.nameBn : c.name).slice(0, 1)}</span>
     <p class="font-display text-xl leading-tight">${t(c.name, c.nameBn)}</p>
     <p class="text-[15px] text-ink-2">${t(c.role, c.roleBn)}</p>
     <p class="hidden sm:block text-sm text-ink-3">${t('since', 'থেকে')} ${dn(String(c.since))}</p>

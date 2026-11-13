@@ -89,7 +89,7 @@ $('#history').addEventListener('click', (e) => {
     <div class="relative">
       <div class="flex items-start justify-between">
         <div>
-          <p class="font-display text-xl text-sindoor">মৈত্রী ক্লাব</p>
+          <p class="font-display text-xl text-sindoor">${t('Maitri Club', 'মৈত্রী ক্লাব')}</p>
           <p class="text-[11px] tracking-[0.16em] font-semibold text-ink-3">MONEY RECEIPT · ${t('CLUB BOOK', 'ক্লাব খাতা')}</p>
         </div>
         <button data-close class="w-9 h-9 grid place-items-center rounded-full hover:bg-paper-2 -mr-2 -mt-1" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -248,7 +248,7 @@ function renderFamily() {
   const people = [{ name: me.name, nameBn: me.nameBn, rel: 'Head of family', relBn: 'পরিবারের প্রধান' }, ...me.dependents];
   render('#family-list', people.map((p, i) => `
     <li class="flex items-center gap-3 py-3 border-b border-rule">
-      <span class="w-10 h-10 rounded-full ${i ? 'bg-paper-2 text-ink' : 'bg-ink text-white'} grid place-items-center font-display" lang="bn">${p.nameBn.slice(0, 1)}</span>
+      <span class="w-10 h-10 rounded-full ${i ? 'bg-paper-2 text-ink' : 'bg-ink text-white'} grid place-items-center font-display">${(lang === 'bn' ? p.nameBn : p.name).slice(0, 1)}</span>
       <span class="flex-1 min-w-0"><span class="block font-semibold">${t(p.name, p.nameBn)}</span><span class="block text-sm text-ink-2">${t(p.rel, p.relBn)}</span></span>
       ${i ? `<button class="w-10 h-10 grid place-items-center rounded-full hover:bg-paper-2" aria-label="Edit ${p.name}"><i data-lucide="pencil" class="w-4 h-4"></i></button>` : ''}
     </li>`).join(''));
