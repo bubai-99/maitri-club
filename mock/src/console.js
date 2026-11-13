@@ -102,7 +102,7 @@ function dashboard() {
               <td><a href="#khata/${k}" class="flex items-center gap-2.5 font-semibold hover:underline">${bookDot(k)}${bookName(k)}</a></td>
               <td class="amt">${inr(b.income)}</td><td class="amt text-ink-2">${inr(b.expense)}</td>
               <td class="amt font-semibold ${b.income - b.expense >= 0 ? 'text-tulsi' : 'text-sindoor'}">${inr(b.income - b.expense)}</td></tr>`).join('')}
-            <tr class="[&>td]:border-b-[3px] [&>td]:border-double [&>td]:border-ink/70 font-semibold">
+            <tr class="bg-paper-2/50 font-semibold [&>td]:border-t [&>td]:border-t-ink/20 [&>td]:border-b-[3px] [&>td]:border-double [&>td]:border-b-ink/25">
               <td>${t('All books', 'সব খাতা')}</td><td class="amt">${inr(totalIn)}</td><td class="amt">${inr(totalOut)}</td><td class="amt text-tulsi">${inr(totalIn - totalOut)}</td></tr>
           </tbody>
         </table>
@@ -209,7 +209,7 @@ function ledgerTable(rows, { compact = false } = {}) {
         ${compact ? '' : `<th><span class="sr-only">${t('Action', 'কাজ')}</span></th>`}
       </tr></thead>
       <tbody>
-        ${rows.map((r, i) => `<tr${i && rows[i - 1].date !== r.date ? ' class="[&>td]:border-t-2 [&>td]:border-t-ink/30"' : ''}>
+        ${rows.map((r, i) => `<tr${i && rows[i - 1].date !== r.date ? ' class="[&>td]:border-t [&>td]:border-t-ink/20"' : ''}>
           <td class="!px-2 text-[13px] text-ink-2 num whitespace-nowrap">${i && rows[i - 1].date === r.date ? '' : dn(r.date)}</td>
           <td class="!pl-4"><span class="flex items-center gap-2.5">${bookDot(r.book)}<span>${t(r.head, r.headBn)}</span>${r.bill ? `<button class="text-ink-3 hover:text-ink" data-act="bill" data-head="${r.head}" data-amt="${r.amount}" aria-label="View bill photo" title="Bill photo"><i data-lucide="paperclip" class="w-4 h-4"></i></button>` : ''}</span></td>
           <td class="hidden md:table-cell text-[13px] text-ink-3 num whitespace-nowrap">${r.ref}</td>
@@ -218,7 +218,7 @@ function ledgerTable(rows, { compact = false } = {}) {
           <td class="amt ${r.type === 'out' ? 'text-sindoor font-semibold' : ''}">${r.type === 'out' ? inr(r.amount) : ''}</td>
           ${compact ? '' : `<td class="text-right"><button class="btn btn-ghost btn-sm text-ink-2" data-act="reverse" data-head="${r.head}" data-amt="${r.amount}" data-type="${r.type}">${t('Reverse', 'উল্টান')}</button></td>`}
         </tr>`).join('')}
-        ${compact ? '' : `<tr class="font-semibold [&>td]:border-b-[3px] [&>td]:border-double [&>td]:border-ink/70 [&>td]:border-t-2 [&>td]:border-t-ink/70">
+        ${compact ? '' : `<tr class="bg-paper-2/50 font-semibold [&>td]:border-t [&>td]:border-t-ink/20 [&>td]:border-b-[3px] [&>td]:border-double [&>td]:border-b-ink/25">
           <td></td><td class="!pl-4">${t('Page total', 'পাতার মোট')}</td><td class="hidden md:table-cell"></td><td class="hidden md:table-cell"></td>
           <td class="amt">${inr(tin)}</td><td class="amt text-sindoor">${inr(tout)}</td><td></td></tr>`}
       </tbody>
@@ -336,7 +336,7 @@ function collect(param) {
       <div class="lg:col-span-5">
         <p class="text-sm font-semibold text-ink-3 mb-2">${col.done ? t('Receipt sent', 'রসিদ পাঠানো হয়েছে') : t('Receipt preview', 'রসিদের নমুনা')}</p>
         <div class="relative bg-card border border-rule rounded-lg p-6 shadow-[0_1px_2px_rgba(29,33,64,.05),0_16px_32px_-20px_rgba(29,33,64,.35)]">
-          <div class="flex items-center gap-3 border-b-2 border-ink pb-3">
+          <div class="flex items-center gap-3 border-b border-ink/20 pb-3">
             <span>${seal({ size: 48, rotate: -4 })}</span>
             <div class="leading-tight"><p class="font-display text-xl text-sindoor">${t('Maitri Club', 'মৈত্রী ক্লাব')}</p><p class="text-[11px] tracking-[0.14em] font-semibold text-ink-3">NETAJI PARA · ESTD 1972</p></div>
             <p class="ml-auto text-right text-sm"><span class="block text-ink-3">${t('Receipt', 'রসিদ')}</span><span class="font-semibold num">${col.receipt || t('next no.', 'পরের নং')}</span></p>
@@ -556,7 +556,7 @@ function catering() {
           <table class="w-full text-[15px] mt-2">
             <tr><td class="py-1.5">${t(`${pkg.name} menu`, `${pkg.nameBn} মেনু`)}</td><td class="text-right num">${dn(String(o.guests))} × ${inr(rate)}</td></tr>
             <tr><td class="py-1.5 text-ink-2">${t('Serving staff & plates', 'পরিবেশন ও প্লেট')}</td><td class="text-right text-ink-2">${t('included', 'সহ')}</td></tr>
-            <tr class="border-t-2 border-ink font-semibold"><td class="py-2">${t('Total', 'মোট')}</td><td class="text-right">${inr(o.guests * rate)}</td></tr>
+            <tr class="border-t border-ink/20 font-semibold"><td class="py-2">${t('Total', 'মোট')}</td><td class="text-right">${inr(o.guests * rate)}</td></tr>
             <tr><td class="py-1.5 text-ink-2">${t('Advance (20%)', 'অগ্রিম (২০%)')}</td><td class="text-right">${inr(Math.round(o.guests * rate * 0.2))}</td></tr>
             <tr><td class="py-1.5 text-ink-2">${t('Received', 'পাওয়া গেছে')}</td><td class="text-right text-tulsi font-semibold">${inr(o.paid)}</td></tr>
             <tr class="font-semibold"><td class="py-1.5">${t('Balance', 'বাকি')}</td><td class="text-right text-sindoor">${inr(o.guests * rate - o.paid)}</td></tr>
@@ -613,7 +613,7 @@ function nursery(param) {
           <dl class="mt-4 text-[15px] space-y-1">
             <div class="flex"><dt class="text-ink-2">${t('Subtotal', 'মোট')}</dt><dd class="ml-auto num">${inr(sub)}</dd></div>
             <div class="flex"><dt class="text-ink-2">${t('Member discount', 'সদস্য ছাড়')}</dt><dd class="ml-auto num text-tulsi">−${inr(disc)}</dd></div>
-            <div class="flex font-semibold text-lg border-t-2 border-ink pt-2 mt-2"><dt>${t('To collect', 'নিতে হবে')}</dt><dd class="ml-auto font-display text-2xl">${inr(sub - disc)}</dd></div>
+            <div class="flex font-semibold text-lg border-t border-ink/20 pt-3 mt-3"><dt>${t('To collect', 'নিতে হবে')}</dt><dd class="ml-auto font-display text-2xl">${inr(sub - disc)}</dd></div>
           </dl>
           <div class="grid grid-cols-2 gap-2 mt-4">
             <button data-sale="cash" ${items.length ? '' : 'disabled'} class="btn bg-tulsi text-white hover:bg-[#1f5029]"><i data-lucide="banknote"></i>${t('Cash', 'নগদ')}</button>
