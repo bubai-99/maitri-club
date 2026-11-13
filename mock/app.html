@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Maitri Club · Member App</title>
+</head>
+<body class="min-h-dvh bg-paper-2">
+  <div class="mx-auto max-w-6xl md:px-6 md:py-10 md:grid md:grid-cols-[1fr_400px] lg:grid-cols-[1fr_400px_1fr] md:gap-10 items-start">
+
+    <!-- Reviewer notes (desktop only) -->
+    <aside class="hidden md:block pt-8 lg:col-start-1">
+      <h1 class="font-display text-4xl text-sindoor leading-tight" data-bn="সদস্য অ্যাপ">Member app</h1>
+      <p class="mt-3 text-[15px] text-ink-2 max-w-[38ch]" data-bn="ইনস্টলযোগ্য ওয়েব অ্যাপ (PWA)। মোবাইল নম্বর ও ওটিপি দিয়ে লগইন। হোয়াটসঅ্যাপ লিঙ্ক থেকে ইনস্টল।">An installable web app (PWA). Login with mobile number + OTP. Members install it from a WhatsApp link.</p>
+      <nav class="mt-8 flex flex-col gap-1 text-[15px]" aria-label="Screens">
+        <a href="#home" data-nav="home" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="হোম ও বকেয়া">Home &amp; dues</a>
+        <a href="#pay" data-nav="pay" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="ইউপিআই-এ চাঁদা">Pay by UPI</a>
+        <a href="#id" data-nav="id" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="ডিজিটাল আইডি">Digital ID card</a>
+        <a href="#events" data-nav="events" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="অনুষ্ঠান ও পাস">Events &amp; passes</a>
+        <a href="#notices" data-nav="notices" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="নোটিস ও ভোট">Notices &amp; poll</a>
+        <a href="#nursery" data-nav="nursery" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="নার্সারি">Nursery</a>
+        <a href="#receipts" data-nav="receipts" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="রসিদ">Receipts</a>
+        <a href="#alerts" data-nav="alerts" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="নোটিফিকেশন">Notifications</a>
+        <a href="#profile" data-nav="profile" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="পরিবার ও প্রোফাইল">Family &amp; profile</a>
+        <a href="#settings" data-nav="settings" class="px-3 py-2 rounded-md hover:bg-paper aria-[current=page]:bg-card aria-[current=page]:font-semibold" data-bn="সেটিংস">Settings</a>
+        <a href="login.html" class="px-3 py-2 rounded-md hover:bg-paper" data-bn="লগইন স্ক্রিন">Sign-in screens</a>
+      </nav>
+      <p class="mt-8 text-sm text-ink-3 max-w-[36ch]" data-bn="টিপ: পেমেন্ট ইতিহাসের একটি রসিদে চাপ দিন।">Tip: tap a receipt in payment history to see the stamped receipt.</p>
+    </aside>
+
+    <!-- Phone -->
+    <div class="relative md:rounded-[44px] md:border-[10px] md:border-ink md:shadow-[0_30px_60px_-30px_rgba(29,33,64,.55)] bg-paper overflow-hidden md:h-[844px] flex flex-col min-h-[calc(100dvh-40px)] md:min-h-0">
+      <!-- status bar (frame only) -->
+      <div class="hidden md:flex h-9 items-center justify-between px-7 text-[13px] font-semibold shrink-0">
+        <span class="num">9:41</span><span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-4 h-4"></i></span>
+      </div>
+
+      <div class="flex-1 overflow-y-auto overscroll-contain" data-scroll-top id="scroller">
+        <!-- HOME -->
+        <section data-screen="home" class="px-5 pt-3 pb-8">
+          <div class="flex items-center gap-3">
+            <span id="app-seal"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-ink-3" data-bn="নমস্কার,">Namaskar,</p>
+              <p class="font-display text-[1.3rem] leading-tight truncate" data-bn="অনন্যা মুখার্জি">Ananya Mukherjee</p>
+            </div>
+            <a href="#alerts" class="ml-auto w-11 h-11 rounded-full grid place-items-center hover:bg-paper-2 relative" aria-label="Notifications, 2 unread"><i data-lucide="bell" class="w-5 h-5"></i><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-sindoor" id="bell-dot"></span></a>
+            <a href="#settings" class="w-11 h-11 rounded-full grid place-items-center hover:bg-paper-2" aria-label="Settings"><i data-lucide="settings" class="w-5 h-5"></i></a>
+          </div>
+
+          <div class="mt-5 rounded-lg bg-sindoor text-white p-5 relative overflow-hidden">
+            <div class="absolute -right-10 -top-12 opacity-15 pointer-events-none" id="dues-seal" aria-hidden="true"></div>
+            <p class="relative text-[15px] text-white" data-bn="আপনার বকেয়া">Your dues</p>
+            <p class="relative font-display text-[3rem] leading-none mt-1" id="dues-total"></p>
+            <p class="relative text-[15px] text-white mt-2" data-bn="অক্টোবর ও নভেম্বর ২০২৬ · পরিবার MC-0104">October &amp; November 2026 · Family MC-0104</p>
+            <div class="relative mt-5 flex gap-2">
+              <a href="#pay" class="btn bg-white text-sindoor-deep hover:bg-paper flex-1"><span data-bn="এখনই দিন">Pay now</span></a>
+              <a href="#cash" class="btn border border-white/40 text-white hover:bg-white/10" id="cash-btn"><span data-bn="নগদে দেব">I’ll pay cash</span></a>
+            </div>
+          </div>
+
+          <a href="#events" class="mt-4 flex items-center gap-4 rounded-lg bg-marigold p-4">
+            <div class="text-center w-14 shrink-0 leading-none"><div class="font-display text-3xl num" data-d="13">13</div><div class="text-[12px] font-semibold mt-1" data-bn="ডিসে">DEC</div></div>
+            <div class="min-w-0">
+              <p class="font-display text-xl leading-tight" data-bn="বার্ষিক ক্রীড়া">Annual Sports Day</p>
+              <p class="text-sm text-ink" data-bn="পরিবারের পাস নিন · নাম জমা ৭ ডিসে পর্যন্ত">Get your family pass · entries close 7 Dec</p>
+            </div>
+            <i data-lucide="chevron-right" class="ml-auto w-5 h-5 shrink-0"></i>
+          </a>
+
+          <div class="mt-4 grid grid-cols-4 gap-2 text-center text-[12.5px] font-medium">
+            <a href="#id" class="rounded-lg bg-card border border-rule py-3 hover:border-ink/30"><i data-lucide="id-card" class="w-6 h-6 mx-auto text-sindoor"></i><span class="block mt-1.5" data-bn="আইডি">ID card</span></a>
+            <a href="#events" class="rounded-lg bg-card border border-rule py-3 hover:border-ink/30"><i data-lucide="ticket" class="w-6 h-6 mx-auto text-sindoor"></i><span class="block mt-1.5" data-bn="পাস">Passes</span></a>
+            <a href="#nursery" class="rounded-lg bg-card border border-rule py-3 hover:border-ink/30"><i data-lucide="sprout" class="w-6 h-6 mx-auto text-tulsi"></i><span class="block mt-1.5" data-bn="নার্সারি">Nursery</span></a>
+            <a href="#receipts" class="rounded-lg bg-card border border-rule py-3 hover:border-ink/30"><i data-lucide="receipt-text" class="w-6 h-6 mx-auto text-ink"></i><span class="block mt-1.5" data-bn="রসিদ">Receipts</span></a>
+          </div>
+
+          <div class="mt-7 flex items-baseline justify-between">
+            <h2 class="font-display text-xl" data-bn="নোটিস বোর্ড">Notice board</h2>
+            <a href="#notices" class="text-sm font-semibold text-sindoor" data-bn="সব দেখুন">See all</a>
+          </div>
+          <ul class="mt-2" id="home-notices"></ul>
+        </section>
+
+        <!-- PAY -->
+        <section data-screen="pay" class="px-5 pt-3 pb-8">
+          <h1 class="font-display text-[1.9rem]" data-bn="চাঁদা দিন">Pay subscription</h1>
+          <p class="text-[15px] text-ink-2 mt-1" data-bn="কোন মাসগুলোর জন্য দিচ্ছেন বেছে নিন।">Choose the months you are paying for.</p>
+          <ul class="mt-4 rounded-lg border border-rule bg-card divide-y divide-rule" id="month-list"></ul>
+
+          <div class="mt-5 rounded-lg bg-card border border-rule p-5 text-center">
+            <p class="text-sm text-ink-2" data-bn="মোট">To pay</p>
+            <p class="font-display text-[2.6rem] leading-none mt-1" id="pay-total"></p>
+            <a id="upi-link" class="btn btn-primary w-full h-12 mt-4"><i data-lucide="smartphone"></i><span data-bn="ইউপিআই অ্যাপে দিন">Pay with your UPI app</span></a>
+            <details class="mt-4 text-left group">
+              <summary class="cursor-pointer text-sm font-semibold text-ink-2 flex items-center justify-center gap-1.5 list-none [&::-webkit-details-marker]:hidden"><i data-lucide="qr-code" class="w-4 h-4"></i><span data-bn="অন্য ফোন থেকে স্ক্যান করবেন?">Paying from another phone? Show QR</span></summary>
+              <div class="w-40 h-40 mx-auto mt-3" id="upi-qr"></div>
+              <p class="mt-2 text-center text-sm text-ink-2 num">maitriclub@sbi</p>
+            </details>
+          </div>
+
+          <form id="utr-form" class="mt-4">
+            <label class="label" for="utr" data-bn="টাকা পাঠানোর পর ১২ সংখ্যার UTR লিখুন (UPI অ্যাপের রসিদে থাকে)">After paying, enter the 12-digit UTR (on your UPI app’s receipt)</label>
+            <div class="flex gap-2">
+              <input id="utr" class="field num" inputmode="numeric" maxlength="12" pattern="[0-9]{12}" placeholder="412356789012" autocomplete="off" required />
+              <button type="button" id="paste-utr" class="btn btn-line shrink-0 px-3" aria-label="Paste UTR"><i data-lucide="clipboard-paste"></i></button>
+              <button class="btn btn-ink shrink-0" data-bn="জমা দিন">Submit</button>
+            </div>
+            <p class="text-sm text-ink-3 mt-2" data-bn="কোষাধ্যক্ষ তাপস মণ্ডল যাচাই করলে রসিদ চলে আসবে।">Your receipt arrives once treasurer Tapas Mondal confirms it.</p>
+          </form>
+
+          <h2 class="font-display text-xl mt-8" data-bn="আগের রসিদ">Past receipts</h2>
+          <ul class="mt-2" id="history"></ul>
+        </section>
+
+        <!-- ID -->
+        <section data-screen="id" class="px-5 pt-3 pb-8">
+          <h1 class="font-display text-[1.9rem]" data-bn="সদস্য কার্ড">Member cards</h1>
+          <p class="text-[15px] text-ink-2 mt-1" data-bn="পরিবারের প্রত্যেকের নিজের কার্ড।">Everyone in your family has their own card.</p>
+          <div class="mt-4 flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5" role="tablist" aria-label="Family member" id="person-tabs"></div>
+          <div class="mt-4 grid grid-cols-2 p-1 rounded-[7px] bg-paper-2" role="tablist" aria-label="Card view">
+            <button role="tab" data-view="card" aria-selected="true" class="h-10 rounded-[5px] text-[15px] font-semibold text-ink-2 aria-selected:bg-white aria-selected:text-ink aria-selected:shadow-[0_1px_2px_rgba(0,0,0,.12)]" data-bn="কার্ড">Card</button>
+            <button role="tab" data-view="gate" aria-selected="false" class="h-10 rounded-[5px] text-[15px] font-semibold text-ink-2 aria-selected:bg-white aria-selected:text-ink aria-selected:shadow-[0_1px_2px_rgba(0,0,0,.12)]" data-bn="গেটের QR">Gate QR</button>
+          </div>
+          <div class="mt-4" id="card-area"></div>
+        </section>
+
+        <!-- EVENTS -->
+        <section data-screen="events" class="px-5 pt-3 pb-8">
+          <h1 class="font-display text-[1.9rem]" data-bn="অনুষ্ঠান">Events</h1>
+          <ul class="mt-3" id="event-list"></ul>
+          <div id="pass-area" class="mt-4"></div>
+        </section>
+
+        <!-- NOTICES -->
+        <section data-screen="notices" class="px-5 pt-3 pb-8">
+          <h1 class="font-display text-[1.9rem]" data-bn="নোটিস বোর্ড">Notice board</h1>
+          <div class="mt-4 rounded-lg border-2 border-ink p-4 bg-card" id="poll"></div>
+          <ul class="mt-4" id="notice-list"></ul>
+        </section>
+
+        <!-- NURSERY -->
+        <section data-screen="nursery" class="px-5 pt-3 pb-8">
+          <h1 class="font-display text-[1.9rem] text-tulsi" data-bn="নার্সারি">Nursery</h1>
+          <p class="text-[15px] text-ink-2 mt-1" data-bn="সদস্য মূল্য দেখানো হচ্ছে (১০% ছাড়)। কাউন্টারে আইডি দেখান।">Showing member prices (10% off). Show your ID at the counter.</p>
+          <ul class="mt-3" id="app-plants"></ul>
+        </section>
+
+        <!-- PROFILE -->
+        <section data-screen="profile" class="px-5 pt-3 pb-8">
+          <a href="#home" class="inline-flex items-center gap-1 text-sm font-semibold text-ink-2 -ml-1"><i data-lucide="chevron-left" class="w-4 h-4"></i><span data-bn="ফিরে যান">Back</span></a>
+          <div class="mt-3 flex items-center gap-4">
+            <span class="w-16 h-16 rounded-full bg-sindoor text-white grid place-items-center font-display text-2xl" lang="bn">অ</span>
+            <div>
+              <h1 class="font-display text-[1.7rem] leading-tight" data-bn="অনন্যা মুখার্জি">Ananya Mukherjee</h1>
+              <p class="text-[15px] text-ink-2 num">MC-0104 · +91 98301 73491</p>
+            </div>
+          </div>
+          <h2 class="mt-7 text-[13px] font-bold uppercase tracking-wide text-ink-2" data-bn="পরিবার">Family on this card</h2>
+          <ul class="mt-2 border-t border-rule" id="family-list"></ul>
+          <button class="btn btn-line w-full mt-3" id="add-member"><i data-lucide="user-plus"></i><span data-bn="সদস্য যোগ করুন">Add a family member</span></button>
+          <p class="mt-2 text-[13px] text-ink-2" data-bn="নতুন নাম কমিটি যাচাই করবে।">New names are checked by the committee before they appear on the card.</p>
+          <h2 class="mt-7 text-[13px] font-bold uppercase tracking-wide text-ink-2" data-bn="ঠিকানা">Address</h2>
+          <p class="mt-2 text-[15px]" data-bn="১২/৪ নেতাজি পাড়া, ২ নং গলি, কলকাতা ৭০০ ০৮৪">12/4 Netaji Para, Lane 2, Kolkata 700 084</p>
+          <button class="mt-1 text-sm font-semibold text-sindoor" data-bn="ঠিকানা বদলান">Change address</button>
+        </section>
+
+        <!-- SETTINGS -->
+        <section data-screen="settings" class="px-5 pt-3 pb-8">
+          <h1 class="font-display text-[1.9rem]" data-bn="সেটিংস">Settings</h1>
+          <h2 class="mt-5 text-[13px] font-bold uppercase tracking-wide text-ink-2" data-bn="ভাষা">Language</h2>
+          <div class="mt-2 grid grid-cols-2 p-1 rounded-[7px] bg-paper-2" role="group" aria-label="Language">
+            <button data-lang-btn="en" class="h-10 rounded-[5px] text-[15px] font-semibold text-ink-2 aria-pressed:bg-white aria-pressed:text-ink">English</button>
+            <button data-lang-btn="bn" class="h-10 rounded-[5px] text-[15px] font-semibold text-ink-2 aria-pressed:bg-white aria-pressed:text-ink" lang="bn">বাংলা</button>
+          </div>
+          <h2 class="mt-7 text-[13px] font-bold uppercase tracking-wide text-ink-2" data-bn="নোটিফিকেশন">Notifications</h2>
+          <ul class="mt-1 divide-y divide-rule" id="notify-prefs"></ul>
+          <h2 class="mt-7 text-[13px] font-bold uppercase tracking-wide text-ink-2" data-bn="অ্যাকাউন্ট">Account</h2>
+          <ul class="mt-1 divide-y divide-rule text-[15px]">
+            <li><a href="#profile" class="flex items-center gap-3 py-3.5"><i data-lucide="users" class="w-5 h-5"></i><span data-bn="পরিবার ও প্রোফাইল">Family &amp; profile</span><i data-lucide="chevron-right" class="ml-auto w-4 h-4 text-ink-3"></i></a></li>
+            <li><a href="login.html#forgot" class="flex items-center gap-3 py-3.5"><i data-lucide="key-round" class="w-5 h-5"></i><span data-bn="পাসওয়ার্ড বদলান">Change password</span><i data-lucide="chevron-right" class="ml-auto w-4 h-4 text-ink-3"></i></a></li>
+            <li><button class="w-full flex items-center gap-3 py-3.5 text-left" id="change-number"><i data-lucide="smartphone" class="w-5 h-5"></i><span data-bn="মোবাইল নম্বর বদলান">Change mobile number</span><i data-lucide="chevron-right" class="ml-auto w-4 h-4 text-ink-3"></i></button></li>
+            <li><a href="tel:+919830012345" class="flex items-center gap-3 py-3.5"><i data-lucide="life-buoy" class="w-5 h-5"></i><span data-bn="সাহায্য: ক্লাবে ফোন করুন">Help: call the club</span><i data-lucide="chevron-right" class="ml-auto w-4 h-4 text-ink-3"></i></a></li>
+          </ul>
+          <a href="login.html" class="btn btn-line w-full mt-6"><i data-lucide="log-out"></i><span data-bn="লগআউট">Sign out</span></a>
+          <p class="mt-4 text-center text-[13px] text-ink-3">Maitri Club app · v0.1 prototype</p>
+        </section>
+
+        <!-- NOTIFICATIONS -->
+        <section data-screen="alerts" class="px-5 pt-3 pb-8">
+          <a href="#home" class="inline-flex items-center gap-1 text-sm font-semibold text-ink-2 -ml-1"><i data-lucide="chevron-left" class="w-4 h-4"></i><span data-bn="ফিরে যান">Back</span></a>
+          <div class="mt-2 flex items-end justify-between">
+            <h1 class="font-display text-[1.9rem]" data-bn="নোটিফিকেশন">Notifications</h1>
+            <button class="text-sm font-semibold text-sindoor pb-2" id="mark-read" data-bn="সব পড়া হয়েছে">Mark all read</button>
+          </div>
+          <ul class="mt-2" id="alert-list"></ul>
+        </section>
+
+        <!-- RECEIPTS -->
+        <section data-screen="receipts" class="px-5 pt-3 pb-8">
+          <a href="#home" class="inline-flex items-center gap-1 text-sm font-semibold text-ink-2 -ml-1"><i data-lucide="chevron-left" class="w-4 h-4"></i><span data-bn="ফিরে যান">Back</span></a>
+          <h1 class="font-display text-[1.9rem] mt-2" data-bn="রসিদ">Receipts</h1>
+          <p class="text-[15px] text-ink-2 mt-1" data-bn="সব চাঁদা, পাস ও নার্সারির রসিদ এক জায়গায়।">Every subscription, pass and nursery receipt in one place.</p>
+          <ul class="mt-3" id="receipt-list"></ul>
+        </section>
+
+        <!-- CASH -->
+        <section data-screen="cash" class="px-5 pt-3 pb-8">
+          <a href="#home" class="inline-flex items-center gap-1 text-sm font-semibold text-ink-2 -ml-1"><i data-lucide="chevron-left" class="w-4 h-4"></i><span data-bn="ফিরে যান">Back</span></a>
+          <h1 class="font-display text-[1.9rem] mt-2" data-bn="নগদে দেবেন">Paying in cash</h1>
+          <p class="text-[17px] text-ink-2 mt-2 leading-relaxed" data-bn="ক্লাব ঘরে সন্ধ্যা ৬–৯টার মধ্যে কোষাধ্যক্ষ তাপস মণ্ডলকে দিন। উনি সঙ্গে সঙ্গে অ্যাপে রসিদ পাঠাবেন, কাগজের রসিদ লাগবে না।">Give it to treasurer Tapas Mondal at the club room, 6–9 pm. He sends the receipt to this app on the spot, so no paper slip is needed.</p>
+          <a href="tel:+919830012345" class="btn btn-line w-full mt-6"><i data-lucide="phone"></i><span data-bn="তাপস-দাকে ফোন করুন">Call Tapas-da</span></a>
+        </section>
+      </div>
+
+      <!-- Tab bar -->
+      <nav class="shrink-0 border-t border-rule bg-paper/95 backdrop-blur-sm grid grid-cols-5 pb-[env(safe-area-inset-bottom)] md:pb-3 sticky bottom-0" aria-label="App">
+        <a href="#home" data-nav="home" class="flex flex-col items-center gap-0.5 py-2.5 text-[11.5px] font-medium text-ink-3 aria-[current=page]:text-sindoor"><i data-lucide="house" class="w-6 h-6"></i><span data-bn="হোম">Home</span></a>
+        <a href="#pay" data-nav="pay" class="flex flex-col items-center gap-0.5 py-2.5 text-[11.5px] font-medium text-ink-3 aria-[current=page]:text-sindoor"><i data-lucide="indian-rupee" class="w-6 h-6"></i><span data-bn="চাঁদা">Pay</span></a>
+        <a href="#id" data-nav="id" class="flex flex-col items-center gap-0.5 py-2.5 text-[11.5px] font-medium text-ink-3 aria-[current=page]:text-sindoor"><i data-lucide="id-card" class="w-6 h-6"></i><span data-bn="কার্ড">Card</span></a>
+        <a href="#events" data-nav="events" class="flex flex-col items-center gap-0.5 py-2.5 text-[11.5px] font-medium text-ink-3 aria-[current=page]:text-sindoor"><i data-lucide="calendar-days" class="w-6 h-6"></i><span data-bn="অনুষ্ঠান">Events</span></a>
+        <a href="#notices" data-nav="notices" class="flex flex-col items-center gap-0.5 py-2.5 text-[11.5px] font-medium text-ink-3 aria-[current=page]:text-sindoor"><i data-lucide="megaphone" class="w-6 h-6"></i><span data-bn="নোটিস">Notices</span></a>
+      </nav>
+
+      <!-- Receipt sheet -->
+      <div id="sheet" class="fixed md:absolute inset-0 z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+        <div class="absolute inset-0 bg-ink/40" data-close></div>
+        <div class="absolute inset-x-0 bottom-0 bg-card rounded-t-3xl p-5 pb-8 rise" id="sheet-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

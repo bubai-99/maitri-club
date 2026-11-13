@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2b2f36" />
+  <title>Maitri Club · Committee Console</title>
+</head>
+<body class="min-h-dvh">
+  <div class="lg:grid lg:grid-cols-[248px_1fr] min-h-[calc(100dvh-40px)]">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-[260px] -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:h-[calc(100dvh-40px)] lg:w-auto bg-paper-2 border-r border-rule flex flex-col transition-transform duration-300 ease-[cubic-bezier(.16,1,.3,1)]">
+      <div class="px-5 h-16 flex items-center gap-2.5 border-b border-rule shrink-0">
+        <span id="side-seal"></span>
+        <div class="leading-none">
+          <p class="font-display text-lg text-sindoor">মৈত্রী ক্লাব</p>
+          <p class="text-[11.5px] font-semibold tracking-[0.14em] text-ink-2 mt-0.5" data-bn="কমিটি কনসোল">COMMITTEE CONSOLE</p>
+        </div>
+      </div>
+      <nav class="flex-1 overflow-y-auto px-3 py-4 text-[15px]" aria-label="Console" id="side-nav"></nav>
+      <div class="border-t border-rule px-4 py-3 flex items-center gap-3">
+        <a href="#profile" data-nav="profile" class="flex items-center gap-3 min-w-0 rounded-md -m-1 p-1 hover:bg-paper-3/50">
+          <span class="w-9 h-9 rounded-full bg-ink text-paper grid place-items-center font-display" lang="bn">তা</span>
+          <span class="leading-tight min-w-0">
+            <span class="block font-semibold text-sm truncate" data-bn="তাপস মণ্ডল">Tapas Mondal</span>
+            <span class="block text-[12.5px] text-ink-2" data-bn="কোষাধ্যক্ষ · আমার অ্যাকাউন্ট">Treasurer · My account</span>
+          </span>
+        </a>
+        <a href="admin-login.html" class="ml-auto w-8 h-8 grid place-items-center rounded-md hover:bg-paper-3/60" aria-label="Sign out" title="Sign out"><i data-lucide="log-out" class="w-4 h-4"></i></a>
+      </div>
+    </aside>
+    <div id="scrim" class="fixed inset-0 bg-ink/40 z-30 hidden lg:hidden"></div>
+
+    <!-- Main -->
+    <div class="min-w-0 flex flex-col">
+      <header class="h-16 border-b border-rule flex items-center gap-3 px-4 sm:px-6 bg-paper sticky top-0 z-20">
+        <button id="side-btn" class="lg:hidden w-10 h-10 -ml-2 grid place-items-center rounded-md hover:bg-paper-2" aria-label="Open menu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+        <div class="relative flex-1 max-w-md">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-3"></i>
+          <input id="gsearch" class="field h-10 pl-9 bg-card" role="combobox" aria-expanded="false" aria-controls="gresults" autocomplete="off" data-bn-ph="পরিবার, রসিদ বা ফোন নম্বর খুঁজুন" placeholder="Find a family, receipt or phone number" />
+          <kbd class="hidden sm:block absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-ink-3 border border-rule rounded px-1.5">/</kbd>
+          <div id="gresults" class="hidden absolute z-30 left-0 right-0 mt-1 bg-white border-2 border-ink rounded-[7px] shadow-[0_12px_32px_-12px_rgba(0,0,0,.35)] overflow-hidden"></div>
+        </div>
+        <a href="#collect" class="btn btn-primary btn-sm ml-auto shrink-0"><i data-lucide="plus"></i><span class="hidden sm:inline" data-bn="টাকা জমা">Collect payment</span></a>
+      </header>
+
+      <main class="flex-1 px-4 sm:px-6 py-6 lg:py-8">
+        <section data-screen="dashboard"></section>
+        <section data-screen="members"></section>
+        <section data-screen="collect"></section>
+        <section data-screen="dues"></section>
+        <section data-screen="khata"></section>
+        <section data-screen="chanda"></section>
+        <section data-screen="catering"></section>
+        <section data-screen="nursery"></section>
+        <section data-screen="meetings"></section>
+        <section data-screen="events"></section>
+        <section data-screen="reports"></section>
+        <section data-screen="settings"></section>
+        <section data-screen="profile"></section>
+        <section data-screen="cards"></section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Drawer -->
+  <div id="drawer" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div class="absolute inset-0 bg-ink/40" data-close></div>
+    <div class="absolute inset-y-0 right-0 w-full max-w-md bg-paper shadow-2xl overflow-y-auto rise" id="drawer-body" tabindex="-1"></div>
+  </div>
+
+  <script type="module" src="/src/console.js"></script>
+</body>
+</html>

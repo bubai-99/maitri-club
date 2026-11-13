@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2b2f36" />
+  <title>Committee sign-in · Maitri Club</title>
+</head>
+<body class="min-h-dvh" data-portal="committee">
+  <div class="min-h-[calc(100dvh-40px)] lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+    <aside class="hidden lg:flex relative bg-ink text-white flex-col justify-between p-12 overflow-hidden isolate" aria-hidden="true">
+      <div class="absolute inset-0 -z-10" data-auth-photo="pujaMorning"></div>
+      <div class="absolute inset-0 -z-10 bg-ink/75"></div>
+      <div id="auth-seal"></div>
+      <div>
+        <p class="font-display leading-none text-[7rem]" lang="bn">মৈত্রী<br />ক্লাব</p>
+        <p class="poster text-[2.4rem] mt-6 max-w-[14ch]">The committee room</p>
+        <p class="mt-4 text-[16px] text-white/80 max-w-[38ch]">Members, the khata, chanda, catering and the nursery. Every entry is signed with your name.</p>
+      </div>
+      <p class="text-[14px] uppercase tracking-wide text-white/75">Two-step sign-in · every session logged</p>
+    </aside>
+
+    <main class="flex flex-col">
+      <header class="flex items-center justify-between px-5 sm:px-10 h-16">
+        <a href="index.html" class="flex items-center gap-2.5" aria-label="Maitri Club website">
+          <span id="auth-seal-sm"></span>
+          <span class="leading-none lg:hidden">
+            <span class="block font-display text-lg text-sindoor" lang="bn">মৈত্রী ক্লাব</span>
+            <span class="block text-[11.5px] font-semibold tracking-[0.14em] text-ink-2 mt-0.5" data-bn="কমিটি কনসোল">COMMITTEE CONSOLE</span>
+          </span>
+        </a>
+        <a href="index.html" class="text-sm font-semibold text-ink-2 hover:text-ink" data-bn="ওয়েবসাইটে ফিরুন">Back to website</a>
+      </header>
+      <div class="flex-1 flex items-start sm:items-center justify-center px-5 sm:px-10 py-8">
+        <div class="w-full max-w-[400px]" id="auth" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/src/auth.js"></script>
+</body>
+</html>

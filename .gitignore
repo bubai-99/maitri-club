@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+*.log
+
+# Local AI tooling (skills installed for design work), not project code
+.claude/
+skills-lock.json
+.impeccable/

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Maitri Club · Netaji Para</title>
+  <meta name="description" content="Maitri Club, Netaji Para, since 1972. Pujas, sports, catering and a neighbourhood nursery." />
+</head>
+<body class="min-h-dvh">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-paper/95 backdrop-blur-sm border-b border-rule">
+    <div class="mx-auto max-w-[1160px] px-5 h-16 flex items-center gap-4">
+      <a href="#home" class="flex items-center gap-2.5 shrink-0" aria-label="Maitri Club home">
+        <span id="logo-seal"></span>
+        <span class="leading-none">
+          <span class="block font-display text-[22px] text-sindoor" lang="bn">মৈত্রী ক্লাব</span>
+          <span class="block text-[11.5px] font-semibold tracking-[0.16em] text-ink-2 mt-0.5">MAITRI CLUB · NETAJI PARA</span>
+        </span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 ml-auto text-[15px] font-medium" aria-label="Main">
+        <a href="#events" data-nav="events" class="px-3 h-9 inline-flex items-center rounded-md hover:bg-paper-2 aria-[current=page]:text-sindoor"><span data-bn="অনুষ্ঠান">Events</span></a>
+        <a href="#catering" data-nav="catering" class="px-3 h-9 inline-flex items-center rounded-md hover:bg-paper-2 aria-[current=page]:text-turmeric"><span data-bn="ক্যাটারিং">Catering</span></a>
+        <a href="#nursery" data-nav="nursery" class="px-3 h-9 inline-flex items-center rounded-md hover:bg-paper-2 aria-[current=page]:text-tulsi"><span data-bn="নার্সারি">Nursery</span></a>
+        <a href="#gallery" data-nav="gallery" class="px-3 h-9 inline-flex items-center rounded-md hover:bg-paper-2 aria-[current=page]:text-sindoor"><span data-bn="ছবি">Gallery</span></a>
+        <a href="#committee" data-nav="committee" class="px-3 h-9 inline-flex items-center rounded-md hover:bg-paper-2 aria-[current=page]:text-sindoor"><span data-bn="কমিটি">Committee</span></a>
+      </nav>
+      <a href="#join" class="btn btn-primary btn-sm ml-auto md:ml-2 whitespace-nowrap"><span class="sm:hidden" data-bn="যোগ দিন">Join</span><span class="hidden sm:inline" data-bn="সদস্য হোন">Become a member</span></a>
+      <button id="menu-btn" class="md:hidden btn btn-ghost btn-sm px-2" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menu"><i data-lucide="menu"></i></button>
+    </div>
+    <nav id="mobile-nav" class="md:hidden hidden border-t border-rule px-4 py-2 text-[17px]" aria-label="Main mobile">
+      <a href="#events" class="block py-3 border-b border-rule" data-bn="অনুষ্ঠান">Events</a>
+      <a href="#catering" class="block py-3 border-b border-rule" data-bn="ক্যাটারিং">Catering</a>
+      <a href="#nursery" class="block py-3 border-b border-rule" data-bn="নার্সারি">Nursery</a>
+      <a href="#gallery" class="block py-3 border-b border-rule" data-bn="ছবি">Gallery</a>
+      <a href="#committee" class="block py-3 border-b border-rule" data-bn="কমিটি">Committee</a>
+      <a href="login.html" class="block py-3" data-bn="সদস্য লগইন">Member login</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ================= HOME ================= -->
+    <section data-screen="home">
+      <!-- Opening stage: photo right, poster type left, next event pinned to the bottom edge -->
+      <div class="relative bg-ink text-white overflow-hidden isolate">
+        <div class="absolute inset-0 -z-10" id="hero-photo" aria-hidden="true"></div>
+        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/85 to-ink/20"></div>
+        <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink/70 via-transparent to-transparent md:hidden"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 sm:pt-24 pb-14 sm:pb-20">
+          <div class="max-w-[620px]">
+            <h1 class="font-display leading-[1.02] text-[clamp(3.4rem,9vw,6.4rem)]" lang="bn">৫৪ বছরের<br />বন্ধুত্ব</h1>
+            <p class="mt-5 poster text-[clamp(1.5rem,3vw,2.1rem)] max-w-[22ch] text-white/95" data-bn="এক পাড়া, এক পরিবার">Fifty-four years of friendship, one para</p>
+            <p class="mt-5 text-[18px] leading-relaxed text-white/85 max-w-[46ch]" data-bn="পূজা, খেলাধুলা, বিয়েবাড়ির রান্না আর মোড়ের মাথায় একটা নার্সারি। প্রতিবেশীদের দ্বারা, প্রতিবেশীদের জন্য।">Pujas, sports, a kitchen that feeds the para’s weddings, and a nursery on the corner. Run by neighbours, for neighbours.</p>
+            <div class="mt-9 flex flex-wrap gap-2.5">
+              <a href="#join" class="btn btn-poster btn-primary"><span data-bn="সদস্য হোন">Become a member</span></a>
+              <a href="#events" class="btn btn-poster btn-light"><span data-bn="কী হচ্ছে">See what’s on</span></a>
+            </div>
+          </div>
+          <p class="mt-10 md:absolute md:right-5 md:bottom-6 md:mt-0 text-[12.5px] text-white/75" id="hero-credit"></p>
+        </div>
+
+        <!-- Next event strip -->
+        <div class="relative bg-marigold text-ink">
+          <div class="mx-auto max-w-[1160px] px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div class="flex items-center gap-4">
+              <span class="text-[12.5px] font-bold uppercase tracking-wide" data-bn="পরের অনুষ্ঠান">Next</span>
+              <span class="font-display text-[2.4rem] leading-none num" id="next-day"></span>
+              <span class="leading-tight"><span class="block poster text-xl" id="next-mon"></span><span class="block text-[13px]" id="next-wd"></span></span>
+            </div>
+            <div class="min-w-0">
+              <p class="poster text-[1.6rem]" id="next-title"></p>
+              <p class="text-[14px] flex items-center gap-1.5"><i data-lucide="map-pin" class="w-4 h-4"></i><span id="next-place"></span></p>
+            </div>
+            <div class="flex gap-1.5 text-center num" id="countdown" aria-live="off"></div>
+            <div class="flex gap-2 sm:ml-auto">
+              <a href="app.html#events" class="btn btn-ink h-11"><span data-bn="সদস্য পাস">Member pass</span></a>
+              <a href="https://wa.me/919830012345?text=Sports%20Day%20enquiry" target="_blank" rel="noopener" class="btn h-11 border-2 border-ink hover:bg-white/40"><span data-bn="জিজ্ঞাসা">Ask</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What we do: three photo tiles (image cards with title on a bottom scrim) -->
+      <div class="mx-auto max-w-[1400px] px-5 pt-24">
+        <div class="mx-auto max-w-[1160px] flex flex-wrap items-end justify-between gap-4 mb-8">
+          <h2 class="poster text-[clamp(2.4rem,5vw,3.75rem)]" data-bn="ক্লাবে কী হয়">What the club does</h2>
+          <p class="text-[17px] text-ink-2 max-w-[44ch]" data-bn="তিনটে কাজ, একটা খাতা। রান্নাঘর আর নার্সারির লাভ ক্লাবের পূজা ও সেবার কাজে যায়।">Three things, one set of books. What the kitchen and nursery earn pays for the pujas and the service work.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-5">
+          <a href="#events" class="book-club group relative block aspect-[4/5] md:aspect-[3/4] border-2 border-ink overflow-hidden isolate">
+            <div class="absolute inset-0 -z-10 transition-transform duration-700 group-hover:scale-[1.04]" data-photo="runners"></div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+              <h3 class="poster text-[2.4rem]" data-bn="ক্লাবের জীবন">Club life</h3>
+              <p class="mt-2 text-[15px] text-white/90 max-w-[34ch]" data-bn="দুর্গা, কালী ও সরস্বতী পূজা, বার্ষিক ক্রীড়া, রক্তদান শিবির, শীতের পিকনিক।">Durga, Kali and Saraswati Puja, sports day, blood donation camps and the winter picnic.</p>
+              <p class="mt-3 text-[15px] font-semibold flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[color:var(--book)] ring-2 ring-white/70"></span><span data-bn="মাসে ₹১০০, প্রতি পরিবার">₹100 a month per family</span></p>
+              <span class="mt-4 inline-flex items-center gap-2 font-semibold"><span data-bn="অনুষ্ঠান দেখুন">See the calendar</span><i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i></span>
+            </div>
+            <span class="absolute top-3 right-3 text-[11.5px] text-white bg-black/50 px-1.5 rounded" data-credit="runners"></span>
+          </a>
+          <a href="#catering" class="book-catering group relative block aspect-[4/5] md:aspect-[3/4] border-2 border-ink overflow-hidden isolate">
+            <div class="absolute inset-0 -z-10 transition-transform duration-700 group-hover:scale-[1.04]" data-photo="feast"></div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+              <h3 class="poster text-[2.4rem]" data-bn="মৈত্রী রান্নাঘর">Maitri Kitchen</h3>
+              <p class="mt-2 text-[15px] text-white/90 max-w-[34ch]" data-bn="পূজার ভোগের রাঁধুনিরাই রাঁধবেন আপনার অন্নপ্রাশন, বিয়ে বা শ্রাদ্ধের রান্না।">The cooks behind the puja bhog, cooking for your annaprashan, wedding or shraddha.</p>
+              <p class="mt-3 text-[15px] font-semibold flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[color:var(--book)] ring-2 ring-white/70"></span><span data-bn="প্লেট ₹২৮০ থেকে">From ₹280 a plate</span></p>
+              <span class="mt-4 inline-flex items-center gap-2 font-semibold"><span data-bn="মেনু দেখুন">See the menus</span><i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i></span>
+            </div>
+            <span class="absolute top-3 right-3 text-[11.5px] text-white bg-black/50 px-1.5 rounded" data-credit="feast"></span>
+          </a>
+          <a href="#nursery" class="book-nursery group relative block aspect-[4/5] md:aspect-[3/4] border-2 border-ink overflow-hidden isolate">
+            <div class="absolute inset-0 -z-10 transition-transform duration-700 group-hover:scale-[1.04]" data-photo="potted"></div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+              <h3 class="poster text-[2.4rem]" data-bn="মৈত্রী নার্সারি">Maitri Nursery</h3>
+              <p class="mt-2 text-[15px] text-white/90 max-w-[34ch]" data-bn="ক্লাবের গেটের পাশে জবা, শিউলি, তুলসী, ফলের কলম আর শীতের ফুল।">Joba, shiuli, tulsi, fruit saplings and winter flowers, by the club gate.</p>
+              <p class="mt-3 text-[15px] font-semibold flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[color:var(--book)] ring-2 ring-white/70"></span><span data-bn="সদস্যদের ১০% ছাড়">Members 10% off</span></p>
+              <span class="mt-4 inline-flex items-center gap-2 font-semibold"><span data-bn="গাছ দেখুন">Browse plants</span><i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i></span>
+            </div>
+            <span class="absolute top-3 right-3 text-[11.5px] text-white bg-black/50 px-1.5 rounded" data-credit="potted"></span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Coming up + notice board -->
+      <div class="mx-auto max-w-[1160px] px-5 pt-24 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div class="lg:col-span-7">
+          <div class="flex items-end justify-between gap-4 mb-5">
+            <h2 class="poster text-[clamp(2.4rem,5vw,3.75rem)]" data-bn="সামনের অনুষ্ঠান">Coming up</h2>
+            <a href="#events" class="text-[15px] font-semibold text-sindoor hover:underline pb-1" data-bn="সব অনুষ্ঠান">All events</a>
+          </div>
+          <ol class="border-t-2 border-ink" id="home-events"></ol>
+        </div>
+        <aside class="lg:col-span-5" aria-labelledby="board-h">
+          <div class="relative bg-paper-2 rounded-[7px] p-6 pt-7">
+            <span class="absolute -top-2.5 left-6 w-5 h-5 rounded-full bg-sindoor shadow-[0_2px_3px_rgba(0,0,0,.3)]" aria-hidden="true"></span>
+            <h2 id="board-h" class="poster text-[1.9rem]" data-bn="নোটিস বোর্ড">Notice board</h2>
+            <ul class="mt-3" id="home-notices"></ul>
+            <a href="login.html" class="mt-4 inline-flex items-center gap-1.5 text-[15px] font-semibold text-sindoor hover:underline"><span data-bn="সব নোটিস অ্যাপে">All notices in the member app</span><i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Gallery strip -->
+      <div class="pt-24">
+        <div class="mx-auto max-w-[1160px] px-5 flex items-end justify-between gap-4 mb-6">
+          <h2 class="poster text-[clamp(2.4rem,5vw,3.75rem)]" data-bn="ছবিতে পাড়া">The para in pictures</h2>
+          <a href="#gallery" class="text-[15px] font-semibold text-sindoor hover:underline pb-1" data-bn="সব ছবি">Open the gallery</a>
+        </div>
+        <div class="flex gap-4 overflow-x-auto no-scrollbar px-5 snap-x snap-mandatory lg:justify-center" id="home-strip"></div>
+      </div>
+
+      <!-- Chanda transparency -->
+      <div class="mx-auto max-w-[1160px] px-5 py-24 grid lg:grid-cols-12 gap-10 items-start">
+        <div class="lg:col-span-5">
+          <h2 class="poster text-[clamp(2.4rem,5vw,3.75rem)]" data-bn="আপনার চাঁদা কোথায় গেল">Where your chanda went</h2>
+          <p class="mt-6 text-[18px] text-ink-2 leading-relaxed max-w-[42ch]" data-bn="দুর্গাপূজা ২০২৬-এর প্রতিটি টাকার হিসাব। প্রতিটি বিল ক্লাবের খাতায় তোলা আছে এবং সদস্যরা অ্যাপে দেখতে পারেন।">Every rupee of Durga Puja 2026, accounted for. Each bill is entered in the club khata and members can see it in the app.</p>
+        </div>
+        <div class="lg:col-span-7">
+          <p class="font-display text-[clamp(3rem,7vw,5rem)] leading-none text-sindoor num" id="puja-total"></p>
+          <p class="text-[15px] text-ink-3 mt-2" data-bn="মোট সংগ্রহ, ৩১২টি পরিবার ও ৯ জন স্পনসর">collected from 312 households and 9 sponsors</p>
+          <div class="mt-6 flex h-12 border-2 border-ink" id="puja-bar" role="img" aria-label="Durga Puja 2026 spending breakdown"></div>
+          <ul class="mt-6 grid sm:grid-cols-2 gap-x-8" id="puja-legend"></ul>
+        </div>
+      </div>
+
+      <!-- Join: red community band -->
+      <div class="relative overflow-hidden bg-sindoor text-white">
+        <div class="absolute -right-16 -top-16 opacity-15 pointer-events-none" id="join-seal" aria-hidden="true"></div>
+        <div class="relative mx-auto max-w-[768px] px-5 py-28 text-center">
+          <h2 class="poster text-[clamp(2.8rem,7vw,5rem)]" data-bn="মাসে ₹১০০, পুরো পরিবার">₹100 a month. Your whole family.</h2>
+          <p class="mt-8 text-[18px] text-white/90 leading-relaxed" data-bn="পূজার ভোগ ও অনুষ্ঠানে সদস্য পাস, ক্যাটারিং ও নার্সারিতে সদস্য মূল্য, আর এজিএম-এ ভোটাধিকার। ভর্তি ফি ₹৫০০, একবার।">Member passes for bhog and events, member prices on catering and plants, and a vote at the AGM. One-time admission ₹500.</p>
+          <a href="#join" class="btn btn-poster btn-light mt-10"><span data-bn="আবেদন করুন">Apply to join</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen="events" class="mx-auto max-w-[1160px] px-5 pt-12 pb-20">
+      <h1 class="poster text-[clamp(2.8rem,7vw,5rem)] text-sindoor" data-bn="অনুষ্ঠান">Events</h1>
+      <p class="mt-4 text-[17px] text-ink-2 max-w-[56ch]" data-bn="সবাই আমন্ত্রিত। যেখানে পাস লাগে, সদস্যরা অ্যাপ থেকে পাস নেবেন।">Everyone is welcome. Where a pass is needed, members get it from the app.</p>
+      <h2 class="sr-only" data-bn="সামনের অনুষ্ঠান">Upcoming events</h2>
+      <ol class="mt-10 border-t-2 border-ink" id="all-events"></ol>
+
+      <h2 class="mt-24 poster text-[2.6rem]" data-bn="সম্প্রতি">Recently</h2>
+      <div class="mt-6 grid md:grid-cols-2 gap-6" id="past-events"></div>
+    </section>
+
+    <!-- ================= CATERING ================= -->
+    <section data-screen="catering" class="book-catering">
+      <div class="bg-turmeric-wash/60 border-b border-rule">
+        <div class="mx-auto max-w-[1160px] px-5 pt-12 pb-14">
+          <h1 class="poster text-[clamp(2.8rem,7vw,5rem)] text-turmeric" data-bn="মৈত্রী রান্নাঘর">Maitri Kitchen</h1>
+          <p class="mt-4 text-[17px] text-ink-2 max-w-[58ch]" data-bn="আমাদের রাঁধুনিরা প্রতি বছর পূজায় হাজার মানুষের ভোগ রাঁধেন। কলকাতার মধ্যে ৫০ জন থেকে ৩০০ জন পর্যন্ত অনুষ্ঠানের রান্না করি। লাভের টাকা ক্লাবের কাজে যায়।">Our cooks feed thousands at the pujas every year. We cater for 50 to 300 guests anywhere in Kolkata, and the profit goes back into the club.</p>
+        </div>
+      </div>
+      <div class="mx-auto max-w-[1160px] px-5 py-14">
+        <h2 class="poster text-[2.6rem]" data-bn="মেনু">Menus, per plate</h2>
+        <div class="mt-6 grid md:grid-cols-3 gap-5" id="packages"></div>
+        <p class="mt-4 text-[15px] text-ink-3" data-bn="সদস্যদের জন্য প্লেট প্রতি ₹২০ কম। মেনু বদলানো যায়।">Members pay ₹20 less per plate. Every menu can be changed.</p>
+
+        <div class="mt-16 grid lg:grid-cols-12 gap-10">
+          <div class="lg:col-span-5">
+            <h2 class="poster text-[2.6rem]" data-bn="রান্নার জন্য জিজ্ঞাসা">Ask for a quote</h2>
+            <p class="mt-3 text-[17px] text-ink-2 max-w-[44ch]" data-bn="দেবাশিস পাল এক দিনের মধ্যে ফোন করে মেনু ও দাম চূড়ান্ত করবেন। ২০% অগ্রিমে তারিখ বুক হয়।">Debashis Pal will call within a day to settle the menu and price. A 20% advance books the date.</p>
+            <div class="mt-6 paper-card p-5">
+              <p class="text-sm text-ink-3" data-bn="আনুমানিক খরচ">Estimate</p>
+              <p class="font-display text-4xl text-turmeric mt-1" id="estimate"></p>
+              <p class="text-sm text-ink-3 mt-1" id="estimate-note"></p>
+            </div>
+          </div>
+          <form class="lg:col-span-7 grid sm:grid-cols-2 gap-4" id="enquiry-form">
+            <label class="block"><span class="label" data-bn="আপনার নাম">Your name</span><input class="field" required autocomplete="name" /></label>
+            <label class="block"><span class="label" data-bn="ফোন">Phone</span><input class="field" required type="tel" inputmode="tel" autocomplete="tel" placeholder="98300 00000" /></label>
+            <label class="block"><span class="label" data-bn="অনুষ্ঠান">Occasion</span>
+              <select class="field"><option data-bn="অন্নপ্রাশন">Annaprashan</option><option data-bn="বিয়ে">Wedding</option><option data-bn="বউভাত">Reception</option><option data-bn="জন্মদিন">Birthday</option><option data-bn="শ্রাদ্ধ">Shraddha</option><option data-bn="অফিস / অন্যান্য">Office / other</option></select></label>
+            <label class="block"><span class="label" data-bn="তারিখ">Date</span><input class="field" type="date" value="2026-12-20" /></label>
+            <label class="block"><span class="label" data-bn="অতিথি সংখ্যা">Guests</span><input class="field num" type="number" min="30" max="400" value="120" id="guests" /></label>
+            <label class="block"><span class="label" data-bn="মেনু">Menu</span><select class="field" id="pkg-select"></select></label>
+            <label class="flex items-center gap-2.5 sm:col-span-2 text-[15px]"><input type="checkbox" id="is-member" class="w-5 h-5 accent-[#9a6400]" /><span data-bn="আমি মৈত্রী ক্লাবের সদস্য">I am a Maitri Club member</span></label>
+            <label class="block sm:col-span-2"><span class="label" data-bn="জায়গা ও অন্য কিছু">Venue and anything else</span><textarea class="field" rows="3" data-bn-ph="যেমন: বাড়িতে, নিরামিষ ২০ প্লেট" placeholder="e.g. at home, 20 vegetarian plates"></textarea></label>
+            <div class="sm:col-span-2"><button class="btn bg-turmeric text-white hover:bg-[#7a4f00] h-12 px-6"><span data-bn="জিজ্ঞাসা পাঠান">Send enquiry</span></button></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= NURSERY ================= -->
+    <section data-screen="nursery" class="book-nursery">
+      <div class="bg-tulsi-wash/70 border-b border-rule">
+        <div class="mx-auto max-w-[1160px] px-5 pt-12 pb-14 grid md:grid-cols-12 gap-6 items-end">
+          <div class="md:col-span-8">
+            <h1 class="poster text-[clamp(2.8rem,7vw,5rem)] text-tulsi" data-bn="মৈত্রী নার্সারি">Maitri Nursery</h1>
+            <p class="mt-4 text-[17px] text-ink-2 max-w-[56ch]" data-bn="গাছ বেছে নিন, হোয়াটসঅ্যাপে তালিকা পাঠান, ক্লাবের গেট থেকে নিয়ে যান। প্রতিটি বিক্রির টাকা ক্লাবের নার্সারি খাতায় ওঠে।">Pick your plants, send the list on WhatsApp, and collect from the club gate. Every sale goes into the club’s nursery book.</p>
+          </div>
+          <div class="md:col-span-4 text-[15px] text-ink-2 md:text-right">
+            <p class="flex md:justify-end items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-tulsi"></i><span data-bn="সকাল ৭–১০ ও বিকেল ৫–৮">7–10 am &amp; 5–8 pm</span></p>
+            <p class="flex md:justify-end items-center gap-2 mt-1"><i data-lucide="badge-percent" class="w-4 h-4 text-tulsi"></i><span data-bn="সদস্যদের ১০% ছাড়">Members 10% off</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="mx-auto max-w-[1160px] px-5 py-10 pb-36">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4" role="tablist" aria-label="Plant categories" id="plant-cats"></div>
+        <ul class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8" id="plant-list"></ul>
+      </div>
+      <div id="basket" class="fixed inset-x-0 bottom-0 z-30 translate-y-full transition-transform duration-300 ease-[cubic-bezier(.16,1,.3,1)]">
+        <div class="mx-auto max-w-[1160px] px-5 pb-4">
+          <div class="bg-tulsi text-white rounded-lg p-4 flex items-center gap-4 shadow-[0_12px_32px_-12px_rgba(20,50,28,.6)]">
+            <div class="min-w-0">
+              <p class="font-semibold" id="basket-count"></p>
+              <p class="text-sm text-white/80 truncate" id="basket-items"></p>
+            </div>
+            <p class="ml-auto font-display text-2xl num" id="basket-total"></p>
+            <a id="basket-wa" target="_blank" rel="noopener" class="btn bg-white text-tulsi hover:bg-tulsi-wash shrink-0"><i data-lucide="message-circle"></i><span class="hidden sm:inline" data-bn="হোয়াটসঅ্যাপে অর্ডার">Order on WhatsApp</span><span class="sm:hidden" data-bn="অর্ডার">Order</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= COMMITTEE ================= -->
+    <section data-screen="committee" class="mx-auto max-w-[1160px] px-5 pt-12 pb-20">
+      <h1 class="poster text-[clamp(2.8rem,7vw,5rem)] text-sindoor" data-bn="কমিটি ২০২৫–২৭">Committee 2025–27</h1>
+      <p class="mt-4 text-[17px] text-ink-2 max-w-[56ch]" data-bn="প্রতি দুই বছর অন্তর এজিএম-এ নির্বাচিত। যেকোনো প্রশ্নে ক্লাব ঘরে আসুন, সন্ধ্যা ৬–৯টা।">Elected at the AGM every two years. Drop into the club room any evening, 6–9 pm.</p>
+      <ul class="mt-10 border-t-2 border-ink" id="committee-list"></ul>
+      <div class="mt-14 grid md:grid-cols-2 gap-8">
+        <div>
+          <h2 class="poster text-3xl" data-bn="ঠিকানা">Find us</h2>
+          <p class="mt-3 text-[17px] text-ink-2 leading-relaxed" data-bn="১৪/২ নেতাজি সুভাষ রোড, নেতাজি পাড়া, কলকাতা ৭০০ ০৮৪">14/2 Netaji Subhas Road, Netaji Para, Kolkata 700 084</p>
+        </div>
+        <div>
+          <h2 class="poster text-3xl" data-bn="যোগাযোগ">Talk to us</h2>
+          <p class="mt-3 text-[17px]"><a href="tel:+919830012345" class="text-sindoor font-semibold hover:underline">+91 98300 12345</a></p>
+          <p class="mt-1 text-[17px]"><a href="https://wa.me/919830012345" target="_blank" rel="noopener" class="text-sindoor font-semibold hover:underline" data-bn="হোয়াটসঅ্যাপ করুন">WhatsApp the club</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= GALLERY ================= -->
+    <section data-screen="gallery" class="mx-auto max-w-[1160px] px-5 pt-12 pb-20">
+      <h1 class="poster text-[clamp(2.8rem,7vw,5rem)]" data-bn="ছবির খাতা">Gallery</h1>
+      <p class="mt-4 text-[17px] text-ink-2 max-w-[56ch]" data-bn="পূজা, খেলা, রান্নাঘর আর নার্সারির ছবি। আপনার তোলা ছবি পাঠাতে ক্লাবকে হোয়াটসঅ্যাপ করুন।">Pujas, sports, the kitchen and the nursery. Took a good photo? WhatsApp it to the club and we’ll add it.</p>
+      <div class="mt-8 flex flex-wrap gap-2" role="tablist" aria-label="Albums" id="album-tabs"></div>
+      <div class="mt-8 columns-1 sm:columns-2 lg:columns-3 gap-5 [&>*]:mb-5" id="gallery-grid"></div>
+    </section>
+
+    <!-- ================= PRIVACY ================= -->
+    <section data-screen="privacy" class="mx-auto max-w-[760px] px-5 pt-12 pb-20">
+      <h1 class="poster text-[clamp(2.4rem,6vw,4rem)]" data-bn="গোপনীয়তা ও শর্ত">Privacy &amp; terms</h1>
+      <p class="mt-3 text-sm text-ink-3" data-bn="শেষ আপডেট ১৩ নভেম্বর ২০২৬">Last updated 13 November 2026</p>
+      <div class="mt-8 space-y-8 text-[17px] leading-relaxed text-ink-2">
+        <div><h2 class="poster text-[1.8rem] text-ink" data-bn="আমরা কী রাখি">What we keep</h2>
+          <p class="mt-3" data-bn="পরিবারের প্রধানের নাম, মোবাইল নম্বর, ঠিকানা, পরিবারের সদস্যদের নাম ও সম্পর্ক, কার্ডের ছবি ও রক্তের গ্রুপ (ইচ্ছে হলে), আর চাঁদা ও রসিদের হিসাব।">The head of family’s name, mobile number and address; family members’ names and relation; card photos and blood group (optional); and your subscription and receipt history.</p></div>
+        <div><h2 class="poster text-[1.8rem] text-ink" data-bn="কেন রাখি">Why</h2>
+          <p class="mt-3" data-bn="সদস্যপদ, রসিদ, অনুষ্ঠানের পাস ও এজিএম-এর হিসাবের জন্য। রক্তের গ্রুপ শুধু রক্তদান শিবিরে দরকার হলে দেখা হয়।">To run membership, receipts, event passes and the AGM accounts. Blood group is only looked at when a blood donation camp needs it.</p></div>
+        <div><h2 class="poster text-[1.8rem] text-ink" data-bn="কারা দেখতে পান">Who can see it</h2>
+          <p class="mt-3" data-bn="শুধু কমিটির যাঁর কাজে দরকার: কোষাধ্যক্ষ হিসাব দেখেন, স্বেচ্ছাসেবক শুধু গেটের পাস। কোনো তথ্য বিক্রি বা বাইরে দেওয়া হয় না।">Only committee members who need it for their job: the treasurer sees accounts, volunteers see only gate passes. Nothing is sold or shared outside the club.</p></div>
+        <div><h2 class="poster text-[1.8rem] text-ink" data-bn="আপনার অধিকার">Your choices</h2>
+          <p class="mt-3" data-bn="অ্যাপের সেটিংস থেকে তথ্য দেখুন ও বদলান। সদস্যপদ ছাড়লে বললে তথ্য মুছে দেওয়া হবে, শুধু আইনত দরকারি হিসাব থাকবে।">See and change your details in the app’s Settings. If you leave the club, ask and we delete your details, keeping only the accounts the law requires.</p></div>
+        <div><h2 class="poster text-[1.8rem] text-ink" data-bn="শর্ত">Terms</h2>
+          <p class="mt-3" data-bn="সদস্য কার্ড হস্তান্তরযোগ্য নয়। হারালে ক্লাবকে জানান, পুরনো QR বাতিল করে নতুন কার্ড দেওয়া হবে।">Member cards are not transferable. If one is lost, tell the club; the old QR is cancelled and a new card is issued.</p></div>
+        <p class="text-[15px]"><span data-bn="প্রশ্ন? সম্পাদকের সঙ্গে যোগাযোগ করুন:">Questions? Contact the secretary:</span> <a href="tel:+919830012345" class="font-semibold text-sindoor hover:underline">+91 98300 12345</a></p>
+      </div>
+    </section>
+
+    <!-- ================= JOIN ================= -->
+    <section data-screen="join" class="mx-auto max-w-[1160px] px-5 pt-12 pb-20 grid lg:grid-cols-12 gap-12">
+      <div class="lg:col-span-5">
+        <h1 class="poster text-[clamp(2.8rem,7vw,5rem)] text-sindoor" data-bn="সদস্য হোন">Become a member</h1>
+        <p class="mt-4 text-[17px] text-ink-2 max-w-[44ch]" data-bn="সদস্যপদ পরিবার ভিত্তিক। একজন আবেদন করলে পুরো পরিবার সদস্য হয়।">Membership is by family. One person applies and the whole household joins.</p>
+        <ol class="mt-8 space-y-5">
+          <li class="flex gap-4"><span class="font-display text-3xl text-sindoor w-8 shrink-0 num">1</span><div><p class="font-semibold" data-bn="ফর্ম পূরণ করুন">Fill this form</p><p class="text-[15px] text-ink-2" data-bn="দুই মিনিট লাগবে।">Takes two minutes.</p></div></li>
+          <li class="flex gap-4"><span class="font-display text-3xl text-sindoor w-8 shrink-0 num">2</span><div><p class="font-semibold" data-bn="কমিটি অনুমোদন করবে">The committee approves</p><p class="text-[15px] text-ink-2" data-bn="সাধারণত এক সপ্তাহের মধ্যে, পরের সভায়।">Usually within a week, at the next meeting.</p></div></li>
+          <li class="flex gap-4"><span class="font-display text-3xl text-sindoor w-8 shrink-0 num">3</span><div><p class="font-semibold" data-bn="ভর্তি ফি দিন, আইডি পান">Pay the admission, get your ID</p><p class="text-[15px] text-ink-2" data-bn="নগদে বা ইউপিআই-এ ₹৫০০। ডিজিটাল আইডি কার্ড অ্যাপে চলে আসবে।">₹500 in cash or UPI. Your digital ID card appears in the app.</p></div></li>
+        </ol>
+      </div>
+      <form class="lg:col-span-7 paper-card p-5 sm:p-8 grid sm:grid-cols-2 gap-4" id="join-form">
+        <label class="block sm:col-span-2"><span class="label" data-bn="পরিবারের প্রধানের নাম">Head of family</span><input class="field" required autocomplete="name" /></label>
+        <label class="block"><span class="label" data-bn="মোবাইল (ওটিপি যাবে)">Mobile (for OTP login)</span><input class="field" type="tel" inputmode="tel" required placeholder="98300 00000" /></label>
+        <label class="block"><span class="label" data-bn="গলি / এলাকা">Lane / area</span>
+          <select class="field"><option data-bn="১ নং গলি">Lane 1</option><option data-bn="২ নং গলি">Lane 2</option><option data-bn="৩ নং গলি">Lane 3</option><option data-bn="পুকুর পাড়">Pukur Par</option><option data-bn="স্কুল রোড">School Road</option></select></label>
+        <label class="block sm:col-span-2"><span class="label" data-bn="ঠিকানা">Address</span><input class="field" autocomplete="street-address" /></label>
+        <fieldset class="sm:col-span-2">
+          <legend class="label" data-bn="পরিবারের অন্য সদস্য">Other family members</legend>
+          <div id="dependents" class="space-y-2"></div>
+          <button type="button" id="add-dep" class="btn btn-ghost btn-sm mt-2 -ml-2 text-sindoor"><i data-lucide="plus"></i><span data-bn="আরও একজন">Add another</span></button>
+        </fieldset>
+        <fieldset class="sm:col-span-2">
+          <legend class="label" data-bn="চাঁদা">Subscription</legend>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <label class="flex items-start gap-3 rounded-lg border border-rule p-3.5 cursor-pointer has-[:checked]:border-sindoor has-[:checked]:bg-sindoor-wash/50"><input type="radio" name="plan" checked class="mt-1 accent-[#d21f1b]" /><span><span class="block font-semibold">₹100 <span data-bn="/ মাস">/ month</span></span><span class="text-sm text-ink-2" data-bn="নগদে বা ইউপিআই-এ">Pay in cash or UPI</span></span></label>
+            <label class="flex items-start gap-3 rounded-lg border border-rule p-3.5 cursor-pointer has-[:checked]:border-sindoor has-[:checked]:bg-sindoor-wash/50"><input type="radio" name="plan" class="mt-1 accent-[#d21f1b]" /><span><span class="block font-semibold">₹1,100 <span data-bn="/ বছর">/ year</span></span><span class="text-sm text-ink-2" data-bn="এক মাস বিনামূল্যে">One month free</span></span></label>
+          </div>
+        </fieldset>
+        <div class="sm:col-span-2 pt-2"><button class="btn btn-primary h-12 px-6"><span data-bn="আবেদন জমা দিন">Send application</span></button></div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Closing: charcoal printed band + monumental name -->
+  <footer class="bg-ink text-white">
+    <div class="halftone">
+      <div class="mx-auto max-w-[768px] px-5 pt-28 pb-20 text-center">
+        <h2 class="poster text-[clamp(2.4rem,6vw,4rem)]" data-bn="ক্লাবের খবর হোয়াটসঅ্যাপে">Club news on WhatsApp</h2>
+        <p class="mt-6 text-[18px] text-white/80" data-bn="পূজা, খেলা আর সভার নোটিস। মাসে দু-তিনটে বার্তা, তার বেশি নয়।">Puja, sports and meeting notices. Two or three messages a month, never more.</p>
+        <form class="mt-10 flex flex-col sm:flex-row gap-2.5" id="wa-form">
+          <label class="sr-only" for="wa-phone">Mobile number</label>
+          <input id="wa-phone" type="tel" inputmode="tel" required placeholder="98300 00000" class="flex-1 h-16 px-5 bg-white text-ink text-[20px] num rounded-[4px] placeholder:text-ink-3 focus:outline-none focus:ring-4 focus:ring-marigold/60" />
+          <button class="btn btn-poster btn-primary"><span data-bn="যোগ দিন">Sign me up</span></button>
+        </form>
+      </div>
+    </div>
+    <div class="mx-auto max-w-[1400px] px-5 pb-10">
+      <p class="font-display text-center leading-none text-[clamp(4.5rem,17vw,15rem)] text-white" aria-hidden="true" lang="bn">মৈত্রী ক্লাব</p>
+      <div class="mt-10 pt-6 border-t border-white/20 grid sm:grid-cols-3 gap-6 text-[14px] uppercase tracking-wide text-white/75">
+        <div class="flex items-center gap-3"><span id="foot-seal"></span><span data-bn="নেতাজি পাড়া, ১৯৭২ থেকে">Netaji Para, since 1972</span></div>
+        <div class="sm:text-center" data-bn="১৪/২ নেতাজি সুভাষ রোড · সন্ধ্যা ৬–৯টা">14/2 Netaji Subhas Road · open 6–9 pm</div>
+        <div class="flex gap-5 sm:justify-end">
+          <a href="login.html" class="hover:text-white" data-bn="সদস্য লগইন">Member login</a>
+          <a href="#privacy" class="hover:text-white" data-bn="গোপনীয়তা">Privacy</a>
+          <a href="admin-login.html" class="hover:text-white" data-bn="কমিটি">Committee</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/site.js"></script>
+</body>
+</html>

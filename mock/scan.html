@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#12131f" />
+  <title>Maitri Club · Gate Scanner</title>
+</head>
+<body class="min-h-dvh !bg-night text-paper">
+  <div class="mx-auto max-w-md min-h-[calc(100dvh-40px)] flex flex-col px-5 pt-4 pb-6 relative">
+    <header class="flex items-start gap-3">
+      <div class="min-w-0">
+        <p class="text-[13px] font-semibold text-marigold" data-bn="গেট ১ · বাপি হালদার">Gate 1 · Bapi Halder</p>
+        <h1 class="font-display text-2xl leading-tight" data-bn="বার্ষিক ক্রীড়া">Annual Sports Day</h1>
+      </div>
+      <span class="ml-auto chip bg-white/10 text-paper/90 shrink-0"><i data-lucide="wifi-off"></i><span data-bn="অফলাইন">Offline</span></span>
+    </header>
+    <p class="text-[13px] text-paper/60 mt-1" data-bn="২৮৬টি পাস ফোনে রাখা · সকাল ৬:৫৮-এ সিঙ্ক">286 passes saved on this phone · synced 6:58 am</p>
+
+    <div class="mt-5 grid grid-cols-2 gap-3">
+      <div class="rounded-xl bg-night-2 p-3.5">
+        <p class="text-[13px] text-paper/60" data-bn="ভিতরে">Inside now</p>
+        <p class="font-display text-3xl leading-none mt-1"><span id="inside" class="num" data-n="412" data-fmt="n">412</span></p>
+      </div>
+      <div class="rounded-xl bg-night-2 p-3.5">
+        <p class="text-[13px] text-paper/60" data-bn="জলখাবারের কুপন">Breakfast coupons</p>
+        <p class="font-display text-3xl leading-none mt-1"><span id="coupons" class="num" data-n="388" data-fmt="n">388</span></p>
+      </div>
+    </div>
+
+    <!-- Viewfinder -->
+    <div class="mt-5 relative aspect-square rounded-3xl overflow-hidden bg-[radial-gradient(ellipse_at_center,#2a2d45_0%,#12131f_75%)]" aria-label="Camera viewfinder">
+      <div class="absolute inset-10">
+        <span class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-marigold rounded-tl-2xl"></span>
+        <span class="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-marigold rounded-tr-2xl"></span>
+        <span class="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-marigold rounded-bl-2xl"></span>
+        <span class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-marigold rounded-br-2xl"></span>
+        <span class="scanline absolute inset-x-3 h-0.5 bg-marigold shadow-[0_0_12px_2px_rgba(242,165,22,.6)]"></span>
+      </div>
+      <p class="absolute bottom-4 inset-x-0 text-center text-[15px] text-paper/75" data-bn="সদস্য কার্ড বা পাসের QR ফ্রেমে ধরুন">Hold the member card or pass QR in the frame</p>
+    </div>
+
+    <button id="manual" class="btn h-14 mt-4 bg-white/10 hover:bg-white/15 text-paper text-[17px]"><i data-lucide="keyboard"></i><span data-bn="নম্বর দিয়ে খুঁজুন">Type family number instead</span></button>
+
+    <div class="mt-6 pt-4 border-t border-white/10">
+      <p class="text-[12px] font-semibold tracking-wide text-paper/50 mb-2" data-bn="প্রোটোটাইপ: স্ক্যানের ফল দেখুন">PROTOTYPE: SIMULATE A SCAN</p>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        <button data-sim="ok" class="h-10 rounded-lg bg-tulsi/30 hover:bg-tulsi/45 font-semibold" data-bn="বৈধ পাস">Valid pass</button>
+        <button data-sim="dues" class="h-10 rounded-lg bg-marigold/25 hover:bg-marigold/40 font-semibold" data-bn="বৈধ, বকেয়া আছে">Valid, dues pending</button>
+        <button data-sim="used" class="h-10 rounded-lg bg-marigold/25 hover:bg-marigold/40 font-semibold" data-bn="আগেই ঢুকেছে">Already entered</button>
+        <button data-sim="bad" class="h-10 rounded-lg bg-sindoor/35 hover:bg-sindoor/50 font-semibold" data-bn="অবৈধ">Not valid</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="result" class="fixed inset-0 z-50 hidden flex-col items-center justify-center text-center px-8" role="alertdialog" aria-live="assertive"></div>
+  </div>
+
+  <style>
+    @keyframes scan { 0%, 100% { top: 6%; } 50% { top: 92%; } }
+    .scanline { animation: scan 2.4s cubic-bezier(.45,0,.55,1) infinite; }
+    @media (prefers-reduced-motion: reduce) { .scanline { animation: none; top: 50%; } }
+  </style>
+  <script type="module" src="/src/scan.js"></script>
+</body>
+</html>

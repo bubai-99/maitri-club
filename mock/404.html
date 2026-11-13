@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2b2f36" />
+  <title>Page not found · Maitri Club</title>
+</head>
+<body class="min-h-dvh !bg-ink text-white">
+  <main class="halftone min-h-[calc(100dvh-40px)] flex items-center">
+    <div class="mx-auto max-w-[760px] px-5 py-20 text-center">
+      <div class="inline-block" id="nf-seal"></div>
+      <p class="mt-6 font-display text-[clamp(5rem,18vw,10rem)] leading-none num">404</p>
+      <h1 class="poster text-[clamp(2rem,6vw,3.5rem)] mt-4">This page went to the pandal</h1>
+      <p class="mt-5 text-[18px] text-white/85 max-w-[44ch] mx-auto">The link may be old, or the page has moved. Everything else is right where it was.</p>
+      <div class="mt-10 flex flex-wrap justify-center gap-2.5">
+        <a href="index.html" class="btn btn-poster btn-primary">Club home</a>
+        <a href="index.html#events" class="btn btn-poster btn-light">See what’s on</a>
+      </div>
+      <p class="mt-8 text-[15px] text-white/75">Looking for your card or dues? <a href="login.html" class="font-semibold text-white underline">Member sign-in</a></p>
+    </div>
+  </main>
+  <script type="module">
+    import { boot, seal } from '/src/shared.js';
+    document.getElementById('nf-seal').innerHTML = seal({ size: 110, color: '#fff', rotate: -8, className: 'stamp-in' });
+    boot('site', { dark: true });
+  </script>
+</body>
+</html>

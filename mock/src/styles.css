@@ -1,0 +1,234 @@
+@import "tailwindcss";
+@import "@fontsource/tiro-bangla/400.css";
+@import "@fontsource/tiro-bangla/400-italic.css";
+@import "@fontsource-variable/anek-bangla/standard.css";
+@import "@fontsource/dm-serif-display/400.css";
+
+/*
+  Reference lock (Refero): primary = neighbourhood-poster style (Roberta's).
+  White paper + charcoal stages; poster red only for actions, dotted menu leaders
+  and full-width community bands; chunky serif capitals stacked tight; square media
+  framed by 2px charcoal rules; halftone fields + four-point stars as print marks.
+  Borrowed: monumental closing name (Hungry Tiger).
+  Kept from brief: seal, khata ledger rules, one colour per book.
+*/
+@theme {
+  /* DM Serif Display carries Latin poster capitals; Bengali falls through to Tiro Bangla. */
+  --font-display: "DM Serif Display", "Tiro Bangla", "Noto Serif Bengali", serif;
+  --font-sans: "Anek Bangla Variable", "Noto Sans Bengali", system-ui, sans-serif;
+
+  /* Paper + charcoal ink */
+  --color-paper: #ffffff;
+  --color-paper-2: #f2f1ef;
+  --color-paper-3: #e2e0dc;
+  --color-card: #ffffff;
+  --color-rule: #dcdad6;
+  --color-rule-blue: #cfd6e8;
+  --color-ink: #2b2f36;
+  --color-ink-2: #4b5059;
+  --color-ink-3: #686c75;
+
+  /* Poster red (AA-adjusted) — actions, leaders, community bands. Also the Club book. */
+  --color-sindoor: #d21f1b;
+  --color-sindoor-deep: #a3140f;
+  --color-sindoor-wash: #fce4e1;
+  --color-marigold: #f2a516;
+  --color-marigold-wash: #fbe9c0;
+  --color-turmeric: #9a6400;
+  --color-turmeric-wash: #f6e3b4;
+  --color-tulsi: #2c6a3a;
+  --color-tulsi-wash: #d9ead6;
+
+  /* Night (scanner) */
+  --color-night: #12131f;
+  --color-night-2: #1d1f30;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--color-paper-3) transparent;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    overflow-x: clip;
+    font-variation-settings: "wdth" 100;
+  }
+  ::selection {
+    background: var(--color-marigold);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-sindoor);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  input, textarea, select {
+    caret-color: var(--color-sindoor);
+  }
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p, li { text-wrap: pretty; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--color-paper-3); border-radius: 10px; border: 2px solid var(--color-paper); }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  [data-screen]:not(.is-active) { display: none !important; }
+}
+
+@layer components {
+  .num { font-variant-numeric: tabular-nums lining-nums; }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-[7px] px-4 h-11 text-[15px] font-semibold transition-colors duration-150 select-none cursor-pointer;
+  }
+  /* Poster label: website-only conversion actions (display caps, 64px). */
+  .btn-poster { @apply h-14 px-7 font-display font-normal text-[20px] tracking-[-0.01em]; }
+  .btn-light { @apply bg-white text-ink hover:bg-paper-2; }
+  .btn svg { width: 18px; height: 18px; }
+  .btn-primary { @apply bg-sindoor text-white hover:bg-sindoor-deep; }
+  .btn-ink { @apply bg-ink text-paper hover:bg-ink-2; }
+  .btn-ghost { @apply text-ink hover:bg-paper-2; }
+  .btn-line { @apply border border-ink/25 text-ink hover:bg-paper-2; }
+  .btn-sm { @apply h-9 px-3 text-sm; }
+  .btn:disabled { @apply opacity-45 cursor-not-allowed; }
+
+  .field { @apply block w-full rounded-[4px] border border-rule bg-card px-3 h-11 text-[15px] text-ink placeholder:text-ink-3 focus:border-sindoor focus:outline-none focus:ring-2 focus:ring-sindoor/20; }
+  textarea.field { @apply h-auto py-2.5; }
+  .label { @apply block text-sm font-medium text-ink-2 mb-1.5; }
+
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 h-7 text-[13px] font-medium; }
+  .chip svg { width: 14px; height: 14px; }
+
+  .book-club { --book: var(--color-sindoor); --book-wash: var(--color-sindoor-wash); }
+  .book-catering { --book: var(--color-turmeric); --book-wash: var(--color-turmeric-wash); }
+  .book-nursery { --book: var(--color-tulsi); --book-wash: var(--color-tulsi-wash); }
+
+  /* Khata ruled paper: faint blue rules + double red margin */
+  .khata {
+    background-color: var(--color-card);
+    background-image:
+      linear-gradient(to right, transparent 54px, rgba(194,53,27,.45) 54px, rgba(194,53,27,.45) 55px, transparent 55px, transparent 58px, rgba(194,53,27,.45) 58px, rgba(194,53,27,.45) 59px, transparent 59px);
+  }
+  .khata-table { @apply w-full text-[15px]; border-collapse: collapse; }
+  .khata-table th { @apply text-left text-[12.5px] font-semibold text-ink-3 uppercase tracking-wide py-2.5 px-3 border-b-2 border-ink/70; }
+  .khata-table td { @apply py-2.5 px-3 border-b border-rule-blue align-middle; }
+  .khata-table tbody tr:hover td { background: rgba(242,165,22,.08); }
+  .khata-table .amt { @apply text-right whitespace-nowrap; font-variant-numeric: tabular-nums lining-nums; }
+
+  .paper-card { @apply bg-card rounded-lg border border-rule; }
+
+  /* Poster type: tight stacked capitals. Bengali is never uppercased, so the rule is harmless there. */
+  .poster { @apply font-display; line-height: 1; letter-spacing: -0.015em; }
+
+  /* Square media frame with charcoal rule; placeholder carries art direction until photos arrive. */
+  .frame { @apply relative border-2 border-ink bg-paper-2 overflow-hidden; }
+  .frame-note { @apply absolute inset-x-0 bottom-0 p-4 text-[13px] leading-snug text-ink-2 bg-white/85; }
+
+  /* Halftone print field, densest at top and fading down. */
+  .halftone { position: relative; isolation: isolate; }
+  .halftone::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-image: radial-gradient(currentColor 1.3px, transparent 1.6px);
+    background-size: 9px 9px; opacity: .22;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 70%);
+            mask-image: linear-gradient(to bottom, #000 0%, transparent 70%);
+  }
+
+  /* Red dotted leader between a menu item and its value. */
+  .leader { @apply flex items-baseline gap-2; }
+  .leader::after { content: ""; order: 1; flex: 1; border-bottom: 2px dotted var(--color-sindoor); transform: translateY(-4px); }
+  .leader > :last-child { order: 2; }
+
+  .icon-sm svg, svg.icon-sm { width: 16px; height: 16px; }
+
+  .ink-stamp { mix-blend-mode: multiply; }
+  .switch { appearance: none; width: 3rem; height: 1.75rem; border-radius: 999px; background: var(--color-paper-3); position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+  .switch::before { content: ""; position: absolute; top: .25rem; left: .25rem; width: 1.25rem; height: 1.25rem; border-radius: 999px; background: #fff; transition: transform .2s var(--ease-out-expo); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .switch:checked { background: var(--color-ink); }
+  .switch:checked::before { transform: translateX(1.25rem); }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+/* Proto bar */
+.proto-bar a[aria-current="page"] { background: var(--color-paper); color: var(--color-ink); }
+
+@keyframes stamp-in {
+  0% { transform: scale(1.6) rotate(-14deg); opacity: 0; filter: blur(4px); }
+  60% { transform: scale(.94) rotate(-8deg); opacity: 1; filter: blur(0); }
+  100% { transform: scale(1) rotate(-8deg); opacity: .92; }
+}
+.stamp-in { animation: stamp-in .55s var(--ease-out-expo) both; }
+
+@keyframes rise {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.rise { animation: rise .5s var(--ease-out-expo) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp-in, .rise { animation: none; }
+}
+
+/* ---------- Member ID card (CR80 85.6 × 54 mm), sized in container units ---------- */
+.idc-wrap { container-type: inline-size; width: 100%; }
+.idc {
+  position: relative; aspect-ratio: 85.6 / 54; width: 100%; overflow: hidden;
+  background: #fff; color: var(--color-ink); border-radius: 3.6cqw;
+  box-shadow: 0 0 0 1px rgba(43,47,54,.18), 0 1px 2px rgba(0,0,0,.06);
+  display: flex; flex-direction: column; font-family: var(--font-sans);
+}
+.idc-band { background: var(--color-sindoor); color: #fff; display: flex; align-items: center; gap: 2.2cqw; padding: 2.4cqw 3.6cqw; }
+.idc-seal svg { width: 9cqw; height: 9cqw; display: block; }
+.idc-club { display: flex; flex-direction: column; line-height: 1.05; }
+.idc-club > span:first-child { font-size: 5.6cqw; }
+.idc-sub { font-size: 1.9cqw; letter-spacing: .14em; font-weight: 600; opacity: .95; margin-top: .4cqw; }
+.idc-kind { margin-left: auto; font-family: var(--font-display); font-size: 3.6cqw; letter-spacing: .02em; border: .35cqw solid #fff; border-radius: 1cqw; padding: .4cqw 1.6cqw; }
+.idc-body { flex: 1; display: flex; gap: 3.4cqw; padding: 3.4cqw 3.6cqw 3cqw; }
+.idc-photo { width: 21cqw; aspect-ratio: 3 / 4; border: .45cqw solid var(--color-ink); background: var(--color-paper-2); display: grid; place-items: center; flex-shrink: 0; }
+.idc-initials { font-family: "Tiro Bangla", serif; font-size: 8cqw; color: var(--color-ink-2); }
+.idc-nophoto { font-size: 2.3cqw; text-align: center; color: var(--color-sindoor-deep); font-weight: 600; line-height: 1.2; }
+.idc-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.idc-name { font-family: var(--font-display); text-transform: uppercase; font-size: 5.6cqw; line-height: .95; }
+.idc-rel { font-size: 2.6cqw; color: var(--color-ink-2); margin-top: .8cqw; }
+.idc-grid { margin-top: auto; display: grid; grid-template-columns: 1.35fr 1fr; gap: 1.4cqw 2.4cqw; }
+.idc-grid dt { font-size: 1.85cqw; text-transform: uppercase; letter-spacing: .08em; color: var(--color-ink-2); font-weight: 600; }
+.idc-grid dd { font-size: 3.1cqw; font-weight: 700; line-height: 1.15; }
+.idc-back { background: #fff; }
+.idc-back-body { flex: 1; display: flex; gap: 3.6cqw; padding: 4.2cqw 3.6cqw 2.4cqw; }
+.idc-qr { width: 27cqw; height: 27cqw; flex-shrink: 0; padding: 1cqw; border: .45cqw solid var(--color-ink); }
+.idc-terms { flex: 1; min-width: 0; font-size: 2.35cqw; line-height: 1.3; color: var(--color-ink-2); display: flex; flex-direction: column; gap: 1.2cqw; }
+.idc-terms-h { font-family: var(--font-display); text-transform: uppercase; font-size: 3.6cqw; line-height: 1; color: var(--color-ink); }
+.idc-found { font-size: 2cqw; }
+.idc-sign { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; }
+.idc-signature { font-family: var(--font-display); font-style: italic; font-size: 4cqw; color: var(--color-ink); border-bottom: .3cqw solid var(--color-ink); padding: 0 1cqw .2cqw 0; }
+.idc-sign-l { font-size: 1.9cqw; text-transform: uppercase; letter-spacing: .08em; margin-top: .5cqw; }
+.idc-strip { background: var(--color-ink); color: #fff; font-size: 2.4cqw; letter-spacing: .3em; padding: 1.3cqw 3.6cqw; text-align: right; font-weight: 600; }
+
+/* Flip */
+.idc-flip { perspective: 1400px; }
+.idc-flip-inner { display: grid; transition: transform .6s var(--ease-out-expo); transform-style: preserve-3d; }
+.idc-flip-inner > * { grid-area: 1 / 1; backface-visibility: hidden; }
+.idc-flip-inner > :last-child { transform: rotateY(180deg); }
+.idc-flip.is-back .idc-flip-inner { transform: rotateY(180deg); }
+@media (prefers-reduced-motion: reduce) { .idc-flip-inner { transition: none; } }
+
+/* Print sheet: A4, cards at true size, front + back side by side for fold-and-laminate */
+#print-sheet { display: none; }
+@media print {
+  @page { size: A4; margin: 10mm; }
+  body > *:not(#print-sheet) { display: none !important; }
+  #print-sheet { display: block !important; }
+  .print-row { display: flex; gap: 0; break-inside: avoid; margin-bottom: 4mm; }
+  .print-row .idc-wrap { width: 85.6mm; }
+  .print-row .idc { border-radius: 0; box-shadow: none; outline: .2mm dashed #999; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
