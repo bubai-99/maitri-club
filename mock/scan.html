@@ -9,27 +9,31 @@
 <body class="min-h-dvh !bg-night text-paper">
   <div class="mx-auto max-w-md min-h-[calc(100dvh-40px)] flex flex-col px-5 pt-4 pb-6 relative">
     <header class="flex items-start gap-3">
-      <div class="min-w-0">
-        <p class="text-[13px] font-semibold text-marigold" data-bn="গেট ১ · বাপি হালদার">Gate 1 · Bapi Halder</p>
-        <h1 class="font-display text-2xl leading-tight" data-bn="বার্ষিক ক্রীড়া">Annual Sports Day</h1>
-      </div>
-      <span class="ml-auto chip bg-white/10 text-paper/90 shrink-0"><i data-lucide="wifi-off"></i><span data-bn="অফলাইন">Offline</span></span>
+      <button type="button" id="evt-btn" class="min-w-0 text-left rounded-lg -m-1 p-1 hover:bg-white/5" aria-label="Change event or gate">
+        <p class="text-[13px] font-semibold text-marigold flex items-center gap-1"><span id="gate-name"></span><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></p>
+        <h1 class="font-display text-2xl leading-tight" id="evt-name"></h1>
+      </button>
+      <button type="button" id="sync-btn" class="ml-auto chip bg-white/10 text-paper/90 shrink-0 hover:bg-white/15"></button>
     </header>
-    <p class="text-[13px] text-paper/60 mt-1" data-bn="২৮৬টি পাস ফোনে রাখা · সকাল ৬:৫৮-এ সিঙ্ক">286 passes saved on this phone · synced 6:58 am</p>
+    <p class="text-[13px] text-paper/60 mt-1" id="sync-line"></p>
 
-    <div class="mt-5 grid grid-cols-2 gap-3">
-      <div class="rounded-xl bg-night-2 p-3.5">
-        <p class="text-[13px] text-paper/60" data-bn="ভিতরে">Inside now</p>
-        <p class="font-display text-3xl leading-none mt-1"><span id="inside" class="num" data-n="412" data-fmt="n">412</span></p>
+    <div class="mt-5 grid grid-cols-3 gap-2.5">
+      <div class="rounded-xl bg-night-2 p-3">
+        <p class="text-[12.5px] text-paper/60" data-bn="ভিতরে">Inside now</p>
+        <p class="font-display text-[1.7rem] leading-none mt-1"><span id="inside" class="num" data-n="412" data-fmt="n">412</span></p>
       </div>
-      <div class="rounded-xl bg-night-2 p-3.5">
-        <p class="text-[13px] text-paper/60" data-bn="জলখাবারের কুপন">Breakfast coupons</p>
-        <p class="font-display text-3xl leading-none mt-1"><span id="coupons" class="num" data-n="388" data-fmt="n">388</span></p>
+      <div class="rounded-xl bg-night-2 p-3">
+        <p class="text-[12.5px] text-paper/60" data-bn="কুপন">Coupons</p>
+        <p class="font-display text-[1.7rem] leading-none mt-1"><span id="coupons" class="num" data-n="388" data-fmt="n">388</span></p>
+      </div>
+      <div class="rounded-xl bg-night-2 p-3">
+        <p class="text-[12.5px] text-paper/60" data-bn="ফেরানো">Turned away</p>
+        <p class="font-display text-[1.7rem] leading-none mt-1"><span id="denied" class="num" data-n="3" data-fmt="n">3</span></p>
       </div>
     </div>
 
     <!-- Viewfinder -->
-    <div class="mt-5 relative aspect-square rounded-3xl overflow-hidden bg-[radial-gradient(ellipse_at_center,#2a2d45_0%,#12131f_75%)]" aria-label="Camera viewfinder">
+    <div class="mt-4 relative aspect-square rounded-3xl overflow-hidden bg-[radial-gradient(ellipse_at_center,#2a2d45_0%,#12131f_75%)]" id="viewfinder" aria-label="Camera viewfinder">
       <div class="absolute inset-10">
         <span class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-marigold rounded-tl-2xl"></span>
         <span class="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-marigold rounded-tr-2xl"></span>
@@ -37,10 +41,23 @@
         <span class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-marigold rounded-br-2xl"></span>
         <span class="scanline absolute inset-x-3 h-0.5 bg-marigold shadow-[0_0_12px_2px_rgba(242,165,22,.6)]"></span>
       </div>
-      <p class="absolute bottom-4 inset-x-0 text-center text-[15px] text-paper/75" data-bn="সদস্য কার্ড বা পাসের QR ফ্রেমে ধরুন">Hold the member card or pass QR in the frame</p>
+      <div class="absolute top-3 right-3 flex gap-2">
+        <button type="button" id="torch" aria-pressed="false" class="w-11 h-11 rounded-full bg-black/35 grid place-items-center aria-pressed:bg-marigold aria-pressed:text-ink" aria-label="Torch"><i data-lucide="flashlight" class="w-5 h-5"></i></button>
+        <button type="button" id="sound" aria-pressed="true" class="w-11 h-11 rounded-full bg-black/35 grid place-items-center" aria-label="Beep on scan"><i data-lucide="volume-2" class="w-5 h-5"></i></button>
+      </div>
+      <p class="absolute bottom-4 inset-x-0 text-center text-[15px] text-paper/75 px-4" data-bn="সদস্য কার্ড বা পাসের QR ফ্রেমে ধরুন">Hold the member card or pass QR in the frame</p>
     </div>
 
-    <button id="manual" class="btn h-14 mt-4 bg-white/10 hover:bg-white/15 text-paper text-[17px]"><i data-lucide="keyboard"></i><span data-bn="নম্বর দিয়ে খুঁজুন">Type family number instead</span></button>
+    <button id="manual" class="btn h-14 mt-4 bg-white/10 hover:bg-white/15 text-paper text-[17px]"><i data-lucide="keyboard"></i><span data-bn="পরিবার নম্বর লিখুন">Type family number instead</span></button>
+
+    <!-- Recent scans -->
+    <div class="mt-5">
+      <div class="flex items-center mb-2">
+        <p class="text-[12px] font-semibold tracking-wide text-paper/50" data-bn="সাম্প্রতিক স্ক্যান">RECENT SCANS</p>
+        <button type="button" id="undo" class="ml-auto text-[13px] font-semibold text-marigold disabled:opacity-40" disabled><span data-bn="শেষটা ফেরান">Undo last</span></button>
+      </div>
+      <ul id="recent" class="rounded-xl bg-night-2 divide-y divide-white/10 text-[14.5px]"></ul>
+    </div>
 
     <div class="mt-6 pt-4 border-t border-white/10">
       <p class="text-[12px] font-semibold tracking-wide text-paper/50 mb-2" data-bn="প্রোটোটাইপ: স্ক্যানের ফল দেখুন">PROTOTYPE: SIMULATE A SCAN</p>
@@ -48,18 +65,27 @@
         <button data-sim="ok" class="h-10 rounded-lg bg-tulsi/30 hover:bg-tulsi/45 font-semibold" data-bn="বৈধ পাস">Valid pass</button>
         <button data-sim="dues" class="h-10 rounded-lg bg-marigold/25 hover:bg-marigold/40 font-semibold" data-bn="বৈধ, বকেয়া আছে">Valid, dues pending</button>
         <button data-sim="used" class="h-10 rounded-lg bg-marigold/25 hover:bg-marigold/40 font-semibold" data-bn="আগেই ঢুকেছে">Already entered</button>
+        <button data-sim="lapsed" class="h-10 rounded-lg bg-marigold/25 hover:bg-marigold/40 font-semibold" data-bn="মেয়াদোত্তীর্ণ সদস্য">Lapsed member</button>
+        <button data-sim="cancelled" class="h-10 rounded-lg bg-sindoor/35 hover:bg-sindoor/50 font-semibold" data-bn="বাতিল কার্ড (হারানো)">Cancelled card (lost)</button>
         <button data-sim="bad" class="h-10 rounded-lg bg-sindoor/35 hover:bg-sindoor/50 font-semibold" data-bn="অবৈধ">Not valid</button>
       </div>
+      <button type="button" id="end-shift" class="btn w-full h-12 mt-4 bg-transparent border border-white/20 hover:bg-white/10 text-paper"><i data-lucide="log-out"></i><span data-bn="শিফট শেষ করুন">End my shift</span></button>
     </div>
 
     <!-- Result -->
     <div id="result" class="fixed inset-0 z-50 hidden flex-col items-center justify-center text-center px-8" role="alertdialog" aria-live="assertive"></div>
+    <!-- Bottom sheet -->
+    <div id="sheet" class="fixed inset-0 z-40 hidden" role="dialog" aria-modal="true">
+      <div class="absolute inset-0 bg-black/60" data-sheet-close></div>
+      <div class="absolute inset-x-0 bottom-0 mx-auto max-w-md bg-night-2 rounded-t-3xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] max-h-[88dvh] overflow-y-auto rise" id="sheet-body"></div>
+    </div>
   </div>
 
   <style>
     @keyframes scan { 0%, 100% { top: 6%; } 50% { top: 92%; } }
     .scanline { animation: scan 2.4s cubic-bezier(.45,0,.55,1) infinite; }
     @media (prefers-reduced-motion: reduce) { .scanline { animation: none; top: 50%; } }
+    #viewfinder.torch { background: radial-gradient(ellipse at center, #5a5f86 0%, #23253a 75%); }
   </style>
   <script type="module" src="/src/scan.js"></script>
 </body>

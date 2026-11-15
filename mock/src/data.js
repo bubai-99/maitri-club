@@ -210,3 +210,131 @@ export const notices = [
   { id: 'n3', date: '06 Nov', tag: 'Nursery', tagBn: 'নার্সারি', title: 'Winter flowers have arrived', titleBn: 'শীতের ফুলের চারা এসে গেছে', body: 'Dahlia and chrysanthemum in stock. Members get 10% off at the counter.', bodyBn: 'ডালিয়া ও চন্দ্রমল্লিকা এসেছে। সদস্যদের জন্য ১০% ছাড়।' },
   { id: 'n4', date: '28 Oct', tag: 'Accounts', tagBn: 'হিসাব', title: 'Durga Puja 2026 accounts published', titleBn: 'দুর্গাপূজা ২০২৬-এর হিসাব প্রকাশিত', body: 'Full income and expenditure is available in the app under Notices.', bodyBn: 'সম্পূর্ণ আয়-ব্যয়ের হিসাব অ্যাপে দেখা যাবে।' },
 ];
+
+/* ---------- Committee console: admin registers (added; sample data only) ---------- */
+
+// Who holds club cash right now. Collectors hand over to the treasurer, who banks it.
+export const cashHolders = [
+  { id: 'tapas', name: 'Tapas Mondal', nameBn: 'তাপস মণ্ডল', role: 'Treasurer', roleBn: 'কোষাধ্যক্ষ', book: 'club', amount: 4850, since: '9 Nov', sinceBn: '৯ নভে', receipts: 11, treasurer: true },
+  { id: 'bapi', name: 'Bapi Halder', nameBn: 'বাপি হালদার', role: 'Chanda volunteer · Lane 1', roleBn: 'চাঁদা স্বেচ্ছাসেবক · ১ নং গলি', book: 'club', amount: 7350, since: '5 Nov', sinceBn: '৫ নভে', receipts: 42 },
+  { id: 'debashis', name: 'Debashis Pal', nameBn: 'দেবাশিস পাল', role: 'Catering in-charge', roleBn: 'ক্যাটারিং দায়িত্বে', book: 'catering', amount: 3200, since: '11 Nov', sinceBn: '১১ নভে', receipts: 2 },
+  { id: 'sutapa', name: 'Sutapa Bose', nameBn: 'সুতপা বসু', role: 'Nursery in-charge', roleBn: 'নার্সারি দায়িত্বে', book: 'nursery', amount: 2290, since: '8 Nov', sinceBn: '৮ নভে', receipts: 17 },
+];
+
+export const bank = {
+  name: 'State Bank of India · Netaji Para branch', nameBn: 'স্টেট ব্যাংক · নেতাজি পাড়া শাখা',
+  account: 'Savings ••••4417', ifsc: 'SBIN0011823',
+  balance: 184320, lastImport: '14 Nov', lastImportBn: '১৪ নভে',
+  statement: [
+    { id: 'b1', date: '13 Nov', desc: 'UPI/431298765012/RAJIB BANERJEE', amount: 500, type: 'in', match: 'MC-26-0411' },
+    { id: 'b2', date: '13 Nov', desc: 'UPI/431277120934/ANANYA MUKHERJEE', amount: 200, type: 'in', match: null },
+    { id: 'b3', date: '12 Nov', desc: 'BILLPAY/CESC/OCT-26', amount: 1870, type: 'out', match: 'Electricity — CESC, Oct' },
+    { id: 'b4', date: '11 Nov', desc: 'NEFT/KAR SUBHASIS/CATERING ADV', amount: 10000, type: 'in', match: 'CT-26-0044' },
+    { id: 'b5', date: '10 Nov', desc: 'CASH DEPOSIT/SELF/SLIP 20981', amount: 12000, type: 'in', match: 'Cash deposit, slip 20981' },
+    { id: 'b6', date: '09 Nov', desc: 'CHQ 000148/MAA TARA DECORATORS', amount: 8000, type: 'out', match: 'Kali Puja — decorator balance' },
+    { id: 'b7', date: '07 Nov', desc: 'IMPS/DEY ARUP/WEDDING FINAL', amount: 37200, type: 'in', match: 'CT-26-0036' },
+    { id: 'b8', date: '05 Nov', desc: 'SMS ALERT CHARGES Q3', amount: 18, type: 'out', match: null },
+    { id: 'b9', date: '01 Nov', desc: 'CREDIT INTEREST', amount: 412, type: 'in', match: null },
+  ],
+};
+
+export const auditLog = [
+  { id: 'a01', at: '15 Nov, 2:00 am', atBn: '১৫ নভে, রাত ২:০০', who: 'System', whoBn: 'সিস্টেম', mod: 'data', en: 'Nightly backup completed · 4.2 MB', bn: 'রাতের ব্যাকআপ সম্পূর্ণ · ৪.২ MB', device: 'Server' },
+  { id: 'a02', at: '13 Nov, 7:42 pm', atBn: '১৩ নভে, সন্ধ্যা ৭:৪২', who: 'Tapas Mondal', whoBn: 'তাপস মণ্ডল', mod: 'collect', en: 'Recorded ₹300 cash from MC-0110 · receipt MC-26-0412', bn: 'MC-0110 থেকে ₹৩০০ নগদ · রসিদ MC-26-0412', device: 'Club-room laptop' },
+  { id: 'a03', at: '13 Nov, 7:10 pm', atBn: '১৩ নভে, সন্ধ্যা ৭:১০', who: 'Rajib Banerjee', whoBn: 'রাজীব ব্যানার্জি', mod: 'settings', en: 'Invited Kakoli Sen as Puja in-charge', bn: 'কাকলি সেনকে পূজা দায়িত্বে আমন্ত্রণ', device: 'Android phone' },
+  { id: 'a04', at: '13 Nov, 6:55 pm', atBn: '১৩ নভে, সন্ধ্যা ৬:৫৫', who: 'Sutapa Bose', whoBn: 'সুতপা বসু', mod: 'nursery', en: 'Counter sale NS-26-0311 · 6 items · ₹830', bn: 'কাউন্টার বিক্রি NS-26-0311 · ৬টি · ₹৮৩০', device: 'Nursery tablet' },
+  { id: 'a05', at: '12 Nov, 8:20 pm', atBn: '১২ নভে, রাত ৮:২০', who: 'Debashis Pal', whoBn: 'দেবাশিস পাল', mod: 'khata', en: 'Expense ₹6,420 · paper plates & glasses · bill photo attached', bn: 'খরচ ₹৬,৪২০ · কাগজের থালা ও গেলাস · বিলের ছবি', device: 'Android phone' },
+  { id: 'a06', at: '12 Nov, 8:05 pm', atBn: '১২ নভে, রাত ৮:০৫', who: 'Tapas Mondal', whoBn: 'তাপস মণ্ডল', mod: 'khata', en: 'Cancelled receipt MC-26-0405 · wrong family · reissued as MC-26-0406', bn: 'রসিদ MC-26-0405 বাতিল · ভুল পরিবার · নতুন রসিদ MC-26-0406', device: 'Club-room laptop', flag: true },
+  { id: 'a07', at: '12 Nov, 11:40 am', atBn: '১২ নভে, সকাল ১১:৪০', who: 'Rajib Banerjee', whoBn: 'রাজীব ব্যানার্জি', mod: 'members', en: 'Approved application AP-26-016 · new family MC-0172', bn: 'আবেদন AP-26-016 অনুমোদিত · নতুন পরিবার MC-0172', device: 'Android phone' },
+  { id: 'a08', at: '11 Nov, 9:14 pm', atBn: '১১ নভে, রাত ৯:১৪', who: 'Unknown', whoBn: 'অজানা', mod: 'security', en: '3 wrong passwords for Sutapa Bose · sign-in paused 15 min', bn: 'সুতপা বসুর ৩ বার ভুল পাসওয়ার্ড · ১৫ মিনিট লগইন বন্ধ', device: 'Chrome · Howrah', flag: true },
+  { id: 'a09', at: '11 Nov, 6:30 pm', atBn: '১১ নভে, সন্ধ্যা ৬:৩০', who: 'Debashis Pal', whoBn: 'দেবাশিস পাল', mod: 'catering', en: 'Advance ₹10,000 recorded for CT-26-0044 Kar family', bn: 'CT-26-0044 কর পরিবারের অগ্রিম ₹১০,০০০', device: 'Android phone' },
+  { id: 'a10', at: '10 Nov, 7:50 pm', atBn: '১০ নভে, সন্ধ্যা ৭:৫০', who: 'Tapas Mondal', whoBn: 'তাপস মণ্ডল', mod: 'cash', en: 'Deposited ₹12,000 cash to SBI · slip 20981', bn: 'SBI-তে ₹১২,০০০ নগদ জমা · স্লিপ ২০৯৮১', device: 'Club-room laptop' },
+  { id: 'a11', at: '10 Nov, 10:02 am', atBn: '১০ নভে, সকাল ১০:০২', who: 'Rajib Banerjee', whoBn: 'রাজীব ব্যানার্জি', mod: 'settings', en: 'Changed lapse rule from 9 to 6 months due', bn: 'মেয়াদোত্তীর্ণের নিয়ম ৯ থেকে ৬ মাস', device: 'Android phone', flag: true },
+  { id: 'a12', at: '09 Nov, 8:45 pm', atBn: '০৯ নভে, রাত ৮:৪৫', who: 'Kakoli Sen', whoBn: 'কাকলি সেন', mod: 'khata', en: 'Expense ₹8,000 · Kali Puja decorator balance · signed by Tapas Mondal', bn: 'খরচ ₹৮,০০০ · কালীপূজা ডেকোরেটর · তাপস মণ্ডলের সই', device: 'Android phone' },
+  { id: 'a13', at: '08 Nov, 5:10 pm', atBn: '০৮ নভে, বিকেল ৫:১০', who: 'Bapi Halder', whoBn: 'বাপি হালদার', mod: 'events', en: 'Gate scanner synced 286 passes · Sports Day', bn: 'গেট স্ক্যানারে ২৮৬টি পাস সিঙ্ক · ক্রীড়া দিবস', device: 'Android phone' },
+  { id: 'a14', at: '06 Nov, 4:00 pm', atBn: '০৬ নভে, বিকেল ৪:০০', who: 'Rajib Banerjee', whoBn: 'রাজীব ব্যানার্জি', mod: 'members', en: 'Waived 3 months (₹300) for MC-0125 · death in the family', bn: 'MC-0125-এর ৩ মাস (₹৩০০) মকুব · পরিবারে শোক', device: 'Club-room laptop' },
+];
+
+// Club property: chairs, tableware for catering, pandal material, sports kit.
+export const assets = [
+  { id: 'AS-01', name: 'Plastic chairs', nameBn: 'প্লাস্টিকের চেয়ার', book: 'club', qty: 220, out: 40, place: 'Club godown', placeBn: 'ক্লাবের গুদাম', cond: 'good', value: 66000 },
+  { id: 'AS-02', name: 'Folding tables (6 ft)', nameBn: 'ভাঁজ করা টেবিল (৬ ফুট)', book: 'club', qty: 24, out: 0, place: 'Club godown', placeBn: 'ক্লাবের গুদাম', cond: 'good', value: 43200 },
+  { id: 'AS-03', name: 'Chafing dishes', nameBn: 'চেফিং ডিশ', book: 'catering', qty: 18, out: 6, place: 'Catering store', placeBn: 'ক্যাটারিং স্টোর', cond: 'good', value: 37800 },
+  { id: 'AS-04', name: 'Steel serving buckets', nameBn: 'স্টিলের পরিবেশন বালতি', book: 'catering', qty: 30, out: 0, place: 'Catering store', placeBn: 'ক্যাটারিং স্টোর', cond: 'worn', value: 12000 },
+  { id: 'AS-05', name: 'Server uniforms (aprons + caps)', nameBn: 'পরিবেশনকারীর পোশাক (অ্যাপ্রন ও টুপি)', book: 'catering', qty: 26, out: 0, place: 'Catering store', placeBn: 'ক্যাটারিং স্টোর', cond: 'good', value: 9100 },
+  { id: 'AS-06', name: 'Sound system (2 speakers + mixer)', nameBn: 'সাউন্ড সিস্টেম (২ স্পিকার ও মিক্সার)', book: 'club', qty: 1, out: 0, place: 'Club room', placeBn: 'ক্লাব ঘর', cond: 'repair', value: 48000 },
+  { id: 'AS-07', name: 'Pandal bamboo & cloth', nameBn: 'প্যান্ডেলের বাঁশ ও কাপড়', book: 'club', qty: 1, out: 0, place: 'Roof store', placeBn: 'ছাদের স্টোর', cond: 'good', value: 22000 },
+  { id: 'AS-08', name: 'Carrom boards', nameBn: 'ক্যারম বোর্ড', book: 'club', qty: 4, out: 1, place: 'Club room', placeBn: 'ক্লাব ঘর', cond: 'good', value: 8800 },
+  { id: 'AS-09', name: 'First-aid kit & stretcher', nameBn: 'ফার্স্ট-এড বাক্স ও স্ট্রেচার', book: 'club', qty: 1, out: 0, place: 'Club room', placeBn: 'ক্লাব ঘর', cond: 'good', value: 6500 },
+  { id: 'AS-10', name: 'Nursery tools & sprayers', nameBn: 'নার্সারির যন্ত্রপাতি ও স্প্রেয়ার', book: 'nursery', qty: 12, out: 0, place: 'Nursery shed', placeBn: 'নার্সারি শেড', cond: 'worn', value: 7400 },
+];
+export const assetLoans = [
+  { id: 'LN-031', asset: 'AS-01', qty: 40, to: 'Sen family (MC-0116)', toBn: 'সেন পরিবার (MC-0116)', out: '12 Nov', due: '14 Nov', deposit: 400, overdue: true },
+  { id: 'LN-032', asset: 'AS-03', qty: 6, to: 'Catering CT-26-0041 · Sen Annaprashan', toBn: 'ক্যাটারিং CT-26-0041 · সেন অন্নপ্রাশন', out: '15 Nov', due: '23 Nov', deposit: 0 },
+  { id: 'LN-033', asset: 'AS-08', qty: 1, to: 'Lane 3 youth (Manas Kundu)', toBn: '৩ নং গলির যুবক (মানস কুণ্ডু)', out: '1 Nov', due: '30 Nov', deposit: 0 },
+];
+
+export const volunteers = [
+  { name: 'Bapi Halder', nameBn: 'বাপি হালদার', lane: 'Lane 1', laneBn: '১ নং গলি', skills: ['gate', 'chanda'], hours: 64, phone: '9831204411' },
+  { name: 'Moumita Kar', nameBn: 'মৌমিতা কর', lane: 'Lane 2', laneBn: '২ নং গলি', skills: ['chanda', 'registration', 'first-aid'], hours: 51, phone: '9831977720' },
+  { name: 'Manas Kundu', nameBn: 'মানস কুণ্ডু', lane: 'Lane 3', laneBn: '৩ নং গলি', skills: ['gate', 'sports'], hours: 38, phone: '9830077145' },
+  { name: 'Tumpa Guha', nameBn: 'টুম্পা গুহ', lane: 'Pukur Par', laneBn: 'পুকুর পাড়', skills: ['bhog', 'registration'], hours: 45, phone: '9874411209' },
+  { name: 'Sanjay Nandi', nameBn: 'সঞ্জয় নন্দী', lane: 'School Road', laneBn: 'স্কুল রোড', skills: ['serving', 'gate'], hours: 72, phone: '9903310087' },
+  { name: 'Arindam Dey', nameBn: 'অরিন্দম দে', lane: 'Lane 1', laneBn: '১ নং গলি', skills: ['sports', 'sound'], hours: 29, phone: '9830551908' },
+  { name: 'Payel Majumdar', nameBn: 'পায়েল মজুমদার', lane: 'Lane 3', laneBn: '৩ নং গলি', skills: ['first-aid', 'registration'], hours: 22, phone: '9836620193' },
+  { name: 'Gopal Biswas', nameBn: 'গোপাল বিশ্বাস', lane: 'Pukur Par', laneBn: 'পুকুর পাড়', skills: ['serving', 'bhog'], hours: 58, phone: '9831188026' },
+  { name: 'Nirmal Dutta', nameBn: 'নির্মল দত্ত', lane: 'Lane 2', laneBn: '২ নং গলি', skills: ['serving', 'sound'], hours: 34, phone: '9830465521' },
+  { name: 'Jhuma Sarkar', nameBn: 'ঝুমা সরকার', lane: 'School Road', laneBn: 'স্কুল রোড', skills: ['bhog', 'chanda'], hours: 40, phone: '9874002315' },
+];
+export const volunteerSkills = {
+  gate: { en: 'Gate & scanner', bn: 'গেট ও স্ক্যানার' },
+  chanda: { en: 'Chanda', bn: 'চাঁদা' },
+  registration: { en: 'Registration desk', bn: 'নাম লেখার টেবিল' },
+  'first-aid': { en: 'First aid', bn: 'প্রাথমিক চিকিৎসা' },
+  sports: { en: 'Sports', bn: 'খেলাধুলা' },
+  bhog: { en: 'Bhog & kitchen', bn: 'ভোগ ও রান্নাঘর' },
+  serving: { en: 'Serving & set-up', bn: 'পরিবেশন ও সাজানো' },
+  sound: { en: 'Sound & lights', bn: 'সাউন্ড ও আলো' },
+};
+export const duties = {
+  blood: [
+    { duty: 'Registration desk', dutyBn: 'নাম লেখার টেবিল', time: '8:30 am – 2 pm', skill: 'registration', need: 3, who: ['Moumita Kar', 'Payel Majumdar'] },
+    { duty: 'Donor care & refreshments', dutyBn: 'রক্তদাতার যত্ন ও জলখাবার', time: '9 am – 2 pm', skill: 'first-aid', need: 2, who: ['Payel Majumdar'] },
+    { duty: 'Chairs & set-up', dutyBn: 'চেয়ার ও সাজানো', time: '7:30 – 9 am', skill: 'serving', need: 4, who: ['Sanjay Nandi', 'Gopal Biswas', 'Nirmal Dutta', 'Bapi Halder'] },
+  ],
+  sports: [
+    { duty: 'Gate & pass scanner', dutyBn: 'গেট ও পাস স্ক্যানার', time: '6:30 am – 1 pm', skill: 'gate', need: 3, who: ['Bapi Halder', 'Manas Kundu'] },
+    { duty: 'Track & events', dutyBn: 'ট্র্যাক ও খেলা', time: '7 am – 12 pm', skill: 'sports', need: 4, who: ['Arindam Dey', 'Manas Kundu'] },
+    { duty: 'First-aid tent', dutyBn: 'ফার্স্ট-এড তাঁবু', time: '7 am – 1 pm', skill: 'first-aid', need: 2, who: ['Moumita Kar'] },
+    { duty: 'Breakfast counter', dutyBn: 'জলখাবারের কাউন্টার', time: '8 – 10 am', skill: 'bhog', need: 3, who: ['Tumpa Guha', 'Jhuma Sarkar', 'Gopal Biswas'] },
+    { duty: 'Sound & announcements', dutyBn: 'সাউন্ড ও ঘোষণা', time: '6:30 am – 1 pm', skill: 'sound', need: 1, who: ['Nirmal Dutta'] },
+  ],
+  picnic: [
+    { duty: 'Bus attendance', dutyBn: 'বাসে হাজিরা', time: '6 – 6:30 am', skill: 'registration', need: 2, who: [] },
+    { duty: 'Lunch serving', dutyBn: 'দুপুরের খাবার পরিবেশন', time: '1 – 3 pm', skill: 'serving', need: 5, who: ['Sanjay Nandi', 'Gopal Biswas'] },
+  ],
+};
+
+// What each committee role can do. full = add and change, own = only their own book or entries, view = read only.
+export const rolePerms = {
+  roles: [
+    { id: 'secretary', en: 'Secretary (admin)', bn: 'সম্পাদক (অ্যাডমিন)', people: 'Rajib Banerjee', peopleBn: 'রাজীব ব্যানার্জি' },
+    { id: 'treasurer', en: 'Treasurer', bn: 'কোষাধ্যক্ষ', people: 'Tapas Mondal', peopleBn: 'তাপস মণ্ডল' },
+    { id: 'puja', en: 'Puja in-charge', bn: 'পূজা দায়িত্বে', people: 'Kakoli Sen', peopleBn: 'কাকলি সেন' },
+    { id: 'catering', en: 'Catering in-charge', bn: 'ক্যাটারিং দায়িত্বে', people: 'Debashis Pal', peopleBn: 'দেবাশিস পাল' },
+    { id: 'nursery', en: 'Nursery in-charge', bn: 'নার্সারি দায়িত্বে', people: 'Sutapa Bose', peopleBn: 'সুতপা বসু' },
+    { id: 'volunteer', en: 'Volunteer', bn: 'স্বেচ্ছাসেবক', people: 'Bapi Halder', peopleBn: 'বাপি হালদার' },
+  ],
+  modules: [
+    { id: 'members', en: 'Families, applications & cards', bn: 'পরিবার, আবেদন ও কার্ড', screens: ['applications', 'members', 'cards', 'donors'], p: { secretary: 'full', treasurer: 'full', puja: 'view', catering: 'none', nursery: 'none', volunteer: 'none' } },
+    { id: 'money', en: 'Collect, dues & receipts', bn: 'জমা, বকেয়া ও রসিদ', screens: ['collect', 'dues', 'receipts'], p: { secretary: 'view', treasurer: 'full', puja: 'none', catering: 'none', nursery: 'none', volunteer: 'none' } },
+    { id: 'khata', en: 'Khata', bn: 'খাতা', screens: ['khata'], p: { secretary: 'view', treasurer: 'full', puja: 'own', catering: 'own', nursery: 'own', volunteer: 'none' } },
+    { id: 'cash', en: 'Cash & bank', bn: 'নগদ ও ব্যাংক', screens: ['cash'], p: { secretary: 'view', treasurer: 'full', puja: 'own', catering: 'own', nursery: 'own', volunteer: 'own' } },
+    { id: 'chanda', en: 'Puja chanda', bn: 'পূজার চাঁদা', screens: ['chanda'], p: { secretary: 'full', treasurer: 'full', puja: 'full', catering: 'none', nursery: 'none', volunteer: 'own' } },
+    { id: 'catering', en: 'Catering', bn: 'ক্যাটারিং', screens: ['catering'], p: { secretary: 'view', treasurer: 'view', puja: 'none', catering: 'full', nursery: 'none', volunteer: 'none' } },
+    { id: 'nursery', en: 'Nursery', bn: 'নার্সারি', screens: ['nursery'], p: { secretary: 'view', treasurer: 'view', puja: 'none', catering: 'none', nursery: 'full', volunteer: 'none' } },
+    { id: 'events', en: 'Events, volunteers, assets & gallery', bn: 'অনুষ্ঠান, স্বেচ্ছাসেবক, সম্পত্তি ও ছবি', screens: ['events', 'volunteers', 'assets', 'gallery'], p: { secretary: 'full', treasurer: 'view', puja: 'full', catering: 'view', nursery: 'none', volunteer: 'view' } },
+    { id: 'notices', en: 'Notices & meetings', bn: 'নোটিস ও সভা', screens: ['meetings'], p: { secretary: 'full', treasurer: 'full', puja: 'full', catering: 'view', nursery: 'view', volunteer: 'view' } },
+    { id: 'admin', en: 'Reports, audit log & settings', bn: 'রিপোর্ট, অডিট লগ ও সেটিংস', screens: ['reports', 'audit', 'settings'], p: { secretary: 'full', treasurer: 'full', puja: 'none', catering: 'none', nursery: 'none', volunteer: 'none' } },
+  ],
+};

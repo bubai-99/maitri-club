@@ -1,7 +1,8 @@
 import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang } from './shared.js';
 import { PHOTOS, ALBUMS, GALLERY, photo } from './photos.js';
 import { peopleOf, cardFront, cardBack, fillQrs, printCards, downloadCard } from './idcard.js';
-import { families, ledger, books, chanda, cateringOrders, cateringStatus, cateringPackages, plants, memberDiscount, notices, events, club, serversFor, memberRate } from './data.js';
+import { families, ledger, books, chanda, cateringOrders, cateringStatus, cateringPackages, plants, memberDiscount, notices, events, club, serversFor, memberRate, auditLog } from './data.js';
+import { initAdmin, logAudit, addReceipt, canSee, lockedScreen, wireNotice, audienceRadios, searchPages } from './console-admin.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -29,19 +30,31 @@ const statusChip = (s) => ({
 $('#side-seal').innerHTML = seal({ size: 38, rotate: -6 });
 const NAV = [
   { group: ['', ''], items: [['dashboard', 'layout-dashboard', 'Today', 'আজ']] },
-  { group: ['Members', 'সদস্য'], items: [['applications', 'user-check', 'Applications', 'আবেদন', '3'], ['members', 'users', 'Families', 'পরিবার'], ['collect', 'hand-coins', 'Collect payment', 'টাকা জমা'], ['dues', 'bell-ring', 'Dues & reminders', 'বকেয়া ও তাগাদা', String(families.filter((f) => f.due).length)], ['cards', 'id-card', 'ID cards', 'পরিচয়পত্র']] },
-  { group: ['Books', 'খাতা'], items: [['khata', 'book-open', 'Khata', 'খাতা'], ['chanda', 'hand-heart', 'Puja chanda', 'পূজার চাঁদা']] },
+  { group: ['Members', 'সদস্য'], items: [['applications', 'user-check', 'Applications', 'আবেদন', '3'], ['members', 'users', 'Families', 'পরিবার'], ['collect', 'hand-coins', 'Collect payment', 'টাকা জমা'], ['dues', 'bell-ring', 'Dues & reminders', 'বকেয়া ও তাগাদা', String(families.filter((f) => f.due).length)], ['cards', 'id-card', 'ID cards', 'পরিচয়পত্র'], ['donors', 'droplet', 'Blood donors', 'রক্তদাতা']] },
+  { group: ['Books', 'খাতা'], items: [['khata', 'book-open', 'Khata', 'খাতা'], ['receipts', 'receipt', 'Receipts register', 'রসিদ খাতা'], ['cash', 'landmark', 'Cash & bank', 'নগদ ও ব্যাংক', '3'], ['chanda', 'hand-heart', 'Puja chanda', 'পূজার চাঁদা']] },
   { group: ['Businesses', 'ব্যবসা'], items: [['catering', 'chef-hat', 'Catering', 'ক্যাটারিং', '2'], ['nursery', 'sprout', 'Nursery', 'নার্সারি']] },
-  { group: ['Club', 'ক্লাব'], items: [['events', 'calendar-days', 'Events', 'অনুষ্ঠান'], ['meetings', 'megaphone', 'Notices & meetings', 'নোটিস ও সভা'], ['gallery', 'images', 'Gallery', 'ছবি ও ভিডিও', '2']] },
-  { group: ['Admin', 'অ্যাডমিন'], items: [['reports', 'chart-column', 'Reports', 'রিপোর্ট'], ['settings', 'settings', 'Settings', 'সেটিংস']] },
+  { group: ['Club', 'ক্লাব'], items: [['events', 'calendar-days', 'Events', 'অনুষ্ঠান'], ['volunteers', 'hand-helping', 'Volunteers', 'স্বেচ্ছাসেবক'], ['meetings', 'megaphone', 'Notices & meetings', 'নোটিস ও সভা'], ['gallery', 'images', 'Gallery', 'ছবি ও ভিডিও', '2'], ['assets', 'package', 'Club assets', 'ক্লাবের সম্পত্তি']] },
+  { group: ['Admin', 'অ্যাডমিন'], items: [['reports', 'chart-column', 'Reports', 'রিপোর্ট'], ['audit', 'history', 'Audit log', 'অডিট লগ'], ['settings', 'settings', 'Settings', 'সেটিংস']] },
 ];
-paint($('#side-nav'), NAV.map((g) => `
+function paintNav() {
+  paint($('#side-nav'), NAV.map((g) => {
+    const items = g.items.filter(([id]) => canSee(id));
+    if (!items.length) return '';
+    return `
   ${g.group[0] ? `<p class="px-3 mt-5 mb-1.5 text-[12px] font-semibold text-ink-3 tracking-wide">${t(g.group[0], g.group[1])}</p>` : ''}
-  ${g.items.map(([id, icon, en, bn, badge]) => `
-    <a href="#${id}" data-nav="${id}" class="flex items-center gap-3 px-3 h-10 rounded-lg text-ink-2 hover:bg-paper-3/50 aria-[current=page]:bg-card aria-[current=page]:text-ink aria-[current=page]:font-semibold aria-[current=page]:shadow-[0_1px_2px_rgba(29,33,64,.08)]">
+  ${items.map(([id, icon, en, bn, badge]) => `
+    <a href="#${id}" data-nav="${id}" ${id === current ? 'aria-current="page"' : ''} class="flex items-center gap-3 px-3 h-10 rounded-lg text-ink-2 hover:bg-paper-3/50 aria-[current=page]:bg-card aria-[current=page]:text-ink aria-[current=page]:font-semibold aria-[current=page]:shadow-[0_1px_2px_rgba(29,33,64,.08)]">
       <i data-lucide="${icon}" class="w-[18px] h-[18px]"></i>${t(en, bn)}
       ${badge ? `<span class="ml-auto chip h-5 px-1.5 text-[11.5px] bg-sindoor text-white num">${dn(badge)}</span>` : ''}
-    </a>`).join('')}`).join(''));
+    </a>`).join('')}`;
+  }).join(''));
+  $$('#side-nav a').forEach((a) => a.addEventListener('click', () => closeSide()));
+  // Phone bottom bar and header button follow the same role rules
+  $$('nav[aria-label="Quick"] [data-nav]').forEach((a) => a.classList.toggle('invisible', !canSee(a.dataset.nav)));
+  $('header a[href="#collect"]')?.classList.toggle('hidden', !canSee('collect'));
+}
+let current = 'dashboard', currentParam;
+paintNav();
 
 const side = $('#sidebar'), scrim = $('#scrim');
 const lgMq = matchMedia('(min-width: 1024px)');
@@ -52,7 +65,6 @@ lgMq.addEventListener('change', syncInert); syncInert();
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !lgMq.matches) closeSide(); });
 scrim.addEventListener('click', closeSide);
 $('#more-btn').addEventListener('click', () => $('#side-btn').click());
-$$('#side-nav a').forEach((a) => a.addEventListener('click', closeSide));
 
 /* ---------------- Drawer ---------------- */
 let drawerReturn = null;
@@ -165,6 +177,12 @@ function dashboard() {
             <p class="text-sm text-ink-3 mt-0.5">${dueFams.slice(0, 3).map((f) => t(f.head, f.headBn)).join(', ')} …</p></div>
             <a href="#dues" class="btn btn-line btn-sm shrink-0">${t('Remind', 'তাগাদা')}</a>
           </li>
+          ${admin.cashOutside() ? `<li class="paper-card p-4 flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-paper-2 text-ink grid place-items-center shrink-0"><i data-lucide="hand-coins" class="w-[18px] h-[18px]"></i></span>
+            <div class="flex-1"><p class="font-semibold leading-snug">${t(`${inr(admin.cashOutside())} cash is still with collectors`, `সংগ্রাহকদের কাছে এখনও ${inr(admin.cashOutside())} নগদ`)}</p>
+            <p class="text-sm text-ink-3 mt-0.5">${t('Bapi Halder has held chanda cash for 10 days · 3 bank lines to match', 'বাপি হালদারের কাছে ১০ দিন ধরে চাঁদার নগদ · ব্যাংকের ৩টি লাইন মেলাতে হবে')}</p></div>
+            <a href="#cash" class="btn btn-line btn-sm shrink-0">${t('Receive', 'বুঝে নিন')}</a>
+          </li>` : ''}
           <li class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-turmeric-wash text-turmeric grid place-items-center shrink-0"><i data-lucide="chef-hat" class="w-[18px] h-[18px]"></i></span>
             <div class="flex-1"><p class="font-semibold leading-snug">${t('Riya & Arka wedding: quote sent 4 days ago', 'রিয়া ও অর্কর বিয়ে: ৪ দিন আগে কোটেশন গেছে')}</p>
@@ -198,6 +216,7 @@ function dashboard() {
   $$('[data-confirm]').forEach((b) => b.addEventListener('click', () => {
     const p = pendingUpi[b.dataset.confirm];
     const no = nextReceipt();
+    addReceipt({ no, fam: p.fam, amount: p.amount, mode: 'upi', months: p.amount / club.monthlyFee });
     settle(b, `<div class="flex items-center gap-3" role="status"><span class="w-9 h-9 rounded-full bg-ink text-white grid place-items-center shrink-0"><i data-lucide="check" class="w-[18px] h-[18px]"></i></span>
       <div class="flex-1 min-w-0"><p class="font-semibold leading-snug">${t(`Confirmed · ${p.fam.head}`, `নিশ্চিত · ${p.fam.headBn}`)} · ${inr(p.amount)}</p>
       <p class="text-sm text-ink-3 mt-0.5 num">${t('Club book', 'ক্লাব খাতা')} · ${no} · ${t('receipt sent to app', 'রসিদ অ্যাপে গেছে')}</p></div>
@@ -317,7 +336,7 @@ const dueRange = (n) => { const end = 10, start = (end - n + 1 + 12) % 12; retur
 function ledgerTable(rows, { compact = false } = {}) {
   const tin = rows.filter((r) => r.type === 'in').reduce((a, b) => a + b.amount, 0);
   const tout = rows.filter((r) => r.type === 'out').reduce((a, b) => a + b.amount, 0);
-  return `<div class="overflow-x-auto"><div class="khata sm:min-w-[720px]">
+  return `<div class="relative overflow-x-auto"><div class="khata sm:min-w-[720px]">
     <table class="khata-table">
       <thead><tr>
         <th class="w-[56px] !px-2">${t('Date', 'তারিখ')}</th>
@@ -348,17 +367,20 @@ function ledgerTable(rows, { compact = false } = {}) {
 /* ---------------- Members ---------------- */
 let memFilter = 'all';
 let memQuery = '';
+let memLane = 'all';
 function members() {
   const counts = { all: families.length, paid: 0, due: 0, lapsed: 0 };
   families.forEach((f) => counts[f.status]++);
-  const list = families.filter((f) => (memFilter === 'all' || f.status === memFilter) && (`${f.head} ${f.headBn} ${f.no} ${f.phone}`.toLowerCase().includes(memQuery.toLowerCase())));
+  const list = families.filter((f) => (memFilter === 'all' || f.status === memFilter) && (memLane === 'all' || f.lane === memLane) && (`${f.head} ${f.headBn} ${f.no} ${f.phone}`.toLowerCase().includes(memQuery.toLowerCase())));
   paint(screen('members'), `
     ${pageHead('Families', 'পরিবার', t('286 families · 1,041 people · showing a sample of 24', '২৮৬টি পরিবার · ১,০৪১ জন · নমুনা ২৪টি'), `
       <button class="btn btn-line btn-sm" data-act="import"><i data-lucide="upload"></i>${t('Import from Excel', 'এক্সেল থেকে')}</button>
+      <button class="btn btn-line btn-sm" data-act="export" data-kind="families"><i data-lucide="file-down"></i>${t('Export', 'ডাউনলোড')}</button>
       <button class="btn btn-ink btn-sm" data-act="member-entry"><i data-lucide="user-plus"></i>${t('Member entry', 'সদস্য এন্ট্রি')}</button>`)}
     <div class="flex flex-wrap items-center gap-2 mb-4">
       ${['all', 'paid', 'due', 'lapsed'].map((k) => `<button data-mf="${k}" aria-pressed="${memFilter === k}" class="chip h-9 px-3.5 text-sm border border-rule bg-card aria-pressed:bg-ink aria-pressed:text-paper aria-pressed:border-ink">${t({ all: 'All', paid: 'Paid up', due: 'Due', lapsed: 'Lapsed 6+ months' }[k], { all: 'সব', paid: 'পরিশোধিত', due: 'বকেয়া', lapsed: '৬+ মাস বকেয়া' }[k])} <span class="opacity-70 num">${dn(String(counts[k]))}</span></button>`).join('')}
-      <input id="mem-q" value="${memQuery}" class="field h-9 w-full sm:w-64 sm:ml-auto text-sm" data-bn-ph="নাম, নম্বর বা ফোন" placeholder="Name, number or phone" />
+      <select id="mem-lane" class="field h-9 text-sm w-auto sm:ml-auto" aria-label="Lane"><option value="all">${lang === 'bn' ? 'সব গলি' : 'All lanes'}</option>${LANES.map((l, i) => `<option value="${l}" ${memLane === l ? 'selected' : ''}>${lang === 'bn' ? ['১ নং গলি', '২ নং গলি', '৩ নং গলি', 'পুকুর পাড়', 'স্কুল রোড'][i] : l}</option>`).join('')}</select>
+      <input id="mem-q" value="${memQuery}" class="field h-9 w-full sm:w-64 text-sm" data-bn-ph="নাম, নম্বর বা ফোন" placeholder="Name, number or phone" />
     </div>
     <div class="paper-card overflow-x-auto">
       <table class="khata-table">
@@ -377,6 +399,7 @@ function members() {
       </table>
     </div>`);
   $$('[data-mf]').forEach((b) => b.addEventListener('click', () => { memFilter = b.dataset.mf; members(); }));
+  $('#mem-lane').addEventListener('change', (e) => { memLane = e.target.value; members(); });
   const q = $('#mem-q');
   q.addEventListener('input', () => { memQuery = q.value; members(); const n = $('#mem-q'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); });
   $$('[data-fam]').forEach((r) => r.addEventListener('click', (e) => { if (!e.target.closest('[data-stop]') && !e.target.closest('[data-open]')) familyDrawer(r.dataset.fam); }));
@@ -507,33 +530,48 @@ function collect(param) {
   $$('[data-mode]').forEach((b) => b.addEventListener('click', () => { if (col.done) return; col.mode = b.dataset.mode; collect(); }));
   $('#collect-form').addEventListener('submit', (e) => {
     e.preventDefault(); if (col.done) return;
-    col.done = true; col.receipt = nextReceipt(); collect();
+    col.done = true; col.receipt = nextReceipt();
+    addReceipt({ no: col.receipt, fam: col.fam, amount: col.months * club.monthlyFee, mode: col.mode, months: col.months });
+    collect();
   });
-  $('#undo-collect')?.addEventListener('click', () => { col.done = false; col.receipt = null; receiptSeq--; collect(); toast(`<i data-lucide="undo-2"></i>${t('Entry reversed. Nothing was kept in the khata.', 'এন্ট্রি ফেরানো হয়েছে। খাতায় কিছু থাকেনি।')}`); });
+  $('#undo-collect')?.addEventListener('click', () => { admin.dropReceipt(col.receipt); col.done = false; col.receipt = null; receiptSeq--; collect(); toast(`<i data-lucide="undo-2"></i>${t('Entry reversed. Nothing was kept in the khata.', 'এন্ট্রি ফেরানো হয়েছে। খাতায় কিছু থাকেনি।')}`); });
   $('#next-collect')?.addEventListener('click', () => { const f = families.find((x) => x.due && x !== col.fam) || families[0]; col = { fam: f, months: Math.max(1, f.dueMonths), mode: 'cash', done: false, receipt: null }; collect(); });
 }
 
 /* ---------------- Dues ---------------- */
+let duesLane = 'all', duesMin = 1;
+const duesPick = new Set();
+const reminded = {};
 function dues() {
-  const list = families.filter((f) => f.due).sort((a, b) => b.dueMonths - a.dueMonths);
+  const all = families.filter((f) => f.due);
+  const list = all.filter((f) => f.dueMonths >= duesMin && (duesLane === 'all' || f.lane === duesLane)).sort((a, b) => b.dueMonths - a.dueMonths);
+  [...duesPick].forEach((no) => { if (!list.find((f) => f.no === no)) duesPick.delete(no); });
   const total = list.reduce((a, b) => a + b.due, 0);
   const msg = (f) => (lang === 'bn'
     ? `নমস্কার ${f.headBn}, গেদে মৈত্রী ক্লাবের ${f.dueMonths} মাসের চাঁদা ₹${f.due} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।`
     : `Namaskar ${f.head}, your Gede Maitree Club subscription of ₹${f.due} for ${f.dueMonths} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.`);
   paint(screen('dues'), `
-    ${pageHead('Dues & reminders', 'বকেয়া ও তাগাদা', `${t(`${list.length} families owe`, `${list.length}টি পরিবারের বকেয়া`)} <strong class="text-sindoor">${inr(total)}</strong>`)}
+    ${pageHead('Dues & reminders', 'বকেয়া ও তাগাদা', `${t(`${list.length} families owe`, `${list.length}টি পরিবারের বকেয়া`)} <strong class="text-sindoor">${inr(total)}</strong>`, `
+      <button class="btn btn-line btn-sm" data-act="export" data-kind="families"><i data-lucide="file-down"></i>${t('Export', 'ডাউনলোড')}</button>`)}
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+      ${[[1, 'Any amount', 'সব'], [3, '3+ months', '৩+ মাস'], [6, '6+ months (lapsed)', '৬+ মাস (মেয়াদোত্তীর্ণ)']].map(([m, en, bn]) => `<button data-dmin="${m}" aria-pressed="${duesMin === m}" class="chip h-9 px-3.5 text-sm border border-rule bg-card aria-pressed:bg-ink aria-pressed:text-paper aria-pressed:border-ink">${t(en, bn)} <span class="opacity-70 num">${dn(String(all.filter((f) => f.dueMonths >= m).length))}</span></button>`).join('')}
+      <select id="dues-lane" class="field h-9 text-sm w-auto" aria-label="Lane"><option value="all">${lang === 'bn' ? 'সব গলি' : 'All lanes'}</option>${LANES.map((l, i) => `<option value="${l}" ${duesLane === l ? 'selected' : ''}>${lang === 'bn' ? ['১ নং গলি', '২ নং গলি', '৩ নং গলি', 'পুকুর পাড়', 'স্কুল রোড'][i] : l}</option>`).join('')}</select>
+      ${duesPick.size ? `<span class="sm:ml-auto flex items-center gap-2"><span class="text-sm text-ink-2">${t(`${duesPick.size} selected`, `${duesPick.size}টি বাছা`)}</span><button class="btn btn-ink btn-sm" data-act="remind-all" data-picked="1"><i data-lucide="send"></i>${t('Remind selected', 'বাছাইদের তাগাদা')}</button><button class="btn btn-ghost btn-sm" id="dues-clear">${t('Clear', 'মুছুন')}</button></span>` : ''}
+    </div>
     <div class="grid lg:grid-cols-12 gap-6 items-start">
       <div class="lg:col-span-8 paper-card overflow-x-auto">
         <table class="khata-table">
-          <thead><tr><th>${t('Family', 'পরিবার')}</th><th class="hidden sm:table-cell">${t('Months', 'মাস')}</th><th class="!text-right">${t('Due', 'বকেয়া')}</th><th class="hidden md:table-cell">${t('Last reminded', 'শেষ তাগাদা')}</th><th><span class="sr-only">${t('Action', 'কাজ')}</span></th></tr></thead>
+          <thead><tr><th class="w-10 !pr-0"><input type="checkbox" id="dues-all" class="w-4 h-4 accent-[#2b2f36] align-middle" ${list.length && duesPick.size === list.length ? 'checked' : ''} aria-label="${lang === 'bn' ? 'সব বাছুন' : 'Select all'}" /></th><th>${t('Family', 'পরিবার')}</th><th class="hidden sm:table-cell">${t('Months', 'মাস')}</th><th class="!text-right">${t('Due', 'বকেয়া')}</th><th class="hidden md:table-cell">${t('Last reminded', 'শেষ তাগাদা')}</th><th><span class="sr-only">${t('Action', 'কাজ')}</span></th></tr></thead>
           <tbody>
+            ${list.length ? '' : `<tr><td colspan="6" class="!py-12 text-center text-ink-3">${t('No family owes in this lane. Nice.', 'এই গলিতে কারও বকেয়া নেই।')}</td></tr>`}
             ${list.map((f, i) => `<tr>
+              <td class="!pr-0"><input type="checkbox" data-dpick="${f.no}" ${duesPick.has(f.no) ? 'checked' : ''} class="w-4 h-4 accent-[#2b2f36] align-middle" aria-label="${f.head}" /></td>
               <td><span class="font-semibold">${t(f.head, f.headBn)}</span><span class="block text-[13px] text-ink-3 num">${f.no} · ${t(f.lane, f.laneBn)}</span></td>
               <td class="hidden sm:table-cell"><span class="flex gap-0.5" role="img" aria-label="${f.dueMonths} months due">${Array.from({ length: 8 }, (_, k) => `<span class="w-2.5 h-5 rounded-sm ${k < f.dueMonths ? (f.dueMonths >= 6 ? 'bg-sindoor' : 'bg-marigold') : 'bg-paper-2'}"></span>`).join('')}</span></td>
               <td class="amt font-semibold">${inr(f.due)}</td>
-              <td class="hidden md:table-cell text-sm text-ink-3">${i % 3 === 0 ? t('Never', 'কখনো না') : t(`${i + 2} days ago`, `${i + 2} দিন আগে`)}</td>
+              <td class="hidden md:table-cell text-sm ${reminded[f.no] ? 'text-tulsi font-semibold' : 'text-ink-3'}">${reminded[f.no] ? t('Today', 'আজ') : f.no.endsWith('1') || i % 3 === 0 ? t('Never', 'কখনো না') : t(`${i + 2} days ago`, `${i + 2} দিন আগে`)}</td>
               <td class="text-right whitespace-nowrap">
-                <a target="_blank" rel="noopener" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(msg(f))}" class="btn btn-sm btn-ink"><i data-lucide="message-circle"></i>${t('Remind', 'তাগাদা')}</a>
+                <a target="_blank" rel="noopener" data-remind="${f.no}" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(msg(f))}" class="btn btn-sm btn-ink"><i data-lucide="message-circle"></i>${t('Remind', 'তাগাদা')}</a>
               </td></tr>`).join('')}
           </tbody>
         </table>
@@ -541,13 +579,23 @@ function dues() {
       <div class="lg:col-span-4">
         <p class="text-sm font-semibold text-ink-3 mb-2">${t('WhatsApp message', 'হোয়াটসঅ্যাপ বার্তা')}</p>
         <div class="rounded-lg bg-[#e7ddc9] p-4">
-          <div class="bg-[#dcf3d0] rounded-lg rounded-tr-sm p-3.5 text-[15px] leading-relaxed ml-6 shadow-[0_1px_1px_rgba(0,0,0,.08)]">${msg(list[0])}<span class="block text-right text-[11px] text-ink-3 mt-1">7:42 pm ✓✓</span></div>
+          <div class="bg-[#dcf3d0] rounded-lg rounded-tr-sm p-3.5 text-[15px] leading-relaxed ml-6 shadow-[0_1px_1px_rgba(0,0,0,.08)]">${msg(list[0] || all[0])}<span class="block text-right text-[11px] text-ink-3 mt-1">7:42 pm ✓✓</span></div>
         </div>
         <p class="text-sm text-ink-2 mt-3">${t('Opens WhatsApp on your phone with this filled in. Nothing is sent automatically and it costs nothing.', 'আপনার ফোনে হোয়াটসঅ্যাপ খুলবে, বার্তা লেখা থাকবে। নিজে থেকে কিছু যাবে না, খরচও নেই।')}</p>
-        <div class="flex flex-wrap gap-2 mt-3"><button class="btn btn-line btn-sm" data-act="message"><i data-lucide="pencil"></i>${t('Edit message', 'বার্তা বদলান')}</button><button class="btn btn-ink btn-sm" data-act="remind-all"><i data-lucide="send"></i>${t('Remind all', 'সবাইকে তাগাদা')}</button></div>
+        <div class="flex flex-wrap gap-2 mt-3"><button class="btn btn-line btn-sm" data-act="message"><i data-lucide="pencil"></i>${t('Edit message', 'বার্তা বদলান')}</button><button class="btn btn-ink btn-sm" data-act="remind-all"><i data-lucide="send"></i>${t(`Remind all ${list.length}`, `সব ${list.length}টিকে তাগাদা`)}</button></div>
       </div>
     </div>`);
+  $$('[data-dmin]').forEach((b) => b.addEventListener('click', () => { duesMin = Number(b.dataset.dmin); dues(); }));
+  $('#dues-lane').addEventListener('change', (e) => { duesLane = e.target.value; dues(); });
+  $$('[data-dpick]').forEach((c) => c.addEventListener('change', () => { c.checked ? duesPick.add(c.dataset.dpick) : duesPick.delete(c.dataset.dpick); dues(); }));
+  $('#dues-all').addEventListener('change', (e) => { duesPick.clear(); if (e.target.checked) list.forEach((f) => duesPick.add(f.no)); dues(); });
+  $('#dues-clear')?.addEventListener('click', () => { duesPick.clear(); dues(); });
+  $$('[data-remind]').forEach((a) => a.addEventListener('click', () => { reminded[a.dataset.remind] = true; logAudit('collect', `WhatsApp reminder opened for ${a.dataset.remind}`, `${a.dataset.remind}-এর জন্য হোয়াটসঅ্যাপ তাগাদা`); setTimeout(dues, 100); }));
 }
+const duesTargets = (picked) => {
+  const all = families.filter((f) => f.due && f.dueMonths >= duesMin && (duesLane === 'all' || f.lane === duesLane));
+  return picked && duesPick.size ? all.filter((f) => duesPick.has(f.no)) : all;
+};
 
 /* ---------------- Khata ---------------- */
 let khataBook = 'all';
@@ -798,7 +846,7 @@ function meetings() {
   paint(screen('meetings'), `
     ${pageHead('Notices & meetings', 'নোটিস ও সভা')}
     <div class="grid xl:grid-cols-12 gap-6 items-start">
-      <form class="xl:col-span-7 paper-card p-5 sm:p-6 space-y-4" id="notice-form">
+      <form class="xl:col-span-7 min-w-0 paper-card p-5 sm:p-6 space-y-4" id="notice-form">
         <h2 class="font-display text-xl">${t('Put up a notice', 'নোটিস দিন')}</h2>
         <div class="grid sm:grid-cols-2 gap-4">
           <label class="block"><span class="label">${t('Title (English)', 'শিরোনাম (ইংরেজি)')}</span><input class="field" value="Committee meeting — Saraswati Puja planning" /></label>
@@ -807,14 +855,19 @@ function meetings() {
         <label class="block"><span class="label">${t('Message', 'বার্তা')}</span><textarea class="field" rows="3">Sunday 16 Nov, 6 pm at the club room. Budget and volunteer list will be finalised.</textarea></label>
         <div><p class="label">${t('Who should get it', 'কারা পাবেন')}</p>
           <div class="flex flex-wrap gap-2">
-            ${[['Everyone', 'সবাই', true], ['Committee only', 'শুধু কমিটি', false], ['Families with dues', 'বকেয়া থাকা পরিবার', false], ['Volunteers', 'স্বেচ্ছাসেবক', false]].map(([en, bn, on]) => `<label class="chip h-9 px-3.5 text-sm border border-rule bg-card cursor-pointer has-[:checked]:bg-ink has-[:checked]:text-paper has-[:checked]:border-ink"><input type="radio" name="aud" class="sr-only" ${on ? 'checked' : ''} />${t(en, bn)}</label>`).join('')}
+            ${audienceRadios()}
           </div></div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><p class="label">${t('When', 'কখন')}</p>${radioRow('when', [['Send now', 'এখনই'], ['Schedule', 'পরে']])}</div>
+          <label class="block" id="notice-at"><span class="label">${t('Send at', 'পাঠানোর সময়')}</span><input type="datetime-local" class="field num" value="2026-11-16T08:00" disabled /></label>
+        </div>
         <div class="flex flex-wrap gap-x-6 gap-y-2 text-[15px]">
           <label class="flex items-center gap-2"><input type="checkbox" checked class="w-5 h-5 accent-[#d21f1b]" />${t('App notification', 'অ্যাপ নোটিফিকেশন')}</label>
           <label class="flex items-center gap-2"><input type="checkbox" checked class="w-5 h-5 accent-[#d21f1b]" />${t('Pin to top', 'উপরে পিন')}</label>
           <label class="flex items-center gap-2"><input type="checkbox" class="w-5 h-5 accent-[#d21f1b]" />${t('Show on website', 'ওয়েবসাইটে দেখান')}</label>
         </div>
-        <div class="flex gap-2"><button class="btn btn-primary">${t('Publish notice', 'নোটিস প্রকাশ')}</button><button type="button" class="btn btn-line" data-act="copy-notice"><i data-lucide="message-circle"></i>${t('Copy for WhatsApp group', 'হোয়াটসঅ্যাপ গ্রুপের জন্য কপি')}</button></div>
+        <div id="notice-preview" class="rounded-lg border border-rule bg-paper-2/50 p-4"></div>
+        <div class="flex flex-wrap gap-2"><button class="btn btn-primary">${t('Publish notice', 'নোটিস প্রকাশ')}</button><button type="button" class="btn btn-line" data-act="copy-notice"><i data-lucide="message-circle"></i>${t('Copy for WhatsApp group', 'হোয়াটসঅ্যাপ গ্রুপের জন্য কপি')}</button></div>
       </form>
 
       <div class="xl:col-span-5 space-y-6">
@@ -855,7 +908,16 @@ function meetings() {
         </div>
       </div>
     </div>`);
-  $('#notice-form').addEventListener('submit', (e) => { e.preventDefault(); toast(`<i data-lucide="check-circle-2"></i>${t('Notice published. 286 families notified.', 'নোটিস প্রকাশিত। ২৮৬টি পরিবারকে জানানো হয়েছে।')}`); });
+  const nf = $('#notice-form');
+  wireNotice(nf);
+  nf.addEventListener('change', (e) => { if (e.target.name === 'when') $('#notice-at input').disabled = e.target.value === '0'; });
+  nf.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const n = nf.dataset.reach || 286, later = nf.querySelector('input[name="when"]:checked').value === '1';
+    const title = nf.querySelector('input.field').value;
+    logAudit('notices', `${later ? 'Scheduled' : 'Published'} notice “${title}” · ${n} recipients`, `নোটিস ${later ? 'নির্ধারিত' : 'প্রকাশিত'} “${title}” · ${n} জন`);
+    toast(`<i data-lucide="check-circle-2"></i>${later ? t(`Scheduled for 16 Nov, 8 am. ${n} will be notified.`, `১৬ নভে সকাল ৮টায় যাবে। ${n} জন পাবেন।`) : t(`Notice published. ${n} notified.`, `নোটিস প্রকাশিত। ${n} জনকে জানানো হয়েছে।`)}`);
+  });
 }
 
 
@@ -910,9 +972,11 @@ document.addEventListener('submit', (e) => {
 function reports() {
   const tot = (k) => books[k].income - books[k].expense;
   paint(screen('reports'), `
-    ${pageHead('Reports', 'রিপোর্ট', t('Statements for the committee, the auditor and the AGM.', 'কমিটি, অডিটর ও এজিএম-এর জন্য বিবরণী।'))}
+    ${pageHead('Reports', 'রিপোর্ট', t('Statements for the committee, the auditor and the AGM.', 'কমিটি, অডিটর ও এজিএম-এর জন্য বিবরণী।'), `
+      <a href="#settings/data" class="btn btn-line btn-sm"><i data-lucide="database"></i>${t('Export & backup', 'ডাউনলোড ও ব্যাকআপ')}</a>
+      <button class="btn btn-primary btn-sm" data-act="agm-pack"><i data-lucide="landmark"></i>${t('Build AGM pack', 'এজিএম প্যাক তৈরি')}</button>`)}
     <div class="grid lg:grid-cols-12 gap-6 items-start">
-      <div class="lg:col-span-7 paper-card">
+      <div class="lg:col-span-7 min-w-0 paper-card overflow-x-auto">
         <div class="px-5 pt-4 pb-3 border-b border-rule flex items-center"><h2 class="font-display text-xl">${t('Year to date · Apr–Nov 2026', 'চলতি বছর · এপ্রি–নভে ২০২৬')}</h2></div>
         <table class="khata-table">
           <thead><tr><th>${t('Book', 'খাতা')}</th><th class="!text-right">${t('Joma', 'জমা')}</th><th class="!text-right">${t('Khoroch', 'খরচ')}</th><th class="!text-right">${t('Surplus', 'উদ্বৃত্ত')}</th></tr></thead>
@@ -927,14 +991,24 @@ function reports() {
           ['landmark', 'AGM annual report', 'এজিএম বার্ষিক রিপোর্ট', 'Income & expenditure, balance sheet, notes', 'আয়-ব্যয়, ব্যালান্স শিট, টীকা'],
           ['users', 'Member register', 'সদস্য তালিকা', 'All families, status and dues', 'সব পরিবার, অবস্থা ও বকেয়া'],
           ['hand-heart', 'Puja chanda summary', 'পূজার চাঁদার হিসাব', 'By area, volunteer and sponsor', 'এলাকা, স্বেচ্ছাসেবক ও স্পনসর অনুযায়ী'],
-          ['history', 'Audit trail', 'অডিট ট্রেইল', 'Every entry, edit and reversal with who and when', 'প্রতিটি এন্ট্রি, কে ও কখন'],
-        ].map(([icon, en, bn, sEn, sBn]) => `
-          <div class="paper-card p-4 flex items-center gap-3">
+          ['history', 'Audit trail', 'অডিট ট্রেইল', 'Every entry, edit and reversal with who and when', 'প্রতিটি এন্ট্রি, কে ও কখন', 'audit'],
+          ['receipt', 'Receipts register', 'রসিদ খাতা', 'Every number in order, cancelled ones with reasons', 'সব নম্বর ক্রমে, বাতিলগুলো কারণসহ', 'receipts'],
+          ['landmark', 'Bank reconciliation', 'ব্যাংক মেলানো', 'Khata against the SBI statement, cash with collectors', 'SBI স্টেটমেন্টের সঙ্গে খাতা, সংগ্রাহকদের নগদ', 'cash'],
+        ].map(([icon, en, bn, sEn, sBn, link]) => `
+          <div class="paper-card p-4 flex flex-wrap items-center gap-3">
             <span class="w-10 h-10 rounded-full bg-paper-2 grid place-items-center shrink-0"><i data-lucide="${icon}" class="w-5 h-5"></i></span>
-            <div class="flex-1 min-w-0"><p class="font-semibold">${t(en, bn)}</p><p class="text-sm text-ink-2">${t(sEn, sBn)}</p></div>
+            <div class="flex-1 min-w-[160px]"><p class="font-semibold">${t(en, bn)}</p><p class="text-sm text-ink-2">${t(sEn, sBn)}</p></div>
+            <span class="flex gap-1 ml-auto">${link ? `<a href="#${link}" class="btn btn-line btn-sm">${t('Open', 'খুলুন')}</a>` : ''}
             <button class="btn btn-line btn-sm" data-dl><i data-lucide="download"></i>PDF</button>
-            <button class="btn btn-ghost btn-sm" data-dl>Excel</button>
+            <button class="btn btn-ghost btn-sm" data-dl>Excel</button></span>
           </div>`).join('')}
+      </div>
+      <div class="lg:col-span-7 paper-card">
+        <div class="px-5 pt-4 pb-3 border-b border-rule"><h2 class="font-display text-xl">${t('Membership this year', 'এ বছরের সদস্য')}</h2></div>
+        <table class="khata-table"><tbody>
+          ${[['Families on 1 April', '১ এপ্রিলে পরিবার', '277', ''], ['Joined', 'নতুন যোগ', '+14', 'text-tulsi'], ['Lapsed (6+ months due)', 'মেয়াদোত্তীর্ণ (৬+ মাস)', '−6', 'text-sindoor'], ['Rejoined after clearing dues', 'বকেয়া মিটিয়ে ফিরেছেন', '+1', 'text-tulsi'], ['Dues waived (hardship)', 'বকেয়া মকুব (অসুবিধা)', '2', 'text-ink-2']].map(([en, bn, v, c]) => `<tr><td>${t(en, bn)}</td><td class="amt font-semibold ${c}">${dn(v)}</td></tr>`).join('')}
+          <tr class="bg-paper-2/50 font-semibold [&>td]:border-t [&>td]:border-t-ink/20 [&>td]:border-b-[3px] [&>td]:border-double [&>td]:border-b-ink/25"><td>${t('Families today', 'আজ পরিবার')}</td><td class="amt">${dn('286')}</td></tr>
+        </tbody></table>
       </div>
     </div>`);
   $$('[data-dl]').forEach((b) => b.addEventListener('click', () => toast(`<i data-lucide="download"></i>${t('Report prepared. (Prototype: no file is created.)', 'রিপোর্ট তৈরি। (প্রোটোটাইপ: কোনো ফাইল তৈরি হয়নি।)')}`)));
@@ -952,8 +1026,11 @@ const staff = [
 ];
 function settings(param) {
   if (param) setTab = param;
-  const tabs = [['club', 'Club', 'ক্লাব'], ['fees', 'Fees', 'চাঁদা'], ['people', 'Users & roles', 'ব্যবহারকারী ও ভূমিকা'], ['security', 'Security', 'নিরাপত্তা']];
+  const tabs = [['club', 'Club', 'ক্লাব'], ['fees', 'Fees', 'চাঁদা'], ['people', 'Users', 'ব্যবহারকারী'], ['roles', 'Roles & permissions', 'ভূমিকা ও অনুমতি'], ['security', 'Security', 'নিরাপত্তা'], ['data', 'Data & backup', 'ডেটা ও ব্যাকআপ']];
+  if (!tabs.find((x) => x[0] === setTab)) setTab = 'club';
   const body = {
+    roles: admin.settingsTabs.roles(),
+    data: admin.settingsTabs.data(),
     club: `<form class="paper-card p-5 sm:p-6 grid sm:grid-cols-2 gap-4 max-w-3xl" data-save>
       <label class="block"><span class="label">${t('Club name (English)', 'ক্লাবের নাম (ইংরেজি)')}</span><input class="field" value="Gede Maitree Club" /></label>
       <label class="block"><span class="label">${t('Club name (Bengali)', 'ক্লাবের নাম (বাংলা)')}</span><input class="field" value="গেদে মৈত্রী ক্লাব" lang="bn" /></label>
@@ -986,7 +1063,7 @@ function settings(param) {
         <td>${s.twofa ? `<span class="chip bg-paper-2 text-ink-2"><i data-lucide="shield-check"></i>${t('On', 'চালু')}</span>` : `<span class="chip border border-ink/40"><i data-lucide="shield-alert"></i>${t('Off', 'বন্ধ')}</span>`}</td>
         <td class="text-sm text-ink-2">${s.pending ? `<span class="chip border border-ink/40"><i data-lucide="mail"></i>${t('Invited', 'আমন্ত্রিত')}</span>` : s.last}</td>
         <td class="text-right whitespace-nowrap">${s.pending ? `<button class="btn btn-ghost btn-sm" data-act="resend" data-name="${s.name}">${t('Resend', 'আবার পাঠান')}</button>` : `<button class="btn btn-ghost btn-sm" data-act="revoke" data-name="${s.name}">${t('Remove access', 'অ্যাক্সেস বাতিল')}</button>`}</td></tr>`).join('')}</tbody></table>
-      <div class="px-5 py-4 border-t border-rule text-sm text-ink-2">${t('Roles decide what each person sees: the treasurer sees all books, in-charges see their own book, volunteers only the gate scanner and chanda entry.', 'ভূমিকা অনুযায়ী দেখা যায়: কোষাধ্যক্ষ সব খাতা, দায়িত্বপ্রাপ্তরা নিজের খাতা, স্বেচ্ছাসেবক শুধু গেট স্ক্যানার ও চাঁদা।')}</div></div>`,
+      <div class="px-5 py-4 border-t border-rule text-sm text-ink-2">${t('Roles decide what each person sees: the treasurer sees all books, in-charges see their own book, volunteers only the gate scanner and chanda entry.', 'ভূমিকা অনুযায়ী দেখা যায়: কোষাধ্যক্ষ সব খাতা, দায়িত্বপ্রাপ্তরা নিজের খাতা, স্বেচ্ছাসেবক শুধু গেট স্ক্যানার ও চাঁদা।')} <a href="#settings/roles" class="font-semibold text-sindoor hover:underline">${t('See every permission, or view the console as a role', 'সব অনুমতি দেখুন, বা কোনো ভূমিকা হিসেবে কনসোল দেখুন')} →</a></div></div>`,
     security: `<form class="paper-card p-5 sm:p-6 max-w-3xl divide-y divide-rule" data-save>
       ${[
         ['Require two-step sign-in for everyone', 'সবার জন্য দুই-ধাপ লগইন বাধ্যতামূলক', 'A code by SMS after the password', 'পাসওয়ার্ডের পর এসএমএস কোড', true],
@@ -1036,6 +1113,9 @@ function profile() {
           <ul class="mt-3 divide-y divide-rule text-[15px]">
             <li class="py-3 flex items-center gap-3"><i data-lucide="key-round" class="w-5 h-5"></i><span class="flex-1">${t('Password · changed 2 months ago', 'পাসওয়ার্ড · ২ মাস আগে বদলানো')}</span><a href="admin-login.html#forgot" class="btn btn-line btn-sm">${t('Change', 'বদলান')}</a></li>
             <li class="py-3 flex items-center gap-3"><i data-lucide="shield-check" class="w-5 h-5"></i><span class="flex-1">${t('Two-step sign-in · SMS to ••••5120', 'দুই-ধাপ লগইন · ••••5120-এ এসএমএস')}</span><span class="chip bg-paper-2 text-ink-2">${t('On', 'চালু')}</span></li>
+            <li class="py-3 flex items-center gap-3"><i data-lucide="history" class="w-5 h-5"></i><span class="flex-1">${t('Everything you did in the console', 'কনসোলে আপনার সব কাজ')}</span><a href="#audit" class="btn btn-line btn-sm">${t('My activity', 'আমার কাজ')}</a></li>
+            <li class="py-3 flex items-center gap-3"><i data-lucide="smartphone" class="w-5 h-5"></i><span class="flex-1">${t('You are also a member (MC-0125)', 'আপনি সদস্যও (MC-0125)')}<span class="block text-sm text-ink-2">${t('The member app has its own sign-in', 'সদস্য অ্যাপের আলাদা লগইন')}</span></span><a href="app.html" class="btn btn-line btn-sm">${t('Member app', 'সদস্য অ্যাপ')}</a></li>
+            <li class="py-3 flex items-center gap-3"><i data-lucide="keyboard" class="w-5 h-5"></i><span class="flex-1">${t('Keyboard shortcuts', 'কিবোর্ড শর্টকাট')}</span><button class="btn btn-line btn-sm" data-act="shortcuts">${t('Show', 'দেখুন')} <kbd class="text-[12px] border border-rule rounded px-1">?</kbd></button></li>
           </ul>
         </div>
         <div class="paper-card p-5">
@@ -1155,7 +1235,14 @@ function formDrawer(titleEn, titleBn, body, submitEn, submitBn, doneEn, doneBn, 
       <div class="grid grid-cols-2 gap-2 pt-2"><button type="button" data-close class="btn btn-line">${t('Cancel', 'বাতিল')}</button>
         <button class="btn ${danger ? 'btn-ink' : 'btn-primary'}">${t(submitEn, submitBn)}</button></div>
     </form>`);
-  $('[data-drawer-form]').addEventListener('submit', (e) => { e.preventDefault(); closeDrawer(); onDone?.(e.target); if (doneEn) toast(`<i data-lucide="check-circle-2"></i>${t(doneEn, doneBn)}`); });
+  $('[data-drawer-form]').addEventListener('submit', (e) => {
+    e.preventDefault(); closeDrawer();
+    const before = auditLog.length;
+    onDone?.(e.target);
+    // Every form leaves a line in the audit log, unless the action already wrote a more specific one
+    if (auditLog.length === before) logAudit(current, `Saved “${titleEn}”`, `সেভ “${titleBn}”`);
+    if (doneEn) toast(`<i data-lucide="check-circle-2"></i>${t(doneEn, doneBn)}`);
+  });
 }
 const rerender = () => SCREENS[current]?.(currentParam);
 const proto = (en, bn) => toast(`<i data-lucide="info"></i>${t(`${en} (Prototype: nothing is printed or downloaded.)`, `${bn} (প্রোটোটাইপ: কিছু প্রিন্ট বা ডাউনলোড হয় না।)`)}`);
@@ -1212,8 +1299,8 @@ const ACTIONS = {
       ${fld('English', 'ইংরেজি', `<textarea class="field" rows="4">Namaskar {name}, your Gede Maitree Club subscription of ₹{amount} for {months} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.</textarea>`)}`,
       'Save message', 'সেভ করুন', 'Reminder message saved.', 'বার্তা সেভ হয়েছে।');
   },
-  'remind-all'() {
-    const due = families.filter((f) => f.due);
+  'remind-all'(b) {
+    const due = duesTargets(b?.dataset.picked);
     openDrawer(`
       <div class="p-6">
         <div class="flex items-center"><h2 class="font-display text-[1.7rem]">${t(`Remind ${due.length} families`, `${due.length}টি পরিবারকে তাগাদা`)}</h2>
@@ -1221,10 +1308,10 @@ const ACTIONS = {
         <p class="mt-2 text-[15px] text-ink-2">${t('WhatsApp opens one chat at a time, so work down the list. Each one ticks off when you come back.', 'হোয়াটসঅ্যাপ একবারে একটা চ্যাট খোলে, তাই তালিকা ধরে এগোন। ফিরে এলে টিক পড়বে।')}</p>
         <ul class="mt-4 divide-y divide-rule border-y border-rule">${due.map((f) => `<li class="py-2.5 flex items-center gap-3">
           <span class="flex-1 min-w-0"><span class="block font-semibold truncate">${t(f.head, f.headBn)}</span><span class="block text-sm text-ink-3">${inr(f.due)}</span></span>
-          <a target="_blank" rel="noopener" data-sent href="https://wa.me/91${f.phone}" class="btn btn-ink btn-sm"><i data-lucide="message-circle"></i>${t('Open', 'খুলুন')}</a></li>`).join('')}</ul>
+          <a target="_blank" rel="noopener" data-sent="${f.no}" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(lang === 'bn' ? `নমস্কার ${f.headBn}, গেদে মৈত্রী ক্লাবের ${f.dueMonths} মাসের চাঁদা ₹${f.due} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।` : `Namaskar ${f.head}, your Gede Maitree Club subscription of ₹${f.due} for ${f.dueMonths} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.`)}" class="btn btn-ink btn-sm"><i data-lucide="message-circle"></i>${t('Open', 'খুলুন')}</a></li>`).join('')}</ul>
         <p class="mt-4 text-[13px] text-ink-3">${t('Later: WhatsApp Business API can send all at once for about ₹0.30 per message.', 'পরে: হোয়াটসঅ্যাপ বিজনেস API দিয়ে একসঙ্গে পাঠানো যায়, বার্তা প্রতি প্রায় ₹০.৩০।')}</p>
       </div>`);
-    $$('[data-sent]').forEach((a) => a.addEventListener('click', () => { a.outerHTML = `<span class="chip bg-paper-2 text-ink-2"><i data-lucide="check"></i>${t('Sent', 'পাঠানো')}</span>`; refreshIcons(); applyLang($('#drawer-body')); }));
+    $$('[data-sent]').forEach((a) => a.addEventListener('click', () => { reminded[a.dataset.sent] = true; if (current === 'dues') setTimeout(dues, 100); a.outerHTML = `<span class="chip bg-paper-2 text-ink-2"><i data-lucide="check"></i>${t('Sent', 'পাঠানো')}</span>`; refreshIcons(); applyLang($('#drawer-body')); }));
   },
   bill(b) {
     openDrawer(`
@@ -1802,12 +1889,13 @@ Object.assign(ACTIONS, {
     const recs = ledger.filter((r) => `${r.ref} ${r.head}`.toLowerCase().includes(q)).slice(0, 4);
     const orders = cateringOrders.filter((o) => `${o.id} ${o.customer}`.toLowerCase().includes(q)).slice(0, 3);
     const sec = (en, bn, items) => items ? `<p class="px-3 pt-2.5 pb-1 text-[12px] font-bold uppercase tracking-wide text-ink-3">${t(en, bn)}</p>${items}` : '';
-    const html = sec('Families', 'পরিবার', fams.map((f) => `<a href="#members" data-g-fam="${f.no}" class="flex items-center gap-3 px-3 py-2 hover:bg-paper-2"><i data-lucide="users" class="w-4 h-4 text-ink-3"></i><span class="font-semibold">${t(f.head, f.headBn)}</span><span class="text-sm text-ink-3 num">${f.no}</span>${f.due ? `<span class="ml-auto text-sm font-semibold">${inr(f.due)}</span>` : ''}</a>`).join(''))
+    const html = searchPages(q) + sec('Families', 'পরিবার', fams.map((f) => `<a href="#members" data-g-fam="${f.no}" class="flex items-center gap-3 px-3 py-2 hover:bg-paper-2"><i data-lucide="users" class="w-4 h-4 text-ink-3"></i><span class="font-semibold">${t(f.head, f.headBn)}</span><span class="text-sm text-ink-3 num">${f.no}</span>${f.due ? `<span class="ml-auto text-sm font-semibold">${inr(f.due)}</span>` : ''}</a>`).join(''))
       + sec('Khata', 'খাতা', recs.map((r) => `<a href="#khata/${r.book}" class="flex items-center gap-3 px-3 py-2 hover:bg-paper-2">${bookDot(r.book)}<span class="truncate">${t(r.head, r.headBn)}</span><span class="ml-auto text-sm num">${inr(r.amount)}</span></a>`).join(''))
       + sec('Catering', 'ক্যাটারিং', orders.map((o) => `<a href="#catering" class="flex items-center gap-3 px-3 py-2 hover:bg-paper-2"><i data-lucide="chef-hat" class="w-4 h-4 text-ink-3"></i><span class="font-semibold">${t(o.customer, o.customerBn)}</span><span class="text-sm text-ink-3 num">${o.id}</span></a>`).join(''));
     paint(box, html || `<p class="px-3 py-4 text-ink-3">${t(`Nothing found for “${g.value}”. Try a family number like MC-0104 or a phone number.`, `“${g.value}” পাওয়া যায়নি। MC-0104-এর মতো পরিবার নম্বর বা ফোন নম্বর দিয়ে খুঁজুন।`)}</p>`);
     box.classList.remove('hidden'); g.setAttribute('aria-expanded', 'true');
     $$('[data-g-fam]', box).forEach((a) => a.addEventListener('click', () => setTimeout(() => familyDrawer(a.dataset.gFam), 50)));
+    $$('[data-g-rc]', box).forEach((a) => a.addEventListener('click', () => setTimeout(() => admin.openReceipt(a.dataset.gRc), 80)));
   };
   g.addEventListener('input', run);
   g.addEventListener('focus', run);
@@ -1829,8 +1917,19 @@ document.addEventListener('input', (e) => {
   if (e.target.matches('[data-digits]')) e.target.value = e.target.value.replace(/\D/g, '').slice(0, +e.target.dataset.digits);
 });
 
-const SCREENS = { dashboard, applications: applicationsScreen, gallery: galleryScreen, members, collect, dues, khata, chanda: chandaScreen, catering, nursery, meetings, events: eventsScreen, reports, settings, profile, cards: cardsScreen };
-let current = 'dashboard', currentParam;
-router('dashboard', (name, param) => { current = name; currentParam = param; SCREENS[name]?.(param); });
-document.addEventListener('langchange', () => SCREENS[current]?.(currentParam));
+/* ---------------- Admin registers (console-admin.js) ---------------- */
+const admin = initAdmin({
+  paint, pageHead, screen, openDrawer, closeDrawer, formDrawer, fld, inp, sel, radioRow, closeBtn, proto, bookDot, bookName,
+  rerender: () => rerender(),
+  onRoleChange: () => {
+    paintNav(); admin.paintRoleBanner();
+    if (!canSee(current)) location.hash = 'dashboard'; else rerender();
+  },
+});
+Object.assign(ACTIONS, admin.actions);
+
+const SCREENS = { dashboard, applications: applicationsScreen, gallery: galleryScreen, members, collect, dues, khata, chanda: chandaScreen, catering, nursery, meetings, events: eventsScreen, reports, settings, profile, cards: cardsScreen, ...admin.screens };
+const show = (name, param) => (canSee(name) ? SCREENS[name]?.(param) : lockedScreen(screen(name), name));
+router('dashboard', (name, param) => { current = name; currentParam = param; show(name, param); });
+document.addEventListener('langchange', () => { paintNav(); show(current, currentParam); });
 boot('console');

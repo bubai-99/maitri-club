@@ -59,7 +59,9 @@ export function cardFront(p) {
       <span class="idc-kind">MEMBER</span>
     </div>
     <div class="idc-body">
-      <div class="idc-photo">${p.photo
+      <div class="idc-photo">${p.photoUrl
+        ? `<img src="${p.photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;display:block" />`
+        : p.photo
         ? `<span class="idc-initials">${initials(p)}</span>`
         : `<span class="idc-nophoto">${t('Photo', 'ছবি')}<br>${t('needed', 'লাগবে')}</span>`}</div>
       <div class="idc-info">
@@ -84,7 +86,7 @@ export function cardBack(p) {
       <div class="idc-terms">
         <p class="idc-terms-h">${t('Show this card at the gate', 'গেটে এই কার্ড দেখান')}</p>
         <p>${t('For club events and member prices at the nursery and on catering. Not transferable.', 'ক্লাবের অনুষ্ঠান এবং নার্সারি ও পরিবেশনে সদস্য মূল্যের জন্য। হস্তান্তরযোগ্য নয়।')}</p>
-        <p class="idc-found">${t('If found, please return to', 'কুড়িয়ে পেলে ফেরত দিন')}: 14/2 Netaji Subhas Road, Kolkata 700 084 · +91 98300 12345</p>
+        <p class="idc-found">${t('Regd. S-0027153 / 2022-23 · If found, please return to', 'নিবন্ধন S-0027153 / 2022-23 · কুড়িয়ে পেলে ফেরত দিন')}: 14/2 Netaji Subhas Road, Kolkata 700 084 · +91 98300 12345</p>
         <div class="idc-sign"><span class="idc-signature">R. Banerjee</span><span class="idc-sign-l">${t('Secretary', 'সম্পাদক')}</span></div>
       </div>
     </div>

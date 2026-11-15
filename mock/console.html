@@ -18,6 +18,7 @@
         </div>
       </div>
       <nav class="flex-1 overflow-y-auto px-3 py-4 text-[15px]" aria-label="Console" id="side-nav"></nav>
+      <button type="button" data-act="shortcuts" class="hidden lg:flex items-center gap-2 mx-4 mb-2 text-[12.5px] text-ink-3 hover:text-ink"><i data-lucide="keyboard" class="w-4 h-4"></i><span data-bn="শর্টকাট দেখতে ? চাপুন">Press ? for shortcuts</span></button>
       <div class="border-t border-rule px-4 py-3 flex items-center gap-3">
         <a href="#profile" data-nav="profile" class="flex items-center gap-3 min-w-0 rounded-md -m-1 p-1 hover:bg-paper-3/50">
           <span class="w-9 h-9 rounded-full bg-ink text-paper grid place-items-center font-display" data-bn="তা">T</span>
@@ -41,8 +42,16 @@
           <kbd class="hidden sm:block absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-ink-3 border border-rule rounded px-1.5">/</kbd>
           <div id="gresults" class="hidden absolute z-30 left-0 right-0 mt-1 bg-white border-2 border-ink rounded-[7px] shadow-[0_12px_32px_-12px_rgba(0,0,0,.35)] overflow-hidden"></div>
         </div>
-        <a href="#collect" class="btn btn-primary btn-sm ml-auto shrink-0"><i data-lucide="plus"></i><span class="hidden sm:inline" data-bn="টাকা জমা">Collect payment</span></a>
+        <div class="relative ml-auto shrink-0">
+          <button id="bell" type="button" class="relative w-10 h-10 grid place-items-center rounded-md hover:bg-paper-2" aria-label="Activity" aria-haspopup="true" aria-expanded="false" aria-controls="bell-panel" title="Activity">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="bell-badge" class="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-sindoor text-white text-[11px] font-semibold grid place-items-center num">6</span>
+          </button>
+          <div id="bell-panel" class="hidden absolute right-0 mt-1 w-[min(360px,calc(100vw-2rem))] z-30 bg-white border-2 border-ink rounded-[7px] shadow-[0_12px_32px_-12px_rgba(0,0,0,.35)] overflow-hidden"></div>
+        </div>
+        <a href="#collect" class="btn btn-primary btn-sm shrink-0"><i data-lucide="plus"></i><span class="hidden sm:inline" data-bn="টাকা জমা">Collect payment</span></a>
       </header>
+      <div id="role-banner" class="hidden sticky top-16 z-10"></div>
 
       <main class="flex-1 px-4 sm:px-6 pt-6 pb-24 lg:py-8">
         <section data-screen="dashboard"></section>
@@ -61,6 +70,12 @@
         <section data-screen="settings"></section>
         <section data-screen="profile"></section>
         <section data-screen="cards"></section>
+        <section data-screen="donors"></section>
+        <section data-screen="receipts"></section>
+        <section data-screen="cash"></section>
+        <section data-screen="volunteers"></section>
+        <section data-screen="assets"></section>
+        <section data-screen="audit"></section>
       </main>
     </div>
   </div>

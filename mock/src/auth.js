@@ -183,8 +183,16 @@ S.register = () => state.regStep === 1 ? `
   ${stepper(1)}
   ${head('Apply to join', 'সদস্য হতে আবেদন', '₹100 a month for your household, ₹500 admission once.', 'বাড়ি পিছু মাসে ₹১০০, ভর্তি ফি একবার ₹৫০০।')}
   <form class="mt-8 space-y-5" id="f" novalidate>
+    <div class="flex items-center gap-4">
+      <span id="reg-photo-prev" class="w-20 h-24 rounded-[4px] border-2 border-dashed border-ink/30 bg-paper-2 grid place-items-center shrink-0 overflow-hidden"><i data-lucide="user-round" class="w-8 h-8 text-ink-3"></i></span>
+      <div>
+        <label class="btn btn-line btn-sm cursor-pointer focus-within:outline-2 focus-within:outline-sindoor"><i data-lucide="camera"></i>${t('Add your photo', 'আপনার ছবি দিন')}<input type="file" accept="image/*" capture="user" class="sr-only" id="reg-photo" /></label>
+        <p class="mt-1.5 text-[13px] text-ink-2">${t('A clear face photo for your member card. You can add it later too.', 'সদস্য কার্ডের জন্য স্পষ্ট মুখের ছবি। পরেও দেওয়া যাবে।')}</p>
+      </div>
+    </div>
     <div><label class="block" for="name"><span class="label">${t('Full name', 'পুরো নাম')}</span></label><input id="name" class="field" autocomplete="name" aria-describedby="name-err" />${err('name-err')}</div>
     <div>${phoneField()}</div>
+    <div><label class="block" for="email"><span class="label">${t('Email (optional)', 'ইমেল (ঐচ্ছিক)')}</span></label><input id="email" type="email" class="field" autocomplete="email" aria-describedby="email-err" />${err('email-err')}</div>
     <div><label class="block" for="lane"><span class="label">${t('Lane / area', 'গলি / এলাকা')}</span></label>
       <select id="lane" class="field"><option data-bn="১ নং গলি">Lane 1</option><option data-bn="২ নং গলি">Lane 2</option><option data-bn="৩ নং গলি">Lane 3</option><option data-bn="পুকুর পাড়">Pukur Par</option><option data-bn="স্কুল রোড">School Road</option></select></div>
     <div class="grid grid-cols-2 gap-3"><div><label class="block" for="dob"><span class="label">${t('Date of birth', 'জন্মতারিখ')}</span></label><input id="dob" type="date" class="field num" autocomplete="bday" max="2026-11-15" /></div><div><label class="block" for="blood"><span class="label">${t('Blood group', 'রক্তের গ্রুপ')}</span></label><select id="blood" class="field"><option value="">${t('Choose', 'বেছে নিন')}</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option><option>O+</option><option>O−</option></select></div></div>
@@ -199,12 +207,13 @@ S.register = () => state.regStep === 1 ? `
   <form class="mt-8 space-y-5" id="f" novalidate>
     <div id="deps" class="space-y-2"></div>
     <button type="button" id="add-dep" class="btn btn-ghost btn-sm -ml-2 text-sindoor"><i data-lucide="plus"></i>${t('Add someone', 'আরও একজন')}</button>
-    <fieldset><legend class="label">${t('How will you pay?', 'কীভাবে দেবেন?')}</legend>
+    <fieldset><legend class="label">${t('How will you pay the ₹500 admission?', '₹৫০০ ভর্তি ফি কীভাবে দেবেন?')}</legend>
       <div class="grid grid-cols-2 gap-2">
-        <label class="rounded-[7px] border-2 border-rule p-3 cursor-pointer has-[:checked]:border-ink"><input type="radio" name="plan" class="sr-only" checked /><span class="block font-semibold">₹100 ${t('/ month', '/ মাস')}</span><span class="text-sm text-ink-2">${t('Cash or UPI', 'নগদ বা ইউপিআই')}</span></label>
-        <label class="rounded-[7px] border-2 border-rule p-3 cursor-pointer has-[:checked]:border-ink"><input type="radio" name="plan" class="sr-only" /><span class="block font-semibold">₹1,100 ${t('/ year', '/ বছর')}</span><span class="text-sm text-ink-2">${t('One month free', 'এক মাস বিনামূল্যে')}</span></label>
-      </div></fieldset>
-    <label class="flex items-start gap-3 rounded-lg bg-paper-2 p-4 text-[15px] leading-relaxed cursor-pointer"><input type="checkbox" required class="mt-1.5 w-4 h-4 shrink-0 accent-[#d21f1b]" /><span>${t('I want to join Gede Maitree Club of my own free will. I will abide by all the rules and collective decisions of the club. Any anti-social activity on my part will end my membership.', 'আমি স্বেচ্ছায় গেদে মৈত্রী ক্লাবে যোগ দিতে চাই। ক্লাবের সব নিয়ম ও সম্মিলিত সিদ্ধান্ত মেনে চলব। আমার কোনো সমাজবিরোধী কাজে সদস্যপদ বাতিল হবে।')}</span></label>
+        <label class="rounded-[7px] border-2 border-rule p-3 cursor-pointer has-[:checked]:border-ink has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-sindoor"><input type="radio" name="plan" class="sr-only" checked /><span class="block font-semibold">${t('UPI', 'ইউপিআই')}</span><span class="text-sm text-ink-2">${t('In the app, after approval', 'অনুমোদনের পর অ্যাপে')}</span></label>
+        <label class="rounded-[7px] border-2 border-rule p-3 cursor-pointer has-[:checked]:border-ink has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-sindoor"><input type="radio" name="plan" class="sr-only" /><span class="block font-semibold">${t('Cash', 'নগদ')}</span><span class="text-sm text-ink-2">${t('At the club room, 6–9 pm', 'ক্লাব ঘরে, সন্ধ্যা ৬–৯টা')}</span></label>
+      </div>
+      <p class="mt-2 text-[13px] text-ink-2">${t('Then ₹100 a month for the whole household, however many join.', 'তারপর পুরো পরিবারের জন্য মাসে ₹১০০, যতজনই যোগ দিন।')}</p></fieldset>
+    <label class="flex items-start gap-3 rounded-lg bg-paper-2 p-4 text-[15px] leading-relaxed cursor-pointer"><input type="checkbox" id="decl" aria-describedby="decl-err" class="mt-1.5 w-4 h-4 shrink-0 accent-[#d21f1b]" /><span>${t('I want to join Gede Maitree Club of my own free will. I will abide by all the rules and collective decisions of the club. Any anti-social activity on my part will end my membership.', 'আমি স্বেচ্ছায় গেদে মৈত্রী ক্লাবে যোগ দিতে চাই। ক্লাবের সব নিয়ম ও সম্মিলিত সিদ্ধান্ত মেনে চলব। আমার কোনো সমাজবিরোধী কাজে সদস্যপদ বাতিল হবে।')}</span></label>${err('decl-err')}
     ${primary('Next: verify your number', 'পরের ধাপ: নম্বর যাচাই')}
   </form>` : '';
 
@@ -281,14 +290,40 @@ function wire(name) {
     line(); resendTimer = setInterval(() => { left--; if (left >= 0) line(); else clearInterval(resendTimer); }, 1000);
   }
 
+  if (name === 'register' && state.regStep === 1) {
+    $('#reg-photo').addEventListener('change', (e) => {
+      const f = e.target.files?.[0]; if (!f || !f.type.startsWith('image/')) return;
+      $('#reg-photo-prev').innerHTML = `<img src="${URL.createObjectURL(f)}" alt="" class="w-full h-full object-cover" />`;
+      $('#reg-photo-prev').classList.remove('border-dashed');
+    });
+    $('#email').addEventListener('input', () => clearErr('email-err'));
+  }
   if (name === 'register' && state.regStep === 2) {
+    let depN = 0;
+    const L = (en, bn) => (lang === 'bn' ? bn : en);
     const dep = (n = '', r = 'Spouse') => {
+      const k = ++depN;
       const d = document.createElement('div');
-      d.className = 'grid grid-cols-[1fr_120px_40px] gap-2';
-      d.innerHTML = `<input class="field" value="${n}" aria-label="Name" data-bn-ph="নাম" placeholder="Name" />
-        <select class="field" aria-label="Relation">${[['Spouse', 'স্বামী/স্ত্রী'], ['Son', 'ছেলে'], ['Daughter', 'মেয়ে'], ['Parent', 'বাবা/মা'], ['Other', 'অন্যান্য']].map(([en, bn]) => `<option ${en === r ? 'selected' : ''} data-bn="${bn}">${en}</option>`).join('')}</select>
-        <button type="button" class="btn btn-ghost px-0 w-10" aria-label="Remove"><i data-lucide="x"></i></button>`;
-      d.querySelector('button').addEventListener('click', () => d.remove());
+      d.className = 'rounded-lg border border-rule bg-card p-3';
+      d.innerHTML = `
+        <div class="flex items-center gap-3">
+          <label class="w-12 h-14 rounded-[4px] border-2 border-dashed border-ink/30 bg-paper-2 grid place-items-center shrink-0 overflow-hidden cursor-pointer focus-within:outline-2 focus-within:outline-sindoor" data-dep-photo title="${L('Add photo', 'ছবি দিন')}"><i data-lucide="camera" class="w-5 h-5 text-ink-3"></i><input type="file" accept="image/*" class="sr-only" aria-label="${L('Photo', 'ছবি')}" /></label>
+          <input class="field" value="${n}" aria-label="${L('Full name', 'পুরো নাম')}" data-bn-ph="পুরো নাম" placeholder="Full name" />
+          <button type="button" class="btn btn-ghost px-0 w-10 shrink-0" data-remove aria-label="${L('Remove', 'বাদ দিন')}"><i data-lucide="x"></i></button>
+        </div>
+        <div class="mt-2 grid grid-cols-3 gap-2">
+          <select class="field px-2" aria-label="${L('Relation', 'সম্পর্ক')}">${[['Spouse', 'স্বামী/স্ত্রী'], ['Son', 'ছেলে'], ['Daughter', 'মেয়ে'], ['Parent', 'বাবা/মা'], ['Other', 'অন্যান্য']].map(([en, bn]) => `<option ${en === r ? 'selected' : ''} data-bn="${bn}">${en}</option>`).join('')}</select>
+          <input type="date" class="field num px-2" max="2026-11-15" aria-label="${L('Date of birth', 'জন্মতারিখ')}" id="dep-dob-${k}" />
+          <select class="field px-2" aria-label="${L('Blood group', 'রক্তের গ্রুপ')}"><option value="">${L('Blood', 'রক্ত')}</option>${['A+', 'A−', 'B+', 'B−', 'AB+', 'AB−', 'O+', 'O−'].map((b) => `<option>${b}</option>`).join('')}</select>
+        </div>`;
+      d.querySelector('[data-remove]').addEventListener('click', () => d.remove());
+      const ph = d.querySelector('[data-dep-photo]');
+      ph.querySelector('input').addEventListener('change', (e) => {
+        const f = e.target.files?.[0]; if (!f) return;
+        const img = ph.querySelector('img') || document.createElement('img');
+        img.src = URL.createObjectURL(f); img.alt = ''; img.className = 'w-full h-full object-cover';
+        ph.querySelector('svg')?.remove(); ph.prepend(img);
+      });
       $('#deps').append(d); applyLang(d); refreshIcons();
     };
     dep('', 'Spouse');
@@ -350,8 +385,11 @@ function submit(name) {
     if (state.regStep === 1) {
       if (!$('#name').value.trim()) { showErr('name-err', 'Enter the name of the head of the family.', 'পরিবারের প্রধানের নাম দিন।'); return $('#name').focus(); }
       if (!needPhone()) return;
+      const em = $('#email').value.trim();
+      if (em && !/^\S+@\S+\.\S+$/.test(em)) { showErr('email-err', 'That email doesn’t look right. You can leave it empty.', 'ইমেল ঠিক মনে হচ্ছে না। ফাঁকাও রাখতে পারেন।'); return $('#email').focus(); }
       state.regStep = 2; return render('register');
     }
+    if (!$('#decl').checked) { showErr('decl-err', 'Please tick the self declaration to continue.', 'এগোতে স্ব-ঘোষণায় টিক দিন।'); return $('#decl').focus(); }
     state.purpose = 'register'; go('otp');
   }
   if (name === 'invite') {
