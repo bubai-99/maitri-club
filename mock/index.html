@@ -256,36 +256,54 @@
 
       <!-- What neighbours say. Sample quotes: replace with real ones, with permission, before launch. -->
       <div class="mx-auto max-w-[1160px] px-5 pt-20">
-        <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
-          <div><p class="gz-kicker" data-bn="পাড়ার কথা">In their words</p><h2 class="mt-2 gz-headline text-[clamp(2rem,4.5vw,3rem)]" data-bn="পাড়ার লোকে যা বলেন">What neighbours say</h2></div>
-          <p class="text-[13px] text-ink-3 max-w-[38ch]" data-bn="প্রোটোটাইপ: নমুনা লেখা। চালুর আগে সদস্যদের অনুমতি নিয়ে আসল কথা বসবে।">Prototype: sample quotes. Real ones, with the person’s permission, go here before launch.</p>
+        <div class="max-w-[640px]">
+          <p class="gz-kicker" data-bn="পাড়ার কথা">In their words</p>
+          <h2 class="mt-2 gz-headline text-[clamp(2rem,4.5vw,3rem)]" data-bn="পাড়ার লোকে যা বলেন">What neighbours say</h2>
         </div>
-        <div class="grid md:grid-cols-3 gap-5">
-          <figure class="book-catering relative gz rounded-[18px] border gz-hair p-6 sm:p-7 flex flex-col">
-            <span class="font-display text-[4.5rem] leading-[.6] text-turmeric" aria-hidden="true">“</span>
-            <blockquote class="mt-3 text-[17px] leading-relaxed text-ink flex-1" data-bn="মেয়ের বিয়েতে দুশো অতিথি, একটা পাতও দেরিতে যায়নি। দলনেতা নিজে বয়স্কদের খোঁজ নিয়েছেন।">Two hundred guests at our daughter’s wedding and not one plate was late. The team leader checked on the elders himself.</blockquote>
-            <figcaption class="mt-6 pt-4 border-t gz-hair flex items-center gap-3">
-              <span class="w-10 h-10 rounded-full bg-paper grid place-items-center shrink-0 text-turmeric"><i data-lucide="utensils" class="w-5 h-5"></i></span>
-              <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="স্কুল রোডের এক পরিবার">A family on School Road</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী পরিবেশন · বিয়ে, ২২০ জন">Maitree Serving · wedding, 220 guests</span></span>
+
+        <div class="mt-8 grid lg:grid-cols-12 gap-5">
+          <!-- Featured -->
+          <figure class="nb-feature lg:col-span-7 relative isolate overflow-hidden rounded-[26px] bg-ink text-white min-h-[400px] sm:min-h-[460px] flex flex-col justify-end p-6 sm:p-10">
+            <div class="absolute inset-0 -z-10" data-photo="pujaCrowd" aria-hidden="true"></div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/55 to-black/10" aria-hidden="true"></div>
+            <span class="absolute left-6 top-6 sm:left-10 sm:top-9 chip h-8 px-3 bg-white/15 text-white backdrop-blur-sm border border-white/20 text-[13px]"><i data-lucide="users" class="w-4 h-4"></i><span data-bn="ক্লাব সদস্য">Club member</span></span>
+            <svg viewBox="0 0 48 36" class="w-11 h-9 text-marigold" aria-hidden="true"><path fill="currentColor" d="M0 36V22C0 9.6 6.4 2.3 19.2 0l2 5.3C14.6 7 11.2 11 10.9 17H20v19H0zm28 0V22C28 9.6 34.4 2.3 47.2 0l.8 5.3C41.4 7 38 11 37.7 17H48v19H28z"/></svg>
+            <blockquote class="mt-5 font-display text-[clamp(1.55rem,3.2vw,2.35rem)] leading-[1.18] max-w-[24ch]" data-bn="গত বছর পাড়ায় এসেছি। ক্লাবের হাত ধরেই সবার সঙ্গে চেনা, শুরু দুর্গাপূজার ভোগ দিয়ে।">We moved to the para last year. The club is how we got to know everyone, starting with Durga Puja bhog.</blockquote>
+            <figcaption class="mt-7 pt-5 border-t border-white/20 flex flex-wrap items-center justify-between gap-3">
+              <span><span class="block font-semibold" data-bn="৩ নং গলির এক নতুন সদস্য">A new member, Lane 3</span><span class="block text-[13.5px] text-white/70" data-bn="২০২৫ থেকে সদস্য">Member since 2025</span></span>
+              <span class="text-[11.5px] text-white/55" data-credit="pujaCrowd"></span>
             </figcaption>
           </figure>
-          <figure class="book-club relative gz rounded-[18px] border gz-hair p-6 sm:p-7 flex flex-col">
-            <span class="font-display text-[4.5rem] leading-[.6] text-sindoor" aria-hidden="true">“</span>
-            <blockquote class="mt-3 text-[17px] leading-relaxed text-ink flex-1" data-bn="গত বছর পাড়ায় এসেছি। ক্লাবের হাত ধরেই সবার সঙ্গে চেনা, শুরু দুর্গাপূজার ভোগ দিয়ে।">We moved to the para last year. The club is how we got to know everyone, starting with Durga Puja bhog.</blockquote>
-            <figcaption class="mt-6 pt-4 border-t gz-hair flex items-center gap-3">
-              <span class="w-10 h-10 rounded-full bg-paper grid place-items-center shrink-0 text-sindoor"><i data-lucide="users" class="w-5 h-5"></i></span>
-              <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="৩ নং গলির এক নতুন সদস্য">A new member, Lane 3</span><span class="block text-[13.5px] text-ink-3" data-bn="২০২৫ থেকে সদস্য">Member since 2025</span></span>
-            </figcaption>
-          </figure>
-          <figure class="book-nursery relative gz rounded-[18px] border gz-hair p-6 sm:p-7 flex flex-col">
-            <span class="font-display text-[4.5rem] leading-[.6] text-tulsi" aria-hidden="true">“</span>
-            <blockquote class="mt-3 text-[17px] leading-relaxed text-ink flex-1" data-bn="তুলসী আর লেবু গাছ ভালো আছে। কতটা জল দিতে হবে ঠিক বলে দিয়েছিল, সদস্য মূল্যেও সুবিধা।">The tulsi and the lemon plant are doing well. They told me exactly how much to water, and the member price helps.</blockquote>
-            <figcaption class="mt-6 pt-4 border-t gz-hair flex items-center gap-3">
-              <span class="w-10 h-10 rounded-full bg-paper grid place-items-center shrink-0 text-tulsi"><i data-lucide="sprout" class="w-5 h-5"></i></span>
-              <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="পুকুর পাড়ের এক বাগানপ্রেমী">A gardener at Pukur Par</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী নার্সারি">Maitree Nursery</span></span>
-            </figcaption>
-          </figure>
+
+          <!-- Two more -->
+          <div class="lg:col-span-5 grid gap-5">
+            <figure class="nb-card book-catering relative flex flex-col rounded-[22px] bg-card border border-rule p-6 sm:p-7 overflow-hidden">
+              <span class="absolute left-0 inset-y-0 w-1 bg-turmeric" aria-hidden="true"></span>
+              <div class="flex items-center justify-between gap-3">
+                <span class="flex gap-0.5 text-marigold" aria-hidden="true"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></span>
+                <span class="w-9 h-9 rounded-full bg-paper grid place-items-center text-turmeric" aria-hidden="true"><i data-lucide="utensils" class="w-[18px] h-[18px]"></i></span>
+              </div>
+              <blockquote class="mt-4 font-display text-[1.28rem] leading-snug text-ink flex-1" data-bn="মেয়ের বিয়েতে দুশো অতিথি, একটা পাতও দেরিতে যায়নি।">Two hundred guests at our daughter’s wedding and not one plate was late.</blockquote>
+              <figcaption class="mt-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="স্কুল রোডের এক পরিবার">A family on School Road</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী পরিবেশন · বিয়ে">Maitree Serving · wedding</span></span>
+                <a href="#catering" class="inline-flex items-center gap-1 text-[14px] font-semibold text-turmeric hover:underline whitespace-nowrap"><span data-bn="পরিবেশনের রিভিউ">Serving reviews</span><i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+              </figcaption>
+            </figure>
+            <figure class="nb-card book-nursery relative flex flex-col rounded-[22px] bg-card border border-rule p-6 sm:p-7 overflow-hidden">
+              <span class="absolute left-0 inset-y-0 w-1 bg-tulsi" aria-hidden="true"></span>
+              <div class="flex items-center justify-between gap-3">
+                <span class="flex gap-0.5 text-marigold" aria-hidden="true"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></span>
+                <span class="w-9 h-9 rounded-full bg-paper grid place-items-center text-tulsi" aria-hidden="true"><i data-lucide="sprout" class="w-[18px] h-[18px]"></i></span>
+              </div>
+              <blockquote class="mt-4 font-display text-[1.28rem] leading-snug text-ink flex-1" data-bn="কতটা জল দিতে হবে ঠিক বলে দিয়েছিল। তুলসী আর লেবু গাছ ভালো আছে।">They told me exactly how much to water. The tulsi and lemon are doing well.</blockquote>
+              <figcaption class="mt-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="পুকুর পাড়ের এক বাগানপ্রেমী">A gardener at Pukur Par</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী নার্সারি">Maitree Nursery</span></span>
+                <a href="#nursery" class="inline-flex items-center gap-1 text-[14px] font-semibold text-tulsi hover:underline whitespace-nowrap"><span data-bn="নার্সারির রিভিউ">Nursery reviews</span><i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+              </figcaption>
+            </figure>
+          </div>
         </div>
+        <p class="mt-4 flex items-center gap-2 text-[13px] text-ink-3"><i data-lucide="info" class="w-4 h-4 shrink-0"></i><span data-bn="প্রোটোটাইপ: নমুনা লেখা। চালুর আগে সদস্যদের অনুমতি নিয়ে আসল কথা বসবে।">Prototype: sample quotes. Real ones, with the person’s permission, go here before launch.</span></p>
       </div>
 
       <!-- Questions -->
