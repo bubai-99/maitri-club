@@ -12,7 +12,7 @@ _Status: Draft v1, 13 Nov 2026. Open items are marked **TBD**._
 | **Type** | Neighbourhood (para) club: Durga/Kali Puja, cultural programmes, sports, social work |
 | **Members** | Under 300 families |
 | **Fees today** | Collected in cash and written in a register; the treasurer chases dues by hand |
-| **Businesses run by the club** | **Catering** (event food orders) and a **Nursery** (plant sales) |
+| **Businesses run by the club** | **Catering**: a serving service only (poribeshon), the club does not cook and a **Nursery** (plant sales) |
 | **Language** | English + Bengali, switchable |
 | **Brand assets** | None yet. Identity is designed from scratch |
 | **Locality / Estd. year** | **TBD** (placeholder: Netaji Para, Estd. 1972) |
@@ -74,7 +74,7 @@ No gradients, no glassmorphism, no stock 3D illustrations.
 2. **Fees & dues**: monthly or yearly subscription. **2-tap cash entry** with an instant receipt. Members can pay by UPI QR (no gateway fee), and the treasurer confirms.
 3. **Reminders**: one tap opens WhatsApp with a prefilled Bengali reminder. Free, and WhatsApp is where members already are.
 4. **Puja & event chanda**: budget, chanda book by area or volunteer, sponsors, target vs. collected.
-5. **Catering**: enquiry → quotation (menu × plates) → advance → event → final bill → profit to the Catering book.
+5. **Catering (serving only)**: the club supplies a uniformed serving team, and optionally tableware and buffet setup; the customer arranges the food. Enquiry → quotation (package × guests, servers at 1 per 15 guests) → advance → serving team roster → event → final bill on the actual guest count → profit to the Catering book.
 6. **Nursery**:
    - Catalogue (Bengali/English names, pot size, price, stock).
    - Counter sale with receipt.
@@ -117,5 +117,5 @@ No gradients, no glassmorphism, no stock 3D illustrations.
 
 1. Locality / para name and year the club was founded.
 2. Fee structure: monthly or yearly amount, admission fee.
-3. Catering: members only or outside customers too? Per-plate pricing?
+3. Catering (serving only): members only or outside customers too? Confirm the per-guest rates for the three packages (Serving team, Team + tableware, Full setup) and the server wage.
 4. Nursery: roughly how many varieties? Delivery or pickup only?

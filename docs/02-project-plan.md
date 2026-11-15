@@ -15,7 +15,7 @@ _Companion to [01-design-brief.md](01-design-brief.md). Solo developer, low budg
 | 4 | **MVP: Members & Fees** | Members, cash entry, receipts, dues, WhatsApp reminders; Member and Admin web apps (laptop + phone) with separate sign-in | 2–3 weeks |
 | 5 | Public website | Home, Events, Catering, Nursery, Committee, Join | 1–2 weeks |
 | 6 | Events & Chanda + Gate scanner | Puja budget, chanda book, passes, offline scanner | 2 weeks |
-| 7 | Catering + Nursery | Enquiry → bill flow; catalogue, counter sale, stock | 2–3 weeks |
+| 7 | Catering (serving) + Nursery | Enquiry → bill flow and serving-team roster; catalogue, counter sale, stock | 2–3 weeks |
 | 8 | Accounts (Khata) + AGM report | Three books, P&L, yearly report | 1–2 weeks |
 | 9 | Notices, meetings, polls, push | Notices, minutes, AGM polls, PWA push | 1 week |
 | 10 | Data migration & launch | Import register/Excel, train treasurer, soft launch | 1 week |
@@ -32,7 +32,7 @@ Single prototype with a top switcher: **Website · Member App · Console · Scan
 **Website**
 - Home (next-event hero + countdown, about, three activities: Club / Catering / Nursery)
 - Events & Puja
-- Catering (menu, packages, enquiry form)
+- Catering, serving only (packages per guest, how booking works, enquiry form with estimate)
 - Nursery (catalogue, Order on WhatsApp)
 - Committee
 - Join / Membership
@@ -52,7 +52,7 @@ Single prototype with a top switcher: **Website · Member App · Console · Scan
 - Collect payment (2-tap cash entry → receipt)
 - Dues & WhatsApp reminders
 - Puja chanda book (areas, sponsors, budget)
-- Catering orders (enquiry → quote → advance → served → final bill → settled; lost / cancelled)
+- Catering orders, serving only (enquiry → quote → advance → served → final bill → settled; lost / cancelled; serving-team roster)
 - Nursery counter sale, stock, catalogue, WhatsApp orders
 - Khata (three books)
 - Events (create, edit, registrations, cancel)
@@ -104,7 +104,8 @@ passes            id, event_id, member_id, qr_token, used_at, scanned_by
 
 catering_orders   id, customer_name, phone, is_member, event_date, guests, status
                   (enquiry|quoted|advance|done|settled|lost), venue
-catering_items    id, order_id, dish, dish_bn, per_plate_rate, qty
+catering_orders.package  team | tableware | full; rate per guest
+catering_roster   id, order_id, server_name, phone, is_leader, wage, confirmed
 catering_payments id, order_id, amount, kind (advance|final), mode
 
 plants            id, name, name_bn, category, pot_size, price, member_price, photo_url, active

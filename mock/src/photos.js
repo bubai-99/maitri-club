@@ -23,14 +23,35 @@ export const PHOTOS = {
   marigold: { src: u('1716747449890-d3f1cfa83d2f'), by: 'Aravind Reddy Tarugu', page: 'https://unsplash.com/photos/F0jsLyrEnQI', alt: 'A marigold in full bloom', altBn: 'পূর্ণ প্রস্ফুটিত গাঁদা ফুল' },
 };
 
+/* Albums are the kinds of event; the gallery filters by them. */
 export const ALBUMS = [
-  { key: 'puja', en: 'Durga Puja', bn: 'দুর্গাপূজা', photos: ['pujaNight', 'sindoor', 'pujaIdol', 'pujaMorning', 'pujaCrowd'] },
-  { key: 'sports', en: 'Sports Day', bn: 'ক্রীড়া দিবস', photos: ['race', 'runners'] },
-  { key: 'kitchen', en: 'Maitree Kitchen', bn: 'মৈত্রী রান্নাঘর', photos: ['feast', 'feast2', 'kadai'] },
-  { key: 'nursery', en: 'Nursery', bn: 'নার্সারি', photos: ['potted', 'nurseryTable', 'garlands', 'marigold'] },
-  { key: 'kali', en: 'Kali Puja', bn: 'কালীপূজা', photos: ['diyas', 'diyaTray'] },
-  { key: 'service', en: 'Blood donation', bn: 'রক্তদান', photos: ['blood'] },
+  { key: 'puja', en: 'Durga Puja', bn: 'দুর্গাপূজা' },
+  { key: 'kali', en: 'Kali Puja', bn: 'কালীপূজা' },
+  { key: 'sports', en: 'Sports Day', bn: 'ক্রীড়া দিবস' },
+  { key: 'kitchen', en: 'Maitree Serving', bn: 'মৈত্রী পরিবেশন' },
+  { key: 'nursery', en: 'Nursery', bn: 'নার্সারি' },
+  { key: 'service', en: 'Blood donation', bn: 'রক্তদান' },
 ];
+
+/*
+ * Gallery, date-wise: one entry per event day, newest first.
+ * Each item is a photo ({ p }) or a video ({ v }). Videos carry a poster photo and a duration;
+ * in the real app `src` is an uploaded file or a YouTube link set by the committee.
+ */
+export const GALLERY = [
+  { id: 'nursery-winter-26', album: 'nursery', date: '2026-11-06', en: 'Winter flowers arrive', bn: 'শীতের ফুল এল', when: '6 Nov 2026', whenBn: '৬ নভে ২০২৬',
+    items: [{ p: 'nurseryTable' }, { p: 'marigold' }, { p: 'potted' }] },
+  { id: 'kali-26', album: 'kali', date: '2026-11-08', en: 'Kali Puja & Bhai Phonta', bn: 'কালীপূজা ও ভাইফোঁটা', when: '8–10 Nov 2026', whenBn: '৮–১০ নভে ২০২৬',
+    items: [{ v: 'Green-crackers night at the pandal', vBn: 'প্যান্ডেলে সবুজ বাজির রাত', poster: 'diyas', dur: '2:14' }, { p: 'diyas' }, { p: 'diyaTray' }] },
+  { id: 'dey-wedding-26', album: 'kitchen', date: '2026-11-01', en: 'Serving at the Dey family wedding, 160 guests', bn: 'দে পরিবারের বিয়েতে পরিবেশন, ১৬০ জন', when: '1 Nov 2026', whenBn: '১ নভে ২০২৬',
+    items: [{ p: 'feast' }, { v: 'The serving team’s first batch', vBn: 'পরিবেশন দলের প্রথম ব্যাচ', poster: 'kadai', dur: '0:48' }, { p: 'feast2' }] },
+  { id: 'durga-26', album: 'puja', date: '2026-10-17', en: 'Durga Puja', bn: 'দুর্গাপূজা', when: '17–21 Oct 2026', whenBn: '১৭–২১ অক্টো ২০২৬',
+    items: [{ p: 'pujaNight' }, { v: 'Dhunuchi naach on Navami night', vBn: 'নবমীর রাতে ধুনুচি নাচ', poster: 'pujaCrowd', dur: '1:58' }, { p: 'pujaIdol' }, { p: 'pujaMorning' }, { v: 'Sindoor khela on Dashami', vBn: 'দশমীর সিঁদুর খেলা', poster: 'sindoor', dur: '3:42' }, { p: 'sindoor' }, { p: 'pujaCrowd' }, { p: 'garlands' }] },
+  { id: 'blood-26', album: 'service', date: '2026-08-15', en: 'Blood donation camp · 58 donors', bn: 'রক্তদান শিবির · ৫৮ জন দাতা', when: '15 Aug 2026', whenBn: '১৫ আগ ২০২৬',
+    items: [{ p: 'blood' }] },
+  { id: 'sports-25', album: 'sports', date: '2025-12-14', en: 'Annual Sports Day', bn: 'বার্ষিক ক্রীড়া', when: '14 Dec 2025', whenBn: '১৪ ডিসে ২০২৫',
+    items: [{ v: 'Under-12 sack race', vBn: 'অনূর্ধ্ব-১২ বস্তা দৌড়', poster: 'race', dur: '1:12' }, { p: 'race' }, { p: 'runners' }] },
+].sort((a, b) => b.date.localeCompare(a.date));
 
 /** <img> with lazy loading, responsive srcset and Bengali alt support. */
 export function photo(key, { w = 1200, cls = '', eager = false, sizes = '100vw' } = {}) {

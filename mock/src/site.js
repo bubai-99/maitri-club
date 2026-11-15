@@ -1,9 +1,11 @@
 import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang } from './shared.js';
-import { PHOTOS, ALBUMS, photo, credit } from './photos.js';
+import { PHOTOS, ALBUMS, GALLERY, photo, credit } from './photos.js';
 import { notices } from './data.js';
+import { serversFor, memberRate } from './data.js';
 import { events, pastEvents, cateringPackages, plants, plantCats, committee, club } from './data.js';
 
 const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
 
 /* Seals */
 $('#logo-seal').innerHTML = seal({ size: 44, rotate: -6 });
@@ -49,51 +51,113 @@ function renderHomeExtras() {
 renderHomeExtras();
 document.addEventListener('langchange', renderHomeExtras);
 
-/* Gallery */
+/* Gallery: date-wise, photos and videos */
 let album = 'all';
+let mediaType = 'all';
+let gYear = 'all';
+const years = [...new Set(GALLERY.map((g) => g.date.slice(0, 4)))];
+const isVideo = (it) => !!it.v;
+const posterOf = (it) => (isVideo(it) ? it.poster : it.p);
 function renderGallery() {
-  const tabs = [{ key: 'all', en: 'All', bn: 'সব' }, ...ALBUMS];
-  const tabsEl = document.getElementById('album-tabs');
-  tabsEl.innerHTML = tabs.map((a) => `<button role="tab" data-album="${a.key}" aria-selected="${album === a.key}" class="chip h-9 px-4 text-[15px] border border-rule bg-card hover:border-ink aria-selected:bg-ink aria-selected:text-white aria-selected:border-ink">${t(a.en, a.bn)}</button>`).join('');
-  const items = ALBUMS.filter((a) => album === 'all' || a.key === album).flatMap((a) => a.photos.map((k) => ({ k, a })));
-  const grid = document.getElementById('gallery-grid');
-  grid.innerHTML = items.map(({ k, a }) => `
-    <figure class="break-inside-avoid">
-      <button type="button" data-zoom="${k}" class="block w-full border-2 border-ink overflow-hidden group" aria-label="Open photo: ${PHOTOS[k].alt}">
-        ${photo(k, { w: 900, cls: 'w-full h-auto block transition-transform duration-500 group-hover:scale-[1.03]', sizes: '(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw' })}
-      </button>
-      <figcaption class="mt-2 text-[14px] text-ink-2 flex gap-2"><span class="font-semibold text-ink">${t(a.en, a.bn)}</span><span class="ml-auto text-ink-3">${credit(k)}</span></figcaption>
-    </figure>`).join('');
-  applyLang(tabsEl); applyLang(grid);
+  const tabs = [{ key: 'all', en: 'All albums', bn: 'সব অ্যালবাম' }, ...ALBUMS];
+  const tabsEl = $('#album-tabs');
+  tabsEl.innerHTML = tabs.map((a) => `<button type="button" data-album="${a.key}" aria-pressed="${album === a.key}" class="chip h-9 px-4 text-[15px] whitespace-nowrap border border-rule bg-card hover:border-ink aria-pressed:bg-ink aria-pressed:text-white aria-pressed:border-ink">${t(a.en, a.bn)}</button>`).join('');
+  const types = [['all', 'All', 'সব', 'layout-grid'], ['photo', 'Photos', 'ছবি', 'image'], ['video', 'Videos', 'ভিডিও', 'play']];
+  $('#media-type').innerHTML = types.map(([k, en, bn, icon]) => `<button type="button" data-mt="${k}" aria-pressed="${mediaType === k}" class="h-8 px-3.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-ink-2 aria-pressed:bg-card aria-pressed:text-ink aria-pressed:shadow-[0_1px_2px_rgba(0,0,0,.08)]"><i data-lucide="${icon}" class="w-4 h-4"></i>${t(en, bn)}</button>`).join('');
+  $('#g-year').innerHTML = [['all', lang === 'bn' ? 'সব বছর' : 'All years'], ...years.map((y) => [y, lang === 'bn' ? y.replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[d]) : y])].map(([v, l]) => `<option value="${v}" ${gYear === v ? 'selected' : ''}>${l}</option>`).join('');
+
+  const groups = GALLERY
+    .filter((g) => (album === 'all' || g.album === album) && (gYear === 'all' || g.date.startsWith(gYear)))
+    .map((g) => ({ ...g, shown: g.items.filter((it) => mediaType === 'all' || (mediaType === 'video') === isVideo(it)) }))
+    .filter((g) => g.shown.length);
+  const flat = groups.flatMap((g) => g.shown.map((it) => ({ it, g })));
+  const nP = flat.filter((x) => !isVideo(x.it)).length, nV = flat.length - nP;
+  $('#g-summary').innerHTML = t(`${nP} photo${nP === 1 ? '' : 's'} · ${nV} video${nV === 1 ? '' : 's'} · ${groups.length} event${groups.length === 1 ? '' : 's'}`, `${nP}টি ছবি · ${nV}টি ভিডিও · ${groups.length}টি অনুষ্ঠান`);
+
+  let lastYear = '';
+  let idx = 0;
+  $('#gallery-grid').innerHTML = groups.length ? groups.map((g) => {
+    const y = g.date.slice(0, 4);
+    const yearHead = y !== lastYear ? `<h2 class="font-display text-[2.4rem] leading-none text-ink-3 num ${lastYear ? 'mt-16' : ''} mb-2">${dn(y)}</h2>` : '';
+    lastYear = y;
+    const a = ALBUMS.find((x) => x.key === g.album);
+    const pc = g.items.filter((it) => !isVideo(it)).length, vc = g.items.length - pc;
+    return `${yearHead}
+      <section class="pt-6 mt-6 border-t-2 border-ink first-of-type:mt-0" aria-label="${g.en}">
+        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-4">
+          <p class="text-sm font-semibold text-sindoor num">${t(g.when, g.whenBn)}</p>
+          <h3 class="font-display text-[1.6rem] leading-tight">${t(g.en, g.bn)}</h3>
+          <p class="text-sm text-ink-3 sm:ml-auto">${t(a.en, a.bn)} · ${t(`${pc} photo${pc === 1 ? '' : 's'}`, `${pc}টি ছবি`)}${vc ? ` · ${t(`${vc} video${vc === 1 ? '' : 's'}`, `${vc}টি ভিডিও`)}` : ''}</p>
+        </div>
+        <div class="columns-2 lg:columns-3 gap-4 [&>*]:mb-4">
+          ${g.shown.map((it) => {
+            const k = posterOf(it);
+            const i = idx++;
+            return `<figure class="break-inside-avoid">
+              <button type="button" data-zoom="${i}" class="relative block w-full border-2 border-ink overflow-hidden group bg-paper-2" aria-label="${isVideo(it) ? `Play video: ${it.v}` : `Open photo: ${PHOTOS[k].alt}`}">
+                ${photo(k, { w: 900, cls: `w-full h-auto block transition-transform duration-500 group-hover:scale-[1.03] ${isVideo(it) ? 'aspect-video object-cover' : ''}`, sizes: '(min-width: 1024px) 370px, 50vw' })}
+                ${isVideo(it) ? `<span class="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors"></span>
+                  <span class="absolute inset-0 grid place-items-center"><span class="w-14 h-14 rounded-full bg-white/95 text-ink grid place-items-center shadow-lg group-hover:scale-105 transition-transform"><i data-lucide="play" class="w-6 h-6 ml-0.5 fill-current"></i></span></span>
+                  <span class="absolute left-2 bottom-2 chip h-6 px-2 bg-black/70 text-white text-[12px]"><i data-lucide="video" class="!w-3.5 !h-3.5"></i><span class="num">${it.dur}</span></span>` : ''}
+              </button>
+              ${isVideo(it) ? `<figcaption class="mt-1.5 text-[14px] font-semibold leading-snug">${t(it.v, it.vBn)}</figcaption>` : ''}
+            </figure>`;
+          }).join('')}
+        </div>
+      </section>`;
+  }).join('') : `<div class="py-16 text-center text-ink-3">${t('Nothing here for this choice. Try another album or year.', 'এই বাছাইয়ে কিছু নেই। অন্য অ্যালবাম বা বছর দেখুন।')}</div>`;
+
+  applyLang(tabsEl); applyLang($('#media-type')); applyLang($('#g-summary')); applyLang($('#gallery-grid')); refreshIcons();
   tabsEl.querySelectorAll('[data-album]').forEach((b) => b.addEventListener('click', () => { album = b.dataset.album; renderGallery(); }));
-  grid.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => openLightbox(b.dataset.zoom, items.map((x) => x.k))));
+  $$('#media-type [data-mt]').forEach((b) => b.addEventListener('click', () => { mediaType = b.dataset.mt; renderGallery(); }));
+  $$('#gallery-grid [data-zoom]').forEach((b) => b.addEventListener('click', () => openLightbox(Number(b.dataset.zoom), flat)));
 }
-function openLightbox(key, keys) {
-  let i = keys.indexOf(key);
+$('#g-year').addEventListener('change', (e) => { gYear = e.target.value; renderGallery(); });
+
+function openLightbox(start, list) {
+  let i = start;
   const back = document.activeElement;
   const box = document.createElement('div');
   box.className = 'fixed inset-0 z-[80] bg-black/90 flex flex-col';
-  box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Photo viewer');
+  box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Gallery viewer');
   const draw = () => {
-    const k = keys[i];
+    const { it, g } = list[i];
+    const k = posterOf(it);
+    const caption = isVideo(it) ? t(it.v, it.vBn) : t(g.en, g.bn);
     box.innerHTML = `
-      <div class="flex items-center gap-3 px-4 h-14 text-white/85 text-sm"><span class="num">${i + 1} / ${keys.length}</span><span class="ml-2 truncate">${PHOTOS[k].alt}</span>
-        <button data-x class="ml-auto w-11 h-11 grid place-items-center rounded-full hover:bg-white/10" aria-label="Close"><i data-lucide="x"></i></button></div>
+      <div class="flex items-center gap-3 px-4 h-14 text-white/85 text-sm">
+        <span class="num shrink-0">${i + 1} / ${list.length}</span>
+        <span class="ml-2 truncate"><span class="font-semibold text-white">${caption}</span> · ${t(g.when, g.whenBn)}</span>
+        <button data-x class="ml-auto w-11 h-11 grid place-items-center rounded-full hover:bg-white/10 shrink-0" aria-label="Close"><i data-lucide="x"></i></button></div>
       <div class="flex-1 min-h-0 flex items-center justify-center gap-2 px-2 pb-4">
         <button data-p class="w-11 h-11 grid place-items-center rounded-full text-white hover:bg-white/10 shrink-0" aria-label="Previous"><i data-lucide="chevron-left"></i></button>
-        <img src="${PHOTOS[k].src(1800)}" alt="${PHOTOS[k].alt}" class="max-h-full max-w-full object-contain" />
+        ${isVideo(it) ? `
+        <div class="relative w-full max-w-4xl aspect-video bg-black overflow-hidden rounded" data-player>
+          <img src="${PHOTOS[k].src(1600)}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-70" />
+          <button data-play class="absolute inset-0 grid place-items-center group" aria-label="Play ${it.v}">
+            <span class="w-20 h-20 rounded-full bg-white text-ink grid place-items-center shadow-2xl group-hover:scale-105 transition-transform"><i data-lucide="play" class="w-9 h-9 ml-1 fill-current"></i></span></button>
+          <div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent flex items-center gap-3 text-white text-sm pointer-events-none">
+            <i data-lucide="play" class="w-4 h-4"></i><div class="flex-1 h-1 rounded-full bg-white/30"><div class="h-full w-0 bg-sindoor rounded-full"></div></div><span class="num">0:00 / ${it.dur}</span><i data-lucide="volume-2" class="w-4 h-4"></i><i data-lucide="maximize" class="w-4 h-4"></i></div>
+        </div>` : `<img src="${PHOTOS[k].src(1800)}" alt="${PHOTOS[k].alt}" class="max-h-full max-w-full object-contain" />`}
         <button data-n class="w-11 h-11 grid place-items-center rounded-full text-white hover:bg-white/10 shrink-0" aria-label="Next"><i data-lucide="chevron-right"></i></button>
       </div>
-      <p class="text-center text-white/70 text-[13px] pb-4">${credit(k)}</p>`;
-    refreshIcons();
+      <p class="text-center text-white/70 text-[13px] pb-4 px-4">${isVideo(it) ? t('Cover photo', 'প্রচ্ছদ') + ': ' : ''}${credit(k)}</p>`;
+    applyLang(box); refreshIcons();
+    box.querySelector('[data-play]')?.addEventListener('click', (e) => {
+      e.currentTarget.outerHTML = `<div class="absolute inset-0 grid place-items-center p-6 text-center bg-black/60"><div class="max-w-md text-white">
+        <i data-lucide="clapperboard" class="w-10 h-10 mx-auto text-marigold"></i>
+        <p class="mt-3 font-semibold text-lg">${t('The club’s video plays here', 'এখানে ক্লাবের ভিডিও চলবে')}</p>
+        <p class="mt-1 text-white/80 text-[15px]">${t('Prototype: no video file yet. The committee uploads a video or pastes a YouTube link, and it plays in this player.', 'প্রোটোটাইপ: এখনো ভিডিও নেই। কমিটি ভিডিও আপলোড করবে বা ইউটিউব লিঙ্ক দেবে, এখানেই চলবে।')}</p></div></div>`;
+      applyLang(box); refreshIcons();
+    });
     box.querySelector('[data-x]').focus();
   };
   const close = () => { box.remove(); document.removeEventListener('keydown', key2); back?.focus(); };
-  const key2 = (e) => { if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') { i = (i + 1) % keys.length; draw(); } if (e.key === 'ArrowLeft') { i = (i - 1 + keys.length) % keys.length; draw(); } };
+  const key2 = (e) => { if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') { i = (i + 1) % list.length; draw(); } if (e.key === 'ArrowLeft') { i = (i - 1 + list.length) % list.length; draw(); } };
   box.addEventListener('click', (e) => {
     if (e.target.closest('[data-x]') || e.target === box) return close();
-    if (e.target.closest('[data-n]')) { i = (i + 1) % keys.length; draw(); }
-    if (e.target.closest('[data-p]')) { i = (i - 1 + keys.length) % keys.length; draw(); }
+    if (e.target.closest('[data-n]')) { i = (i + 1) % list.length; draw(); }
+    if (e.target.closest('[data-p]')) { i = (i - 1 + list.length) % list.length; draw(); }
   });
   document.addEventListener('keydown', key2);
   document.body.append(box); draw();
@@ -146,11 +210,34 @@ const eventRow = (e) => `
       <p class="text-[15px] text-ink-2 mt-0.5">${t(e.place, e.placeBn)} · ${t(e.time, e.time)}</p>
     </div>
     <div class="flex items-center gap-2 sm:justify-end">
-      ${e.pass ? `<span class="chip bg-sindoor-wash text-sindoor-deep"><i data-lucide="ticket"></i>${t('Pass in app', 'অ্যাপে পাস')}</span>` : ''}
+      ${e.pass ? `<span class="chip bg-sindoor-wash text-sindoor-deep"><i data-lucide="ticket"></i>${t('Pass in app', 'অ্যাপে পাস')}</span>` : `<span class="chip bg-paper-2 text-ink-2"><i data-lucide="users"></i>${t('Open to all', 'সবার জন্য')}</span>`}
     </div>
   </li>`;
+const ics = (e) => {
+  const d = e.date.replace(/-/g, '');
+  const next = new Date(`${e.date}T00:00:00Z`); next.setUTCDate(next.getUTCDate() + 1);
+  const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Gede Maitree Club//EN', 'BEGIN:VEVENT', `UID:${e.id}@gedemaitreeclub`, `DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${next.toISOString().slice(0, 10).replace(/-/g, '')}`, `SUMMARY:${e.title} · Gede Maitree Club`, `LOCATION:${e.place}`, `DESCRIPTION:${e.time}`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  return `data:text/calendar;charset=utf-8,${encodeURIComponent(body)}`;
+};
+const fullRow = (e) => eventRow(e).replace('</li>', `<div class="col-start-2 sm:col-span-2 sm:col-start-2 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+    <a href="${ics(e)}" download="${e.id}.ics" class="font-semibold text-sindoor hover:underline inline-flex items-center gap-1.5"><i data-lucide="calendar-plus" class="w-4 h-4"></i>${t('Add to calendar', 'ক্যালেন্ডারে রাখুন')}</a>
+    ${e.pass ? `<a href="login.html" class="font-semibold text-ink-2 hover:underline inline-flex items-center gap-1.5"><i data-lucide="ticket" class="w-4 h-4"></i>${t('Get your pass', 'পাস নিন')}</a>` : ''}
+  </div></li>`);
+let evFilter = 'all';
+function renderEvents() {
+  const kinds = [['all', 'All', 'সব'], ...Object.entries(kindLabel).map(([k, [en, bn]]) => [k, en, bn])];
+  $('#event-filters').innerHTML = kinds.map(([k, en, bn]) => `<button type="button" data-ef="${k}" aria-pressed="${evFilter === k}" class="chip h-9 px-4 text-[15px] border border-rule bg-card hover:border-ink aria-pressed:bg-ink aria-pressed:text-white aria-pressed:border-ink">${t(en, bn)}</button>`).join('');
+  const list = events.filter((e) => evFilter === 'all' || e.kind === evFilter);
+  $('#all-events').innerHTML = list.length ? list.map(fullRow).join('') : `<li class="py-10 text-center text-ink-3">${t('Nothing of this kind coming up. Check back soon.', 'এই ধরনের কিছু আপাতত নেই।')}</li>`;
+  $$('#event-filters [data-ef]').forEach((b) => b.addEventListener('click', () => { evFilter = b.dataset.ef; renderEvents(); }));
+  applyLang($('#event-filters')); applyLang($('#all-events')); refreshIcons();
+}
 $('#home-events').innerHTML = events.slice(0, 4).map(eventRow).join('');
-$('#all-events').innerHTML = events.map(eventRow).join('');
+renderEvents();
+document.addEventListener('langchange', renderEvents);
+
+/* In-page jumps (hash is used by the router, so scroll by hand) */
+document.querySelectorAll('[data-jump]').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
 $('#past-events').innerHTML = pastEvents.map((p, i) => `
   <article>
     <div class="frame aspect-[16/9] bg-ink flex items-end p-5 isolate">
@@ -190,20 +277,20 @@ $('#packages').innerHTML = cateringPackages.map((p) => `
     ${p.popular ? `<span class="absolute -top-3.5 left-6 chip bg-sindoor text-white">${t('Most booked', 'সবচেয়ে জনপ্রিয়')}</span>` : ''}
     <h3 class="poster text-4xl">${t(p.name, p.nameBn)}</h3>
     <p class="text-[15px] text-ink-2 mt-1">${t(p.for, p.forBn)}</p>
-    <p class="mt-4 flex items-baseline gap-1.5"><span class="font-display text-4xl text-turmeric">${inr(p.rate)}</span><span class="text-sm text-ink-3">${t('per plate', 'প্রতি প্লেট')}</span></p>
+    <p class="mt-4 flex items-baseline gap-1.5"><span class="font-display text-4xl text-turmeric">${inr(p.rate)}</span><span class="text-sm text-ink-3">${t('per guest', 'অতিথি প্রতি')}</span></p>
     <ul class="mt-5 text-[15px] divide-y-2 divide-dotted divide-sindoor/70 border-y-2 border-dotted border-sindoor/70">
       ${p.menu.map((m, i) => `<li class="py-2">${t(m, p.menuBn[i])}</li>`).join('')}
     </ul>
-    <p class="mt-4 text-sm text-ink-3">${t(`Minimum ${p.min} plates`, `ন্যূনতম ${p.min} প্লেট`)}</p>
+    <p class="mt-4 text-sm text-ink-3">${t(`Minimum ${p.min} guests`, `ন্যূনতম ${String(p.min).replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[d])} জন অতিথি`)}</p>
   </article>`).join('');
-$('#pkg-select').innerHTML = cateringPackages.map((p) => `<option value="${p.id}" ${p.popular ? 'selected' : ''}>${p.name} · ₹${p.rate}</option>`).join('');
+$('#pkg-select').innerHTML = cateringPackages.map((p) => `<option value="${p.id}" ${p.popular ? 'selected' : ''}>${p.name} · ₹${p.rate} / guest</option>`).join('');
 
 function estimate() {
   const g = Number($('#guests').value) || 0;
   const p = cateringPackages.find((x) => x.id === $('#pkg-select').value);
-  const rate = p.rate - ($('#is-member').checked ? 20 : 0);
+  const rate = memberRate(p.rate, $('#is-member').checked);
   $('#estimate').innerHTML = inr(g * rate);
-  $('#estimate-note').innerHTML = `${dn(String(g))} × ${inr(rate)} · ${t('advance', 'অগ্রিম')} ${inr(Math.round(g * rate * 0.2))}`;
+  $('#estimate-note').innerHTML = `${dn(String(g))} × ${inr(rate)} · ${t(`${serversFor(g)} servers`, `${serversFor(g)} জন পরিবেশনকারী`)} · ${t('advance', 'অগ্রিম')} ${inr(Math.round(g * rate * 0.2))}`;
   applyLang($('#estimate-note'));
 }
 ['#guests', '#pkg-select', '#is-member'].forEach((s) => $(s).addEventListener('input', estimate));
@@ -224,8 +311,8 @@ const confirmPanel = (form, titleEn, titleBn, steps, resetLabel) => {
 $('#enquiry-form').addEventListener('submit', (e) => {
   e.preventDefault();
   confirmPanel(e.currentTarget, 'Enquiry received', 'জিজ্ঞাসা পেয়েছি', [
-    ['Your details are with Debashis Pal, catering in-charge.', 'আপনার তথ্য ক্যাটারিং দায়িত্বে থাকা দেবাশিস পালের কাছে।'],
-    ['He calls you within a day to settle the menu and final price.', 'এক দিনের মধ্যে ফোন করে মেনু ও দাম ঠিক করবেন।'],
+    ['Your details are with Debashis Pal, who runs the serving team.', 'আপনার তথ্য পরিবেশন দলের দায়িত্বে থাকা দেবাশিস পালের কাছে।'],
+    ['He calls you within a day to confirm the guests, timing and price.', 'এক দিনের মধ্যে ফোন করে অতিথি, সময় ও দাম ঠিক করবেন।'],
     ['A 20% advance books your date. You get a stamped receipt.', '২০% অগ্রিমে তারিখ বুক হবে। সিলমোহর দেওয়া রসিদ পাবেন।'],
   ], ['Send another enquiry', 'আরেকটি জিজ্ঞাসা']);
 });
@@ -245,8 +332,10 @@ function stockLabel(p) {
   return `<span class="text-[13px] font-semibold text-tulsi">${t('In stock', 'স্টকে আছে')}</span>`;
 }
 function renderPlants() {
-  const list = plants.filter((p) => cat === 'all' || p.cat === cat);
-  $('#plant-list').innerHTML = list.map((p) => {
+  const q0 = ($('#plant-q')?.value || '').trim().toLowerCase();
+  const list = plants.filter((p) => (cat === 'all' || p.cat === cat) && (!q0 || `${p.name} ${p.nameBn}`.toLowerCase().includes(q0)));
+  $('#plant-list').innerHTML = list.length ? '' : `<li class="sm:col-span-2 lg:col-span-3 py-10 text-center text-ink-3">${t('No plant matches. Ask at the gate; we may have it in the back.', 'কোনো গাছ মেলেনি। গেটে জিজ্ঞেস করুন, ভেতরে থাকতে পারে।')}</li>`;
+  if (list.length) $('#plant-list').innerHTML = list.map((p) => {
     const q = basket.get(p.id) || 0;
     return `
     <li class="flex items-center gap-4 py-4 border-b border-rule">
@@ -288,13 +377,33 @@ function renderBasket() {
 }
 
 /* Committee */
-$('#committee-list').innerHTML = committee.map((c) => `
-  <li class="grid grid-cols-[56px_1fr] sm:grid-cols-[56px_1fr_1fr_auto] gap-x-5 gap-y-0.5 py-4 border-b border-rule items-center">
-    <span class="row-span-2 sm:row-span-1 w-14 h-14 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-display text-xl">${(lang === 'bn' ? c.nameBn : c.name).slice(0, 1)}</span>
-    <p class="font-display text-xl leading-tight">${t(c.name, c.nameBn)}</p>
-    <p class="text-[15px] text-ink-2">${t(c.role, c.roleBn)}</p>
-    <p class="hidden sm:block text-sm text-ink-3">${t('since', 'থেকে')} ${dn(String(c.since))}</p>
-  </li>`).join('');
+const askAbout = {
+  President: ['Club direction, disputes, the AGM', 'ক্লাবের দিশা, বিবাদ, এজিএম'],
+  Secretary: ['Membership, meetings, notices, privacy', 'সদস্যপদ, সভা, নোটিস, গোপনীয়তা'],
+  Treasurer: ['Subscriptions, receipts, the accounts', 'চাঁদা, রসিদ, হিসাব'],
+  'Puja in-charge': ['Pujas, chanda, bhog passes', 'পূজা, চাঁদা, ভোগের পাস'],
+  'Catering in-charge': ['Catering quotes and bookings', 'ক্যাটারিং কোটেশন ও বুকিং'],
+  'Nursery in-charge': ['Plants, orders, stock', 'গাছ, অর্ডার, স্টক'],
+  'Sports secretary': ['Sports day, coaching, the ground', 'ক্রীড়া দিবস, প্রশিক্ষণ, মাঠ'],
+};
+function renderCommittee() {
+  $('#committee-list').innerHTML = committee.map((c) => {
+    const initials = (lang === 'bn' ? c.nameBn[0] : c.name.split(' ').map((w) => w[0]).join('').slice(0, 2));
+    const ask = askAbout[c.role] || ['', ''];
+    return `<li class="rounded-lg border border-rule p-5">
+      <div class="flex items-center gap-4">
+        <span class="w-14 h-14 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-display text-xl shrink-0" aria-hidden="true">${initials}</span>
+        <div class="min-w-0"><p class="font-display text-xl leading-tight">${t(c.name, c.nameBn)}</p><p class="text-[15px] text-sindoor font-semibold">${t(c.role, c.roleBn)}</p></div>
+      </div>
+      <p class="mt-4 text-[15px] text-ink-2"><span class="text-ink-3">${t('Ask about', 'যোগাযোগের বিষয়')}:</span> ${t(ask[0], ask[1])}</p>
+      <p class="mt-1 text-sm text-ink-3">${t('On the committee since', 'কমিটিতে')} ${dn(String(c.since))}${lang === 'bn' ? ' থেকে' : ''}</p>
+    </li>`;
+  }).join('');
+  applyLang($('#committee-list'));
+}
+renderCommittee();
+document.addEventListener('langchange', renderCommittee);
+$('#plant-q').addEventListener('input', () => renderPlants());
 
 /* Join */
 function depRow() {

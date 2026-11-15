@@ -87,35 +87,38 @@ export const committee = [
   { role: 'Sports secretary', roleBn: 'ক্রীড়া সম্পাদক', name: 'Arindam Dey', nameBn: 'অরিন্দম দে', since: 2025 },
 ];
 
+// Catering is a serving service only (poribeshon): the club does not cook. Rates are per guest and are placeholders.
 export const cateringPackages = [
   {
-    id: 'gharoa', name: 'Gharoa', nameBn: 'ঘরোয়া', rate: 280, min: 50,
-    for: 'Annaprashan, small pujas, shraddha', forBn: 'অন্নপ্রাশন, ছোট পূজা, শ্রাদ্ধ',
-    menu: ['Basanti pulao', 'Shukto', 'Moong dal with fish head', 'Aloo posto', 'Rui kalia', 'Chutney & papad', 'Rosogolla'],
-    menuBn: ['বাসন্তী পোলাও', 'শুক্তো', 'মুড়িঘণ্ট', 'আলু পোস্ত', 'রুই কালিয়া', 'চাটনি ও পাঁপড়', 'রসগোল্লা'],
+    id: 'team', name: 'Serving team', nameBn: 'পরিবেশন', rate: 35, min: 50,
+    for: 'You have the food and the plates', forBn: 'খাবার ও থালা আপনার',
+    menu: ['Serving team in club uniform', 'One server for every 15 guests', 'A team leader on site', 'Water and salad rounds', 'Clearing between batches'],
+    menuBn: ['ক্লাবের পোশাকে পরিবেশনকারী দল', 'প্রতি ১৫ জন অতিথিতে একজন', 'জায়গায় একজন দলনেতা', 'জল ও স্যালাড পরিবেশন', 'প্রতি ব্যাচের পর পরিষ্কার'],
   },
   {
-    id: 'utsab', name: 'Utsab', nameBn: 'উৎসব', rate: 420, min: 80, popular: true,
-    for: 'Weddings, birthdays, reunions', forBn: 'বিয়ে, জন্মদিন, পুনর্মিলন',
-    menu: ['Radhaballavi & cholar dal', 'Fish fry', 'Fried rice', 'Chingri malaikari', 'Kosha mangsho', 'Chutney & papad', 'Mishti doi & sandesh'],
-    menuBn: ['রাধাবল্লভী ও ছোলার ডাল', 'ফিশ ফ্রাই', 'ফ্রায়েড রাইস', 'চিংড়ি মালাইকারি', 'কষা মাংস', 'চাটনি ও পাঁপড়', 'মিষ্টি দই ও সন্দেশ'],
+    id: 'tableware', name: 'Team + tableware', nameBn: 'পরিবেশন ও থালা-গেলাস', rate: 60, min: 50, popular: true,
+    for: 'Annaprashan, pujas, birthdays', forBn: 'অন্নপ্রাশন, পূজা, জন্মদিন',
+    menu: ['Everything in Serving team', 'Banana-leaf or paper plates', 'Glasses and bowls', 'Water jugs on every table', 'Wash-up after the event'],
+    menuBn: ['পরিবেশনের সব কিছু', 'কলাপাতা বা কাগজের থালা', 'গেলাস ও বাটি', 'প্রতি টেবিলে জলের জগ', 'অনুষ্ঠানের পর ধোয়ামোছা'],
   },
   {
-    id: 'bhoj', name: 'Bhoj', nameBn: 'ভোজ', rate: 650, min: 100,
-    for: 'Weddings & receptions', forBn: 'বিয়ে ও বউভাত',
-    menu: ['Welcome drink & 2 starters', 'Luchi & aloor dom', 'Basanti pulao', 'Bhetki paturi', 'Golda chingri malaikari', 'Mutton biryani', 'Mishti doi, rosogolla, ice cream'],
-    menuBn: ['ওয়েলকাম ড্রিংক ও ২টি স্টার্টার', 'লুচি ও আলুর দম', 'বাসন্তী পোলাও', 'ভেটকি পাতুরি', 'গলদা চিংড়ি মালাইকারি', 'মাটন বিরিয়ানি', 'মিষ্টি দই, রসগোল্লা, আইসক্রিম'],
+    id: 'full', name: 'Full setup', nameBn: 'সম্পূর্ণ ব্যবস্থা', rate: 95, min: 80,
+    for: 'Weddings, receptions, large gatherings', forBn: 'বিয়ে, বউভাত, বড় অনুষ্ঠান',
+    menu: ['Everything in Team + tableware', 'Tables laid with covers', 'Buffet counters', 'Chafing dishes to keep food hot', 'Set up 2 hours before, packed away after'],
+    menuBn: ['পরিবেশন ও থালা-গেলাসের সব কিছু', 'ঢাকা দেওয়া টেবিল সাজানো', 'বুফে কাউন্টার', 'খাবার গরম রাখার চেফিং ডিশ', '২ ঘণ্টা আগে সাজানো, পরে গুছিয়ে নেওয়া'],
   },
 ];
+export const serversFor = (guests) => Math.max(2, Math.ceil(guests / 15));
+export const memberRate = (rate, member) => (member ? Math.round(rate * 0.9) : rate);
 
 export const cateringOrders = [
-  { id: 'CT-26-0041', customer: 'Sen family', customerBn: 'সেন পরিবার', member: true, occasion: 'Annaprashan', date: '22 Nov', guests: 70, pkg: 'gharoa', status: 'advance', amount: 19600, paid: 8000 },
-  { id: 'CT-26-0042', customer: 'Riya & Arka wedding', customerBn: 'রিয়া ও অর্কর বিয়ে', member: false, occasion: 'Wedding reception', date: '6 Dec', guests: 220, pkg: 'bhoj', status: 'quoted', amount: 143000, paid: 0 },
-  { id: 'CT-26-0043', customer: 'Lipika Paul', customerBn: 'লিপিকা পাল', member: true, occasion: '60th birthday', date: '29 Nov', guests: 45, pkg: 'gharoa', status: 'enquiry', amount: 12600, paid: 0 },
-  { id: 'CT-26-0039', customer: 'Bose Hardware', customerBn: 'বোস হার্ডওয়্যার', member: false, occasion: 'Staff lunch', date: '15 Nov', guests: 35, pkg: 'gharoa', status: 'done', amount: 9800, paid: 4000 },
-  { id: 'CT-26-0044', customer: 'Kar family', customerBn: 'কর পরিবার', member: true, occasion: 'Shraddha', date: '3 Dec', guests: 90, pkg: 'gharoa', status: 'advance', amount: 25200, paid: 10000 },
-  { id: 'CT-26-0045', customer: 'School alumni', customerBn: 'স্কুলের প্রাক্তনী', member: false, occasion: 'Reunion', date: '20 Dec', guests: 120, pkg: 'utsab', status: 'enquiry', amount: 50400, paid: 0 },
-  { id: 'CT-26-0036', customer: 'Dey family', customerBn: 'দে পরিবার', member: true, occasion: 'Wedding', date: '1 Nov', guests: 160, pkg: 'utsab', status: 'settled', amount: 67200, paid: 67200 },
+  { id: 'CT-26-0041', customer: 'Sen family', customerBn: 'সেন পরিবার', member: true, occasion: 'Annaprashan', date: '22 Nov', guests: 70, pkg: 'tableware', status: 'advance', amount: 3780, paid: 800 },
+  { id: 'CT-26-0042', customer: 'Riya & Arka wedding', customerBn: 'রিয়া ও অর্কর বিয়ে', member: false, occasion: 'Wedding reception', date: '6 Dec', guests: 220, pkg: 'full', status: 'quoted', amount: 20900, paid: 0 },
+  { id: 'CT-26-0043', customer: 'Lipika Paul', customerBn: 'লিপিকা পাল', member: true, occasion: '60th birthday', date: '29 Nov', guests: 45, pkg: 'team', status: 'enquiry', amount: 1440, paid: 0 },
+  { id: 'CT-26-0039', customer: 'Bose Hardware', customerBn: 'বোস হার্ডওয়্যার', member: false, occasion: 'Staff lunch', date: '15 Nov', guests: 35, pkg: 'team', status: 'done', amount: 1225, paid: 300 },
+  { id: 'CT-26-0044', customer: 'Kar family', customerBn: 'কর পরিবার', member: true, occasion: 'Shraddha', date: '3 Dec', guests: 90, pkg: 'tableware', status: 'advance', amount: 4860, paid: 1000 },
+  { id: 'CT-26-0045', customer: 'School alumni', customerBn: 'স্কুলের প্রাক্তনী', member: false, occasion: 'Reunion', date: '20 Dec', guests: 120, pkg: 'full', status: 'enquiry', amount: 11400, paid: 0 },
+  { id: 'CT-26-0036', customer: 'Dey family', customerBn: 'দে পরিবার', member: true, occasion: 'Wedding', date: '1 Nov', guests: 160, pkg: 'full', status: 'settled', amount: 13760, paid: 13760 },
 ];
 
 export const cateringStatus = {
@@ -156,7 +159,7 @@ export const memberDiscount = 0.1;
 export const ledger = [
   { date: '13 Nov', book: 'club', type: 'in', head: 'Subscription — MC-0110, 3 months', headBn: 'চাঁদা — MC-0110, ৩ মাস', amount: 300, by: 'Tapas M.', ref: 'MC-26-0412' },
   { date: '13 Nov', book: 'nursery', type: 'in', head: 'Counter sale — 6 items', headBn: 'কাউন্টার বিক্রি — ৬টি', amount: 830, by: 'Sutapa B.', ref: 'NS-26-0311' },
-  { date: '12 Nov', book: 'catering', type: 'out', head: 'Fish & prawn — Jagu Bazar', headBn: 'মাছ ও চিংড়ি — যদুবাজার', amount: 6420, by: 'Debashis P.', ref: 'Bill', bill: true },
+  { date: '12 Nov', book: 'catering', type: 'out', head: 'Paper plates & glasses — wholesale', headBn: 'কাগজের থালা ও গেলাস — পাইকারি', amount: 6420, by: 'Debashis P.', ref: 'Bill', bill: true },
   { date: '12 Nov', book: 'club', type: 'out', head: 'Electricity — CESC, Oct', headBn: 'বিদ্যুৎ — সিইএসসি, অক্টো', amount: 1870, by: 'Tapas M.', ref: 'Bill', bill: true },
   { date: '11 Nov', book: 'catering', type: 'in', head: 'Advance — CT-26-0044 Kar family', headBn: 'অগ্রিম — CT-26-0044 কর পরিবার', amount: 10000, by: 'Debashis P.', ref: 'CT-26-0044' },
   { date: '10 Nov', book: 'nursery', type: 'out', head: 'Saplings — Galiff Street wholesale', headBn: 'চারাগাছ — গ্যালিফ স্ট্রিট', amount: 3250, by: 'Sutapa B.', ref: 'Bill', bill: true },
@@ -164,7 +167,7 @@ export const ledger = [
   { date: '09 Nov', book: 'club', type: 'out', head: 'Kali Puja — decorator balance', headBn: 'কালীপূজা — ডেকোরেটর বাকি', amount: 8000, by: 'Kakoli S.', ref: 'Bill', bill: true },
   { date: '08 Nov', book: 'nursery', type: 'in', head: 'Counter sale — 11 items', headBn: 'কাউন্টার বিক্রি — ১১টি', amount: 1460, by: 'Sutapa B.', ref: 'NS-26-0302' },
   { date: '07 Nov', book: 'catering', type: 'in', head: 'Final bill — CT-26-0036 Dey family', headBn: 'চূড়ান্ত বিল — CT-26-0036 দে পরিবার', amount: 37200, by: 'Debashis P.', ref: 'CT-26-0036' },
-  { date: '07 Nov', book: 'catering', type: 'out', head: 'Cook & helpers wages', headBn: 'রাঁধুনি ও জোগাড়ের মজুরি', amount: 9600, by: 'Debashis P.', ref: 'Voucher' },
+  { date: '07 Nov', book: 'catering', type: 'out', head: 'Serving team wages', headBn: 'পরিবেশনকারীদের মজুরি', amount: 9600, by: 'Debashis P.', ref: 'Voucher' },
   { date: '05 Nov', book: 'club', type: 'in', head: 'Kali Puja chanda — Lane 2', headBn: 'কালীপূজা চাঁদা — ২ নং গলি', amount: 7350, by: 'Bapi H.', ref: 'Book 4' },
 ];
 

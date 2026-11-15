@@ -125,6 +125,10 @@
 
   .paper-card { @apply bg-card rounded-lg border border-rule; }
 
+  /* Small label above an inner-page title */
+  .eyebrow { @apply text-[13px] font-semibold uppercase tracking-[0.12em]; }
+  .page-hero { @apply border-b border-rule; }
+
   /* Poster type: tight stacked capitals. Bengali is never uppercased, so the rule is harmless there. */
   .poster { @apply font-display; line-height: 1; letter-spacing: -0.015em; }
 

@@ -83,7 +83,7 @@ export function cardBack(p) {
       <div class="idc-qr" data-qr="${p.token}"></div>
       <div class="idc-terms">
         <p class="idc-terms-h">${t('Show this card at the gate', 'গেটে এই কার্ড দেখান')}</p>
-        <p>${t('For club events and member prices at the nursery and kitchen. Not transferable.', 'ক্লাবের অনুষ্ঠান এবং নার্সারি ও রান্নাঘরে সদস্য মূল্যের জন্য। হস্তান্তরযোগ্য নয়।')}</p>
+        <p>${t('For club events and member prices at the nursery and on catering. Not transferable.', 'ক্লাবের অনুষ্ঠান এবং নার্সারি ও পরিবেশনে সদস্য মূল্যের জন্য। হস্তান্তরযোগ্য নয়।')}</p>
         <p class="idc-found">${t('If found, please return to', 'কুড়িয়ে পেলে ফেরত দিন')}: 14/2 Netaji Subhas Road, Kolkata 700 084 · +91 98300 12345</p>
         <div class="idc-sign"><span class="idc-signature">R. Banerjee</span><span class="idc-sign-l">${t('Secretary', 'সম্পাদক')}</span></div>
       </div>
