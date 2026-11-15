@@ -249,7 +249,7 @@ function applicationsScreen(param) {
   const plan = (p) => (p === 'yearly' ? t('₹1,100 / year', '₹১,১০০ / বছর') : t('₹100 / month', '₹১০০ / মাস'));
   paint(screen('applications'), `
     ${pageHead('Membership applications', 'সদস্যপদের আবেদন', t('From the website Join form and the club counter. The committee approves at the next meeting.', 'ওয়েবসাইটের ফর্ম ও ক্লাব কাউন্টার থেকে। কমিটি পরের সভায় অনুমোদন করে।'), `
-      <button class="btn btn-ink btn-sm" data-act="app-new"><i data-lucide="plus"></i>${t('Add at the counter', 'কাউন্টারে আবেদন')}</button>`)}
+      <button class="btn btn-ink btn-sm" data-act="member-entry"><i data-lucide="file-pen-line"></i>${t('Enter a paper form', 'কাগজের ফর্ম তুলুন')}</button>`)}
     <div class="grid xl:grid-cols-12 gap-6 items-start">
       <div class="xl:col-span-5 space-y-3">
         ${open.length ? open.map((x) => `
@@ -355,7 +355,7 @@ function members() {
   paint(screen('members'), `
     ${pageHead('Families', 'পরিবার', t('286 families · 1,041 people · showing a sample of 24', '২৮৬টি পরিবার · ১,০৪১ জন · নমুনা ২৪টি'), `
       <button class="btn btn-line btn-sm" data-act="import"><i data-lucide="upload"></i>${t('Import from Excel', 'এক্সেল থেকে')}</button>
-      <button class="btn btn-ink btn-sm" data-act="family"><i data-lucide="user-plus"></i>${t('Add family', 'পরিবার যোগ')}</button>`)}
+      <button class="btn btn-ink btn-sm" data-act="member-entry"><i data-lucide="user-plus"></i>${t('Member entry', 'সদস্য এন্ট্রি')}</button>`)}
     <div class="flex flex-wrap items-center gap-2 mb-4">
       ${['all', 'paid', 'due', 'lapsed'].map((k) => `<button data-mf="${k}" aria-pressed="${memFilter === k}" class="chip h-9 px-3.5 text-sm border border-rule bg-card aria-pressed:bg-ink aria-pressed:text-paper aria-pressed:border-ink">${t({ all: 'All', paid: 'Paid up', due: 'Due', lapsed: 'Lapsed 6+ months' }[k], { all: 'সব', paid: 'পরিশোধিত', due: 'বকেয়া', lapsed: '৬+ মাস বকেয়া' }[k])} <span class="opacity-70 num">${dn(String(counts[k]))}</span></button>`).join('')}
       <input id="mem-q" value="${memQuery}" class="field h-9 w-full sm:w-64 sm:ml-auto text-sm" data-bn-ph="নাম, নম্বর বা ফোন" placeholder="Name, number or phone" />
@@ -468,7 +468,7 @@ function collect(param) {
         <div class="relative bg-card border border-rule rounded-lg p-6 shadow-[0_1px_2px_rgba(29,33,64,.05),0_16px_32px_-20px_rgba(29,33,64,.35)]">
           <div class="flex items-center gap-3 border-b border-ink/20 pb-3">
             <span>${seal({ size: 48, rotate: -4 })}</span>
-            <div class="leading-tight"><p class="font-display text-xl text-sindoor">${t('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব')}</p><p class="text-[11px] tracking-[0.14em] font-semibold text-ink-3">NETAJI PARA · ESTD 1972</p></div>
+            <div class="leading-tight"><p class="font-display text-xl text-sindoor">${t('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব')}</p><p class="text-[11px] tracking-[0.14em] font-semibold text-ink-3">NETAJI PARA · ESTD 2014 · REG. S-0027153</p></div>
             <p class="ml-auto text-right text-sm"><span class="block text-ink-3">${t('Receipt', 'রসিদ')}</span><span class="font-semibold num">${col.receipt || t('next no.', 'পরের নং')}</span></p>
           </div>
           <p class="mt-4 text-[15px] leading-relaxed">${t('Received with thanks from', 'ধন্যবাদের সঙ্গে গৃহীত')} <strong>${t(f.head, f.headBn)}</strong> (${f.no}) ${t('the sum of', 'মোট')} <strong>${inr(amount)}</strong> ${t(`towards subscription for ${col.months} month${col.months > 1 ? 's' : ''}, by`, `${col.months} মাসের চাঁদা বাবদ,`)} ${col.mode === 'cash' ? t('cash', 'নগদে') : 'UPI'}.</p>
@@ -958,7 +958,7 @@ function settings(param) {
       <label class="block"><span class="label">${t('Club name (English)', 'ক্লাবের নাম (ইংরেজি)')}</span><input class="field" value="Gede Maitree Club" /></label>
       <label class="block"><span class="label">${t('Club name (Bengali)', 'ক্লাবের নাম (বাংলা)')}</span><input class="field" value="গেদে মৈত্রী ক্লাব" lang="bn" /></label>
       <label class="block"><span class="label">${t('Locality', 'এলাকা')}</span><input class="field" value="Netaji Para" /></label>
-      <label class="block"><span class="label">${t('Founded', 'প্রতিষ্ঠা')}</span><input class="field num" value="1972" inputmode="numeric" /></label>
+      <label class="block"><span class="label">${t('Founded', 'প্রতিষ্ঠা')}</span><input class="field num" value="2014" inputmode="numeric" /></label>
       <label class="block sm:col-span-2"><span class="label">${t('Address', 'ঠিকানা')}</span><input class="field" value="14/2 Netaji Subhas Road, Kolkata 700 084" /></label>
       <label class="block"><span class="label">${t('Club UPI ID', 'ক্লাবের UPI আইডি')}</span><input class="field num" value="maitriclub@sbi" /></label>
       <label class="block"><span class="label">${t('WhatsApp number', 'হোয়াটসঅ্যাপ নম্বর')}</span><input class="field num" value="+91 98300 12345" /></label>
@@ -1155,7 +1155,7 @@ function formDrawer(titleEn, titleBn, body, submitEn, submitBn, doneEn, doneBn, 
       <div class="grid grid-cols-2 gap-2 pt-2"><button type="button" data-close class="btn btn-line">${t('Cancel', 'বাতিল')}</button>
         <button class="btn ${danger ? 'btn-ink' : 'btn-primary'}">${t(submitEn, submitBn)}</button></div>
     </form>`);
-  $('[data-drawer-form]').addEventListener('submit', (e) => { e.preventDefault(); closeDrawer(); onDone?.(e.target); toast(`<i data-lucide="check-circle-2"></i>${t(doneEn, doneBn)}`); });
+  $('[data-drawer-form]').addEventListener('submit', (e) => { e.preventDefault(); closeDrawer(); onDone?.(e.target); if (doneEn) toast(`<i data-lucide="check-circle-2"></i>${t(doneEn, doneBn)}`); });
 }
 const rerender = () => SCREENS[current]?.(currentParam);
 const proto = (en, bn) => toast(`<i data-lucide="info"></i>${t(`${en} (Prototype: nothing is printed or downloaded.)`, `${bn} (প্রোটোটাইপ: কিছু প্রিন্ট বা ডাউনলোড হয় না।)`)}`);
@@ -1376,14 +1376,57 @@ const ACTIONS = {
   'close-regs'() { closeDrawer(); toast(`<i data-lucide="lock"></i>${t('Registrations closed. The app shows “Registration closed”.', 'নাম নেওয়া বন্ধ। অ্যাপে “নাম নেওয়া বন্ধ” দেখাবে।')}`); },
 
   /* Applications */
-  'app-new'() {
-    formDrawer('Application at the counter', 'কাউন্টারে আবেদন', `
-      ${fld('Head of family', 'পরিবারের প্রধান', inp('required'))}
-      <div class="grid grid-cols-2 gap-3">${fld('Mobile', 'মোবাইল', inp('class="field num" type="tel" required'))}${fld('Lane', 'গলি', sel(LANES))}</div>
-      ${fld('Address', 'ঠিকানা', inp())}
-      ${fld('Other family members (one per line)', 'অন্য সদস্য (প্রতি লাইনে একজন)', '<textarea class="field" rows="3" placeholder="Name, relation"></textarea>')}
-      ${fld('Plan', 'প্ল্যান', sel(['₹100 / month', '₹1,100 / year']))}`,
-      'Add application', 'আবেদন যোগ', 'Application added. It goes to the next committee meeting.', 'আবেদন যোগ হয়েছে। পরের সভায় উঠবে।');
+  'app-new'() { ACTIONS['member-entry'](); },
+  /* Member entry: type in a paper membership form, field for field */
+  'member-entry'() {
+    const no = `MC-${String(nextFamNo).padStart(4, '0')}`;
+    const sec = (en, bn) => `<p class="pt-3 text-[13px] font-semibold uppercase tracking-[0.1em] text-ink-3">${t(en, bn)}</p>`;
+    const BLOOD = [t('Choose', 'বেছে নিন'), 'A+', 'A−', 'B+', 'B−', 'AB+', 'AB−', 'O+', 'O−', t('Not known', 'জানা নেই')];
+    formDrawer('Member entry', 'সদস্য এন্ট্রি', `
+      <p class="text-sm text-ink-2 -mt-2">${t('Copy a paper membership form into the register. The fields follow the paper form, top to bottom.', 'কাগজের সদস্য ফর্ম খাতায় তুলুন। ঘরগুলো কাগজের ফর্মের ক্রমেই।')}</p>
+      <div>${radioRow('entry', [['Secretary signed', 'সম্পাদক সই করেছেন'], ['For the next meeting', 'পরের সভায় উঠবে']])}
+        <p class="mt-1.5 text-[13px] text-ink-3">${t(`Signed forms become member ${no} now. Unsigned ones go to Applications.`, `সই করা ফর্ম এখনই সদস্য ${no} হবে। সই ছাড়া ফর্ম আবেদনে যাবে।`)}</p></div>
+      ${sec('Personal information', 'ব্যক্তিগত তথ্য')}
+      <div class="flex gap-4 items-start">
+        <label class="shrink-0 w-24 h-28 rounded-[4px] border-2 border-dashed border-rule grid place-items-center text-center cursor-pointer hover:border-ink/40 overflow-hidden relative">
+          <input type="file" accept="image/*" class="sr-only" data-member-photo />
+          <span class="text-[12px] text-ink-2 px-2"><i data-lucide="camera" class="w-6 h-6 mx-auto mb-1 text-ink-3"></i>${t('Photo', 'ছবি')}</span>
+          <img alt="" class="hidden absolute inset-0 w-full h-full object-cover" /></label>
+        <div class="flex-1 space-y-4">
+          ${fld('Full name', 'পুরো নাম', inp('required autocomplete="off"'))}
+          ${fld('Name in Bengali', 'বাংলায় নাম', inp('lang="bn"'))}
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">${fld('Date of birth', 'জন্মতারিখ', inp('class="field num" type="date" required max="2026-11-15"'))}${fld('Blood group', 'রক্তের গ্রুপ', sel(BLOOD))}</div>
+      ${fld('Address', 'ঠিকানা', '<textarea class="field" rows="2" required></textarea>')}
+      <div class="grid grid-cols-2 gap-3">${fld('Lane', 'গলি', sel(LANES))}${fld('Aadhaar, last 4 digits', 'আধারের শেষ ৪ সংখ্যা', inp('class="field num tracking-[0.3em]" inputmode="numeric" data-digits="4" placeholder="1234"'))}</div>
+      <p class="-mt-2 text-[13px] text-ink-3">${t('If the paper form has the full Aadhaar number, enter only the last 4 and keep the paper in the club file.', 'কাগজে পুরো আধার নম্বর থাকলে শুধু শেষ ৪টি লিখুন, কাগজটি ক্লাবের ফাইলে রাখুন।')}</p>
+      <div class="grid grid-cols-2 gap-3">${fld('Phone', 'ফোন', inp('class="field num" type="tel" inputmode="tel" required'))}${fld('Email', 'ইমেল', inp('type="email"'))}</div>
+      ${sec('Family on the same form', 'একই ফর্মে পরিবার')}
+      ${fld('One per line: name, relation, blood group', 'প্রতি লাইনে একজন: নাম, সম্পর্ক, রক্তের গ্রুপ', '<textarea class="field" rows="2" placeholder="Rina Das, wife, B+"></textarea>')}
+      ${sec('Declaration and fees', 'ঘোষণা ও ফি')}
+      <label class="flex items-start gap-3 text-[15px]"><input type="checkbox" class="mt-1 w-4 h-4 accent-[#d21f1b]" required />${t('The member has signed the self declaration', 'সদস্য স্ব-ঘোষণায় সই করেছেন')}</label>
+      <div class="grid grid-cols-2 gap-3">${fld('Date on the form', 'ফর্মের তারিখ', inp('class="field num" type="date" value="2026-11-15"'))}${fld('Plan', 'প্ল্যান', sel(['₹100 / month', '₹1,100 / year']))}</div>
+      <div><p class="label">${t(`Admission fee ${inr(club.admissionFee)}`, `ভর্তি ফি ${inr(club.admissionFee)}`)}</p>${radioRow('adm', [['Paid cash', 'নগদ'], ['Paid UPI', 'ইউপিআই'], ['Not yet', 'এখনও না']])}</div>
+      <label class="flex items-center gap-3 text-[15px] cursor-pointer"><input type="file" accept="image/*,.pdf" class="sr-only" data-photo-input /><span class="btn btn-line btn-sm"><i data-lucide="paperclip"></i>${t('Attach the scanned form', 'স্ক্যান করা ফর্ম যুক্ত করুন')}</span><span class="text-sm text-ink-3 truncate" data-photo-name>${t('Optional', 'ঐচ্ছিক')}</span></label>`,
+      'Save entry', 'এন্ট্রি সেভ', '', '',
+      { onDone: (form) => {
+        const name = form.querySelector('input:not([type])').value.trim() || t('New member', 'নতুন সদস্য');
+        const signed = form.querySelector('input[name="entry"]:checked').value === '0';
+        if (signed) {
+          approved.unshift({ head: name, headBn: name, no, on: '15 Nov' }); nextFamNo++;
+          toast(`<i data-lucide="check-circle-2"></i>${t(`${name} is now member ${no}. Their ID card is in “To print”.`, `${name} এখন সদস্য ${no}। আইডি কার্ড “প্রিন্ট বাকি”-তে।`)}`);
+        } else {
+          const ta = form.querySelectorAll('textarea');
+          const laneV = form.querySelectorAll('select')[1].value;
+          const people = ta[1].value.split('\n').filter((l) => l.trim()).map((l) => { const [n, ...r] = l.split(','); return [n.trim(), r.join(',').trim()]; });
+          const id = `AP-26-0${applications.length + 17}`;
+          applications.unshift({ id, head: name, headBn: name, phone: form.querySelector('input[type=tel]').value.replace(/\D/g, ''), lane: laneV, laneBn: laneV, address: ta[0].value, people, plan: 'monthly', applied: '15 Nov', via: 'Paper form', status: 'new', note: '' });
+          selApp = id;
+          toast(`<i data-lucide="check-circle-2"></i>${t('Saved to Applications for the next meeting.', 'আবেদনে সেভ হয়েছে, পরের সভায় উঠবে।')}`);
+        }
+        rerender();
+      } });
   },
   'app-approve'(b) {
     const a = applications.find((x) => x.id === b.dataset.id);
@@ -1779,6 +1822,11 @@ document.addEventListener('change', (e) => {
   if (r) toast(`<i data-lucide="shield-check"></i>${t(`${r.dataset.roleFor} is now ${r.value}. They see the new menus at their next sign-in.`, `${r.dataset.roleFor} এখন ${r.value}। পরের লগইনে নতুন মেনু দেখবেন।`)}`);
   const ph = e.target.closest('[data-photo-input]');
   if (ph && ph.files[0]) ph.parentElement.querySelector('[data-photo-name]').textContent = ph.files[0].name;
+  const mp = e.target.closest('[data-member-photo]');
+  if (mp && mp.files[0]) { const img = mp.parentElement.querySelector('img'); img.src = URL.createObjectURL(mp.files[0]); img.classList.remove('hidden'); }
+});
+document.addEventListener('input', (e) => {
+  if (e.target.matches('[data-digits]')) e.target.value = e.target.value.replace(/\D/g, '').slice(0, +e.target.dataset.digits);
 });
 
 const SCREENS = { dashboard, applications: applicationsScreen, gallery: galleryScreen, members, collect, dues, khata, chanda: chandaScreen, catering, nursery, meetings, events: eventsScreen, reports, settings, profile, cards: cardsScreen };

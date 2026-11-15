@@ -15,7 +15,9 @@ _Status: Draft v1, 13 Nov 2026. Open items are marked **TBD**._
 | **Businesses run by the club** | **Catering**: a serving service only (poribeshon), the club does not cook and a **Nursery** (plant sales) |
 | **Language** | English + Bengali, switchable |
 | **Brand assets** | None yet. Identity is designed from scratch |
-| **Locality / Estd. year** | **TBD** (placeholder: Netaji Para, Estd. 1972) |
+| **Established** | 2014 |
+| **Registration** | Reg. No. S-0027153 / 2022-23 |
+| **Locality** | **TBD** (placeholder: Netaji Para) |
 
 ---
 

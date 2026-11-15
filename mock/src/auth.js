@@ -172,7 +172,7 @@ S.setpass = () => `
 /* Member: apply to join (3 steps) */
 const stepper = (n) => `
   <ol class="flex items-center gap-2 text-[13px] font-semibold mb-6" aria-label="Progress">
-    ${[['Family', 'পরিবার'], ['Members', 'সদস্য'], ['Verify', 'যাচাই']].map(([en, bn], i) => `
+    ${[['You', 'আপনি'], ['Family', 'পরিবার'], ['Verify', 'যাচাই']].map(([en, bn], i) => `
       <li class="flex items-center gap-2 ${i + 1 === n ? 'text-ink' : 'text-ink-3'}" ${i + 1 === n ? 'aria-current="step"' : ''}>
         <span class="w-6 h-6 rounded-full grid place-items-center num ${i + 1 < n ? 'bg-ink text-white' : i + 1 === n ? 'border-2 border-ink' : 'border-2 border-rule'}">${i + 1 < n ? '<i data-lucide="check" class="w-3.5 h-3.5"></i>' : i + 1}</span>${t(en, bn)}
       </li>${i < 2 ? '<span class="flex-1 h-px bg-rule"></span>' : ''}`).join('')}
@@ -181,19 +181,21 @@ const stepper = (n) => `
 S.register = () => state.regStep === 1 ? `
   ${back('#login')}
   ${stepper(1)}
-  ${head('Apply to join', 'সদস্য হতে আবেদন', 'Membership is by family: ₹100 a month, ₹500 admission once.', 'সদস্যপদ পরিবার ভিত্তিক: মাসে ₹১০০, ভর্তি ফি একবার ₹৫০০।')}
+  ${head('Apply to join', 'সদস্য হতে আবেদন', '₹100 a month for your household, ₹500 admission once.', 'বাড়ি পিছু মাসে ₹১০০, ভর্তি ফি একবার ₹৫০০।')}
   <form class="mt-8 space-y-5" id="f" novalidate>
-    <div><label class="block" for="name"><span class="label">${t('Head of family', 'পরিবারের প্রধান')}</span></label><input id="name" class="field" autocomplete="name" aria-describedby="name-err" />${err('name-err')}</div>
+    <div><label class="block" for="name"><span class="label">${t('Full name', 'পুরো নাম')}</span></label><input id="name" class="field" autocomplete="name" aria-describedby="name-err" />${err('name-err')}</div>
     <div>${phoneField()}</div>
     <div><label class="block" for="lane"><span class="label">${t('Lane / area', 'গলি / এলাকা')}</span></label>
       <select id="lane" class="field"><option data-bn="১ নং গলি">Lane 1</option><option data-bn="২ নং গলি">Lane 2</option><option data-bn="৩ নং গলি">Lane 3</option><option data-bn="পুকুর পাড়">Pukur Par</option><option data-bn="স্কুল রোড">School Road</option></select></div>
+    <div class="grid grid-cols-2 gap-3"><div><label class="block" for="dob"><span class="label">${t('Date of birth', 'জন্মতারিখ')}</span></label><input id="dob" type="date" class="field num" autocomplete="bday" max="2026-11-15" /></div><div><label class="block" for="blood"><span class="label">${t('Blood group', 'রক্তের গ্রুপ')}</span></label><select id="blood" class="field"><option value="">${t('Choose', 'বেছে নিন')}</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option><option>O+</option><option>O−</option></select></div></div>
     <div><label class="block" for="addr"><span class="label">${t('House address', 'বাড়ির ঠিকানা')}</span></label><input id="addr" class="field" autocomplete="street-address" /></div>
-    ${primary('Next: family members', 'পরের ধাপ: পরিবারের সদস্য')}
+    <div><label class="block" for="aad"><span class="label">${t('Aadhaar, last 4 digits', 'আধারের শেষ ৪ সংখ্যা')}</span></label><input id="aad" class="field num tracking-[0.3em]" inputmode="numeric" maxlength="4" placeholder="1234" /><p class="mt-1 text-[13px] text-ink-3">${t('We don’t store the full number.', 'পুরো নম্বর আমরা রাখি না।')}</p></div>
+    ${primary('Next: family and declaration', 'পরের ধাপ: পরিবার ও ঘোষণা')}
   </form>`
 : state.regStep === 2 ? `
   <button type="button" id="reg-back" class="inline-flex items-center gap-1 text-sm font-semibold text-ink-2 hover:text-ink -ml-1 mb-6"><i data-lucide="chevron-left" class="w-4 h-4"></i>${t('Back', 'ফিরে যান')}</button>
   ${stepper(2)}
-  ${head('Who lives with you?', 'কারা একসঙ্গে থাকেন?', 'Everyone listed gets entry to club events on your family pass.', 'তালিকার সবাই পরিবারের পাসে অনুষ্ঠানে ঢুকতে পারবেন।')}
+  ${head('Family joining with you', 'আপনার সঙ্গে পরিবার', 'Optional. People at the same address can join on your form, and each gets their own ID card.', 'ঐচ্ছিক। একই ঠিকানার লোকেরা আপনার ফর্মে যোগ দিতে পারেন, প্রত্যেকে নিজের আইডি কার্ড পাবেন।')}
   <form class="mt-8 space-y-5" id="f" novalidate>
     <div id="deps" class="space-y-2"></div>
     <button type="button" id="add-dep" class="btn btn-ghost btn-sm -ml-2 text-sindoor"><i data-lucide="plus"></i>${t('Add someone', 'আরও একজন')}</button>
@@ -202,6 +204,7 @@ S.register = () => state.regStep === 1 ? `
         <label class="rounded-[7px] border-2 border-rule p-3 cursor-pointer has-[:checked]:border-ink"><input type="radio" name="plan" class="sr-only" checked /><span class="block font-semibold">₹100 ${t('/ month', '/ মাস')}</span><span class="text-sm text-ink-2">${t('Cash or UPI', 'নগদ বা ইউপিআই')}</span></label>
         <label class="rounded-[7px] border-2 border-rule p-3 cursor-pointer has-[:checked]:border-ink"><input type="radio" name="plan" class="sr-only" /><span class="block font-semibold">₹1,100 ${t('/ year', '/ বছর')}</span><span class="text-sm text-ink-2">${t('One month free', 'এক মাস বিনামূল্যে')}</span></label>
       </div></fieldset>
+    <label class="flex items-start gap-3 rounded-lg bg-paper-2 p-4 text-[15px] leading-relaxed cursor-pointer"><input type="checkbox" required class="mt-1.5 w-4 h-4 shrink-0 accent-[#d21f1b]" /><span>${t('I want to join Gede Maitree Club of my own free will. I will abide by all the rules and collective decisions of the club. Any anti-social activity on my part will end my membership.', 'আমি স্বেচ্ছায় গেদে মৈত্রী ক্লাবে যোগ দিতে চাই। ক্লাবের সব নিয়ম ও সম্মিলিত সিদ্ধান্ত মেনে চলব। আমার কোনো সমাজবিরোধী কাজে সদস্যপদ বাতিল হবে।')}</span></label>
     ${primary('Next: verify your number', 'পরের ধাপ: নম্বর যাচাই')}
   </form>` : '';
 
@@ -288,7 +291,7 @@ function wire(name) {
       d.querySelector('button').addEventListener('click', () => d.remove());
       $('#deps').append(d); applyLang(d); refreshIcons();
     };
-    dep('', 'Spouse'); dep('', 'Son');
+    dep('', 'Spouse');
     $('#reg-back').addEventListener('click', () => { state.regStep = 1; render('register'); });
     $('#add-dep').addEventListener('click', () => dep('', 'Other'));
   }

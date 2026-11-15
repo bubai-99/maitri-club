@@ -5,7 +5,8 @@ export const club = {
   nameBn: 'গেদে মৈত্রী ক্লাব',
   para: 'Netaji Para',
   paraBn: 'নেতাজি পাড়া',
-  estd: 1972,
+  estd: 2014,
+  regNo: 'S-0027153 / 2022-23',
   address: '14/2 Netaji Subhas Road, Netaji Para, Kolkata 700 084',
   addressBn: '১৪/২ নেতাজি সুভাষ রোড, নেতাজি পাড়া, কলকাতা ৭০০ ০৮৪',
   phone: '+91 98300 12345',
@@ -53,7 +54,7 @@ export const families = heads.map(([en, bn], i) => ({
   size: sizes[i],
   dueMonths: dueMonths[i],
   due: dueMonths[i] * club.monthlyFee,
-  since: 1982 + ((i * 7) % 42),
+  since: 2014 + ((i * 5) % 13),
   status: dueMonths[i] === 0 ? 'paid' : dueMonths[i] >= 6 ? 'lapsed' : 'due',
 }));
 

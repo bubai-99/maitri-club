@@ -25,7 +25,7 @@ The dark bar at the top switches between surfaces and between English and বা
 - `src/photos.js`: free Unsplash photos (hotlinked, credited); swap for the club's own photos using the same keys
 - `src/auth.js`: sign-in, OTP, register, reset password flows for both portals
 - `src/shared.js`: language toggle, seal SVG, QR codes, hash router, toast, prototype bar
-- `src/data.js`: sample data. Replace the placeholders (Netaji Para, Estd. 1972, ₹100/month) once the club confirms the real details
+- `src/data.js`: sample data. Replace the placeholders (Netaji Para, Estd. 2014, ₹100/month) once the club confirms the real details
 - `src/site.js`, `src/app.js`, `src/console.js`, `src/scan.js`: the script for each page
 
 Fonts: Tiro Bangla for display text and Anek Bangla for the interface, both self-hosted through Fontsource. Icons come from Lucide.

@@ -408,21 +408,29 @@ $('#plant-q').addEventListener('input', () => renderPlants());
 /* Join */
 function depRow() {
   const div = document.createElement('div');
-  div.className = 'grid grid-cols-[1fr_140px_40px] gap-2';
-  div.innerHTML = `<input class="field" data-bn-ph="নাম" placeholder="Name" />
-    <select class="field"><option>Spouse</option><option>Son</option><option>Daughter</option><option>Parent</option><option>Other</option></select>
+  div.className = 'grid grid-cols-[1fr_110px_40px] sm:grid-cols-[1fr_120px_120px_40px] gap-2';
+  div.innerHTML = `<input class="field col-span-1" aria-label="Name" data-bn-ph="নাম" placeholder="Name" />
+    <select class="field" aria-label="Relation"><option data-bn="স্বামী/স্ত্রী">Spouse</option><option data-bn="ছেলে">Son</option><option data-bn="মেয়ে">Daughter</option><option data-bn="বাবা/মা">Parent</option><option data-bn="অন্যান্য">Other</option></select>
+    <select class="field hidden sm:block" aria-label="Blood group"><option value="" data-bn="রক্তের গ্রুপ">Blood group</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option><option>O+</option><option>O−</option></select>
     <button type="button" class="btn btn-ghost px-0 w-10" aria-label="Remove"><i data-lucide="x"></i></button>`;
   div.querySelector('button').addEventListener('click', () => div.remove());
   $('#dependents').append(div);
   applyLang(div);
   refreshIcons();
 }
-depRow(); depRow();
 $('#add-dep').addEventListener('click', depRow);
+$('#join-photo').addEventListener('change', (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  $('#photo-prev').src = URL.createObjectURL(f);
+  $('#photo-prev').classList.remove('hidden');
+  $('#photo-hint').classList.add('invisible');
+});
+$('#join-name').addEventListener('input', (e) => { $('#decl-name').textContent = e.target.value.trim() || '______'; });
+$('#join-form [pattern]').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); });
 $('#join-form').addEventListener('submit', (e) => {
   e.preventDefault();
   confirmPanel(e.currentTarget, 'Application received', 'আবেদন পেয়েছি', [
-    ['Your family’s details are with the committee.', 'আপনার পরিবারের তথ্য কমিটির কাছে।'],
+    ['Your form is with the committee. Bring your Aadhaar card to the club room once.', 'আপনার ফর্ম কমিটির কাছে। আধার কার্ড একবার ক্লাব ঘরে দেখিয়ে যাবেন।'],
     ['They approve it at the next meeting, Sunday 16 Nov, and send you an SMS.', 'পরের সভায় (রবি ১৬ নভে) অনুমোদন হবে, এসএমএস পাবেন।'],
     ['Pay the ₹500 admission and your member card appears in the app.', '₹৫০০ ভর্তি ফি দিলে সদস্য কার্ড অ্যাপে চলে আসবে।'],
   ], ['Edit the application', 'আবেদন বদলান']);

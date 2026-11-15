@@ -65,7 +65,7 @@ export const refreshIcons = () => createIcons({ icons, attrs: { 'stroke-width': 
 let sealId = 0;
 export function seal({ size = 96, color = 'var(--color-sindoor)', rotate = -8, className = '', estd = true } = {}) {
   const id = `seal-${++sealId}`;
-  const ring = estd ? 'GEDE MAITREE CLUB  •  NETAJI PARA  •  ESTD 1972  •  ' : 'GEDE MAITREE CLUB  •  NETAJI PARA  •  ';
+  const ring = estd ? 'GEDE MAITREE CLUB  •  NETAJI PARA  •  ESTD 2014  •  ' : 'GEDE MAITREE CLUB  •  NETAJI PARA  •  ';
   return `<svg class="${className}" width="${size}" height="${size}" viewBox="0 0 200 200" role="img" aria-label="Gede Maitree Club seal" style="transform:rotate(${rotate}deg);color:${color}">
     <defs><path id="${id}" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
     <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="5"/>
