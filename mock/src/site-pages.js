@@ -60,12 +60,12 @@ export function renderNoticeDetail(id) {
       <p class="mt-3 text-[17px] text-ink-2">${t('It may be old. The current notices are on the board.', 'হয়তো পুরনো। এখনকার নোটিস বোর্ডে আছে।')}</p>`;
   } else {
     const prev = publicNotices[i - 1], next = publicNotices[i + 1];
-    const navCard = (x, dir) => x ? `<a href="#notice/${x.id}" class="block rounded-lg border border-rule p-4 hover:border-ink ${dir === 'next' ? 'sm:text-right' : ''}">
+    const navCard = (x, dir) => x ? `<a href="#notice/${x.id}" class="block card card-hover p-4 ${dir === 'next' ? 'sm:text-right' : ''}">
       <span class="text-[13px] text-ink-3">${dir === 'next' ? t('Older', 'পুরনো') : t('Newer', 'নতুন')}</span>
       <span class="block font-semibold leading-snug mt-0.5">${t(x.title, x.titleBn)}</span></a>` : '<span></span>';
     el.innerHTML = `${backLink('#notices', 'All notices', 'সব নোটিস')}
       <p class="mt-8 flex flex-wrap items-center gap-3 text-[13px]">${tagChip(n)}<span class="text-ink-2">${longDate(n.iso)}</span></p>
-      <h1 class="mt-3 poster text-[clamp(2.2rem,5.5vw,3.6rem)]" tabindex="-1">${t(n.title, n.titleBn)}</h1>
+      <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.2rem,5.5vw,3.4rem)]" tabindex="-1">${t(n.title, n.titleBn)}</h1>
       <div class="mt-6 text-[18px] leading-relaxed text-ink-2 prose-site max-w-[62ch]">
         <p class="text-ink">${t(n.body, n.bodyBn)}</p>
         ${n.more ? `<p>${t(n.more, n.moreBn)}</p>` : ''}
@@ -113,7 +113,7 @@ export function renderEventDetail(id) {
         <div class="mt-6 grid lg:grid-cols-12 gap-10 items-center">
           <div class="lg:col-span-7">
             <p class="eyebrow text-sindoor flex flex-wrap items-center gap-3"><span>${t(kEn, kBn)}</span><span class="chip h-7 px-3 normal-case tracking-normal text-[13px] ${left >= 0 && left <= 14 ? 'bg-marigold text-ink' : 'bg-card text-ink-2 border border-rule'}">${daysLabel(left)}</span></p>
-            <h1 class="mt-3 poster text-[clamp(2.6rem,6.5vw,4.6rem)] text-sindoor" tabindex="-1">${t(e.title, e.titleBn)}</h1>
+            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.4rem,6vw,3.75rem)] text-sindoor" tabindex="-1">${t(e.title, e.titleBn)}</h1>
             <ul class="mt-6 space-y-2.5 text-[17px]">
               <li class="flex gap-3"><i data-lucide="calendar" class="w-5 h-5 text-sindoor shrink-0 mt-0.5"></i><span>${longDate(e.date)}</span></li>
               <li class="flex gap-3"><i data-lucide="clock" class="w-5 h-5 text-sindoor shrink-0 mt-0.5"></i><span>${eventTime(e)}</span></li>
@@ -126,7 +126,7 @@ export function renderEventDetail(id) {
               <button type="button" class="btn btn-line h-12 px-5" data-share><i data-lucide="share-2"></i>${t('Share', 'শেয়ার')}</button>
             </div>
           </div>
-          <figure class="lg:col-span-5 relative aspect-[4/3] border-2 border-ink overflow-hidden bg-paper-2">
+          <figure class="lg:col-span-5 relative aspect-[4/3] rounded-2xl overflow-hidden bg-paper-2">
             ${photo(photoKey, { cls: 'absolute inset-0 w-full h-full object-cover', sizes: '(min-width: 1024px) 460px, 100vw' })}
             <figcaption class="absolute bottom-2 right-2 text-[11.5px] text-white bg-black/50 px-1.5 rounded">${credit(photoKey)}</figcaption>
           </figure>
@@ -135,16 +135,16 @@ export function renderEventDetail(id) {
     </div>
     <div class="mx-auto max-w-[1160px] px-5 pt-12 pb-20 grid lg:grid-cols-12 gap-12 items-start">
       <div class="lg:col-span-7">
-        <h2 class="poster text-[2.2rem]">${t('About', 'বিস্তারিত')}</h2>
+        <h2 class="font-display leading-tight text-[1.85rem]">${t('About', 'বিস্তারিত')}</h2>
         <p class="mt-3 text-[18px] leading-relaxed text-ink-2 max-w-[60ch]">${info.about ? t(info.about, info.aboutBn) : t('Details will be posted soon.', 'বিস্তারিত শীঘ্রই জানানো হবে।')}</p>
-        ${info.schedule ? `<h2 class="mt-12 poster text-[2.2rem]">${t('Programme', 'অনুষ্ঠানসূচি')}</h2>
+        ${info.schedule ? `<h2 class="mt-12 font-display leading-tight text-[1.85rem]">${t('Programme', 'অনুষ্ঠানসূচি')}</h2>
           <ol class="mt-4 space-y-3 text-[17px] max-w-[560px]">${info.schedule.map(([tm, tmBn, en, bn]) => `<li class="leader"><span>${t(en, bn)}</span><span class="font-semibold num whitespace-nowrap">${t(tm, tmBn)}</span></li>`).join('')}</ol>
           <p class="mt-3 text-sm text-ink-3">${t('Times may shift a little on the day.', 'সেদিন সময় সামান্য এদিক-ওদিক হতে পারে।')}</p>` : ''}
-        ${info.bring ? `<h2 class="mt-12 poster text-[2.2rem]">${t('What to bring', 'যা আনবেন')}</h2>
+        ${info.bring ? `<h2 class="mt-12 font-display leading-tight text-[1.85rem]">${t('What to bring', 'যা আনবেন')}</h2>
           <ul class="mt-4 space-y-2.5 text-[17px]">${info.bring.map(([en, bn]) => `<li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 text-tulsi shrink-0 mt-0.5"></i><span>${t(en, bn)}</span></li>`).join('')}</ul>` : ''}
       </div>
       <aside class="lg:col-span-5 space-y-5">
-        <div class="rounded-lg border-2 border-ink p-6">
+        <div class="card p-6">
           <p class="eyebrow text-ink-2">${t('Questions? Ask', 'প্রশ্ন? জিজ্ঞেস করুন')}</p>
           <div class="mt-3 flex items-center gap-4">
             <span class="w-12 h-12 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-display text-lg shrink-0" aria-hidden="true">${initials(who)}</span>
@@ -152,19 +152,19 @@ export function renderEventDetail(id) {
           </div>
           <a href="${wa(`Namaskar, a question about ${e.title} (${e.day} ${e.mon}):`)}" target="_blank" rel="noopener" class="btn btn-line btn-sm mt-5" data-no-print><i data-lucide="message-circle"></i>${t('Ask on WhatsApp', 'হোয়াটসঅ্যাপে জিজ্ঞাসা')}</a>
         </div>
-        <div class="rounded-lg bg-ink text-white p-6" data-no-print>
+        <div class="rounded-2xl bg-ink text-white p-6" data-no-print>
           <i data-lucide="hand-heart" class="w-7 h-7 text-marigold"></i>
           <h2 class="mt-3 font-display text-[1.6rem] leading-tight">${t('Lend a hand', 'হাত লাগান')}</h2>
           <p class="mt-1.5 text-white/80 text-[15px]">${t('Setting up, the gate, serving, clearing up. Even two hours helps.', 'সাজানো, গেট, পরিবেশন, গোছানো। দু-ঘণ্টা দিলেও কাজে লাগে।')}</p>
           <a href="${wa(`I would like to volunteer at ${e.title} on ${e.day} ${e.mon}.`)}" target="_blank" rel="noopener" class="btn bg-white text-ink hover:bg-paper-2 btn-sm mt-5"><i data-lucide="message-circle"></i>${t('I’ll volunteer', 'আমি স্বেচ্ছাসেবক হব')}</a>
         </div>
-        ${info.chanda ? `<a href="#chanda" class="block rounded-lg bg-sindoor-wash/70 p-6 hover:bg-sindoor-wash" data-no-print>
+        ${info.chanda ? `<a href="#chanda" class="block rounded-2xl bg-sindoor-wash/70 p-6 hover:bg-sindoor-wash" data-no-print>
           <p class="font-semibold flex items-center gap-2"><i data-lucide="hand-coins" class="w-5 h-5 text-sindoor"></i>${t('Puja chanda', 'পূজার চাঁদা')}</p>
-          <p class="mt-1.5 text-[15px] text-ink-2">${t(`${inr(drive.collected)} raised of ${inr(drive.target)}. See the budget and how to give.`, `${inr(drive.target)} লক্ষ্যের মধ্যে ${inr(drive.collected)} উঠেছে। বাজেট ও দেওয়ার উপায় দেখুন।`)}</p></a>` : ''}
+          <p class="mt-1.5 text-[15px] text-ink-2">${t(`${Math.round((drive.collected / drive.target) * 100)}% of the target raised so far. See how the money is planned and how to give.`, `লক্ষ্যের ${bnNum(Math.round((drive.collected / drive.target) * 100))}% উঠেছে। খরচের পরিকল্পনা ও দেওয়ার উপায় দেখুন।`)}</p></a>` : ''}
       </aside>
       ${others.length ? `<div class="lg:col-span-12 pt-4" data-no-print>
-        <h2 class="poster text-[2.2rem]">${t('Also coming up', 'আরও সামনে')}</h2>
-        <ul class="mt-5 grid sm:grid-cols-3 gap-4">${others.map((o) => `<li><a href="#event/${o.id}" class="group flex gap-4 items-center rounded-lg border border-rule p-4 hover:border-ink h-full">
+        <h2 class="font-display leading-tight text-[1.85rem]">${t('Also coming up', 'আরও সামনে')}</h2>
+        <ul class="mt-5 grid sm:grid-cols-3 gap-4">${others.map((o) => `<li><a href="#event/${o.id}" class="group flex gap-4 items-center card card-hover p-4 h-full">
           <span class="text-sindoor leading-none text-center w-12 shrink-0"><span class="block font-display text-[2rem] num">${dn(o.day)}</span><span class="block text-[12px] font-semibold mt-0.5">${t(o.mon.toUpperCase(), o.monBn)}</span></span>
           <span class="min-w-0"><span class="block font-semibold leading-snug group-hover:underline">${t(o.title, o.titleBn)}</span><span class="block text-sm text-ink-2 mt-0.5">${t(o.place, o.placeBn)}</span></span></a></li>`).join('')}</ul></div>` : ''}
     </div>`;
@@ -174,6 +174,30 @@ export function renderEventDetail(id) {
 }
 
 /* =================== Durga Puja breakdown (home + chanda) =================== */
+/** Split values into shares of ₹100 that add up to exactly 100 (largest remainder). */
+export function sharesOf100(values) {
+  const total = values.reduce((a, b) => a + b, 0) || 1;
+  const raw = values.map((v) => (v / total) * 100);
+  const out = raw.map(Math.floor);
+  raw.map((r, i) => [r - out[i], i]).sort((a, b) => b[0] - a[0]).slice(0, 100 - out.reduce((a, b) => a + b, 0)).forEach(([, i]) => { out[i] += 1; });
+  return out;
+}
+/** Public spending view: proportions only, no rupee amounts. */
+export function renderPujaShares(barSel, legendSel) {
+  const share = sharesOf100(pujaSpend.map((p) => p.v));
+  const bar = $(barSel);
+  bar.innerHTML = pujaSpend.map((p, i) => `<div style="flex:${share[i]};background:${p.c}" class="h-full border-r-2 border-paper last:border-r-0" title="${lang === 'bn' ? p.bn : p.en}"></div>`).join('');
+  bar.setAttribute('aria-label', lang === 'bn'
+    ? `প্রতি ₹১০০-তে: ${pujaSpend.map((p, i) => `${p.bn} ₹${bnNum(share[i])}`).join(', ')}`
+    : `Of every ₹100: ${pujaSpend.map((p, i) => `${p.en} ₹${share[i]}`).join(', ')}`);
+  $(legendSel).innerHTML = pujaSpend.map((p, i) => `
+    <li class="flex items-center gap-3 py-2.5 border-b border-rule">
+      <span class="w-3 h-3 rounded-sm shrink-0" style="background:${p.c}" aria-hidden="true"></span>
+      <span class="text-[15px]">${t(p.en, p.bn)}</span>
+      <span class="ml-auto text-[15px] font-semibold num">${dn(`₹${share[i]}`)}</span>
+    </li>`).join('');
+  applyLang($(legendSel));
+}
 export function renderPujaBreakdown(totalSel, barSel, legendSel) {
   const total = pujaSpend.reduce((a, b) => a + b.v, 0);
   $(totalSel).innerHTML = inr(total);
@@ -199,8 +223,8 @@ const AMOUNTS = [101, 251, 501, 1001, 2001];
 export function renderChanda() {
   const pct = Math.round((drive.collected / drive.target) * 100);
   $('#drive-title').innerHTML = `${t(drive.event, drive.eventBn)} <span class="block mt-2 font-sans text-[17px] text-ink-2 tracking-normal">${t(drive.date, drive.dateBn)} · <a href="#event/saraswati" class="font-semibold text-sindoor hover:underline">${t('Puja details', 'পূজার বিস্তারিত')}</a></span>`;
-  $('#drive-got').innerHTML = inr(drive.collected);
-  $('#drive-of').innerHTML = `${t('raised of', 'উঠেছে, লক্ষ্য')} ${inr(drive.target)} · <strong class="text-ink num">${dn(`${pct}%`)}</strong>`;
+  $('#drive-got').innerHTML = dn(`${pct}%`);
+  $('#drive-of').innerHTML = t('of the target raised so far', 'লক্ষ্যের এতটা উঠেছে');
   const bar = $('#drive-bar');
   bar.setAttribute('aria-valuenow', String(pct));
   bar.setAttribute('aria-label', lang === 'bn' ? `লক্ষ্যের ${bnNum(pct)}% উঠেছে` : `${pct}% of the target raised`);
@@ -212,9 +236,9 @@ export function renderChanda() {
     + stat(dn(String(Math.max(0, days))), 'Days to the puja', 'পূজা আর কত দিন');
   $('#drive-updated').innerHTML = t(`Updated ${drive.updated} by the treasurer. Figures come straight from the club khata.`, `কোষাধ্যক্ষের হালনাগাদ, ${drive.updatedBn}। অঙ্ক সরাসরি ক্লাবের খাতা থেকে।`);
 
-  const btotal = drive.budget.reduce((a, b) => a + b.amount, 0);
-  $('#drive-budget').innerHTML = drive.budget.map((b) => `<li class="leader"><span>${t(b.head, b.headBn)}</span><span class="font-semibold">${inr(b.amount)}</span></li>`).join('')
-    + `<li class="flex items-baseline justify-between pt-3 mt-1 border-t-2 border-ink font-semibold"><span>${t('Total', 'মোট')}</span><span>${inr(btotal)}</span></li>`;
+  const bshare = sharesOf100(drive.budget.map((b) => b.amount));
+  $('#drive-budget').innerHTML = drive.budget.map((b, i) => `<li class="leader"><span>${t(b.head, b.headBn)}</span><span class="font-semibold num">${dn(`₹${bshare[i]}`)}</span></li>`).join('')
+    + `<li class="flex items-baseline justify-between pt-3 mt-1 border-t border-ink/80 font-semibold"><span>${t('Of every ₹100', 'প্রতি ₹১০০-তে')}</span><span class="num">${dn('₹100')}</span></li>`;
 
   $('#drive-lanes').innerHTML = drive.areas.map((a) => {
     const p = Math.round((a.got / a.target) * 100);
@@ -222,7 +246,7 @@ export function renderChanda() {
       <th scope="row" class="py-3 pr-4 text-left font-semibold">${t(a.lane, a.laneBn)}</th>
       <td class="py-3 pr-4 text-ink-2">${a.volunteer}</td>
       <td class="py-3 pr-4 num">${dn(`${a.visited} / ${a.houses}`)}</td>
-      <td class="py-3"><div class="flex items-center gap-3"><div class="flex-1 h-2 bg-paper-2 rounded-full overflow-hidden" aria-hidden="true"><div class="h-full bg-sindoor rounded-full bar-grow" style="width:${Math.min(100, p)}%"></div></div><span class="whitespace-nowrap text-[14px]"><strong>${inr(a.got)}</strong> <span class="text-ink-3">/ ${inr(a.target)}</span></span></div></td>
+      <td class="py-3"><div class="flex items-center gap-3"><div class="flex-1 h-2 bg-paper-2 rounded-full overflow-hidden" aria-hidden="true"><div class="h-full bg-sindoor rounded-full bar-grow" style="width:${Math.min(100, p)}%"></div></div><span class="whitespace-nowrap text-[14px] font-semibold w-12 text-right num">${dn(`${p}%`)}</span></div></td>
     </tr>`;
   }).join('');
 
@@ -238,25 +262,23 @@ export function renderChanda() {
 
   $('#drive-sponsors').innerHTML = drive.sponsors.map((s) => `<li class="flex flex-wrap items-center gap-x-4 gap-y-1 py-4 border-b border-rule">
       <span class="min-w-0 flex-1"><span class="block font-semibold text-[17px]">${t(s.name, s.nameBn)}</span><span class="block text-[14px] text-ink-2">${t(s.gives, s.givesBn)}</span></span>
-      <span class="font-semibold">${inr(s.amount)}</span>
       ${s.status === 'paid' ? `<span class="chip bg-tulsi-wash text-tulsi"><i data-lucide="check"></i>${t('Paid', 'দেওয়া হয়েছে')}</span>` : `<span class="chip bg-paper-2 text-ink-2"><i data-lucide="clock"></i>${t('Promised', 'প্রতিশ্রুত')}</span>`}
     </li>`).join('');
 
-  renderPujaBreakdown('#puja-total-2', '#puja-bar-2', '#puja-legend-2');
+  renderPujaShares('#puja-bar-2', '#puja-legend-2');
 
   const bookCls = { club: 'book-club', catering: 'book-catering', nursery: 'book-nursery' };
-  $('#books').innerHTML = Object.entries(books).map(([k, b]) => `<article class="${bookCls[k]} rounded-lg border border-rule border-t-4 p-6" style="border-top-color:var(--book)">
+  const bookAbout = { club: ['Subscriptions, chanda and the pujas', 'চাঁদা, মাসিক চাঁদা ও পূজা'], catering: ['Maitree Serving bookings and wages', 'মৈত্রী পরিবেশনের বুকিং ও মজুরি'], nursery: ['Plant sales and stock', 'গাছ বিক্রি ও স্টক'] };
+  $('#books').innerHTML = Object.entries(books).map(([k, b]) => `<article class="${bookCls[k]} card border-t-4 p-6" style="border-top-color:var(--book)">
       <h3 class="font-display text-[1.6rem] leading-tight" style="color:var(--book)">${t(`${b.en} book`, `${b.bn} খাতা`)}</h3>
-      <dl class="mt-4 space-y-2 text-[15px]">
-        <div class="flex justify-between"><dt class="text-ink-2">${t('Income', 'আয়')}</dt><dd class="font-semibold">${inr(b.income)}</dd></div>
-        <div class="flex justify-between"><dt class="text-ink-2">${t('Spent', 'খরচ')}</dt><dd class="font-semibold">${inr(b.expense)}</dd></div>
-        <div class="flex justify-between pt-2 border-t border-rule"><dt class="font-semibold">${t('Surplus', 'উদ্বৃত্ত')}</dt><dd class="font-display text-[1.5rem] leading-none" style="color:var(--book)">${inr(b.income - b.expense)}</dd></div>
-      </dl></article>`).join('');
+      <p class="mt-2 text-[15px] text-ink-2">${t(...bookAbout[k])}</p>
+      <p class="mt-4 text-[13.5px] text-ink-3 flex items-center gap-1.5"><i data-lucide="lock" class="w-4 h-4"></i>${t('Figures and bills for members', 'অঙ্ক ও বিল সদস্যদের জন্য')}</p>
+    </article>`).join('');
 
   $('#documents').innerHTML = documents.map((d, i) => `<li class="flex flex-wrap items-center gap-x-4 gap-y-2 py-4 border-b border-rule">
       <span class="w-10 h-10 rounded-lg bg-paper-2 grid place-items-center shrink-0"><i data-lucide="file-text" class="w-5 h-5 text-ink-2"></i></span>
       <span class="min-w-0 flex-1"><span class="block font-semibold">${t(d.en, d.bn)}</span><span class="block text-[14px] text-ink-2"><span class="num">${t(d.note, d.noteBn)}</span> · PDF · ${t(d.size, d.sizeBn)}</span></span>
-      <button type="button" class="btn btn-line btn-sm" data-doc="${i}"><i data-lucide="external-link"></i>${t('Open', 'খুলুন')}</button>
+      ${d.members ? `<a href="login.html" class="btn btn-line btn-sm"><i data-lucide="lock"></i>${t('Members: sign in', 'সদস্যরা লগইন করুন')}</a>` : `<button type="button" class="btn btn-line btn-sm" data-doc="${i}"><i data-lucide="external-link"></i>${t('Open', 'খুলুন')}</button>`}
     </li>`).join('');
   $('#documents').querySelectorAll('[data-doc]').forEach((b) => b.addEventListener('click', () => toast(`<i data-lucide="info"></i>${t('Prototype: the PDF opens here once the club uploads it.', 'প্রোটোটাইপ: ক্লাব আপলোড করলে এখানে PDF খুলবে।')}`)));
 
@@ -394,7 +416,7 @@ function searchIndex() {
     ...searchPages.map((p) => ({ type: 'page', href: p.href, title: L(p.en, p.bn), sub: '', hay: `${p.en} ${p.bn} ${p.k}` })),
     ...events.map((e) => ({ type: 'event', href: `#event/${e.id}`, title: L(e.title, e.titleBn), sub: `${L(`${e.day} ${e.mon}`, `${bnNum(e.day)} ${e.monBn}`)} · ${L(e.place, e.placeBn)}`, hay: `${e.title} ${e.titleBn} ${e.place} ${e.placeBn} ${e.kind}` })),
     ...publicNotices.map((n) => ({ type: 'notice', href: `#notice/${n.id}`, title: L(n.title, n.titleBn), sub: L(n.tag, n.tagBn), hay: `${n.title} ${n.titleBn} ${n.body} ${n.bodyBn} ${n.tag} ${n.tagBn}` })),
-    ...plants.map((p) => ({ type: 'plant', href: '#nursery', plant: p.name, title: L(p.name, p.nameBn), sub: `₹${p.price} · ${p.pot}${p.stock === 0 ? L(' · out of stock', ' · স্টকে নেই') : ''}`, hay: `${p.name} ${p.nameBn} ${p.cat}` })),
+    ...plants.map((p) => ({ type: 'plant', href: '#nursery', plant: p.name, title: L(p.name, p.nameBn), sub: `₹${p.price} · ${L(p.pot, p.potBn)}${p.stock === 0 ? L(' · out of stock', ' · স্টকে নেই') : ''}`, hay: `${p.name} ${p.nameBn} ${p.cat}` })),
     ...committee.map((c) => ({ type: 'person', href: '#committee', title: L(c.name, c.nameBn), sub: L(c.role, c.roleBn), hay: `${c.name} ${c.nameBn} ${c.role} ${c.roleBn} ${(askAbout[c.role] || []).join(' ')}` })),
     ...searchFaq.map((f) => ({ type: 'faq', href: f.href, title: L(f.en, f.bn), sub: '', hay: `${f.en} ${f.bn}` })),
   ];

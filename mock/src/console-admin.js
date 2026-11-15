@@ -5,7 +5,7 @@
 import { t, inr, dn, applyLang, refreshIcons, toast, lang, seal } from './shared.js';
 import { peopleOf } from './idcard.js';
 import {
-  families, ledger, books, events, club, chanda, notices,
+  bnText, families, ledger, books, events, club, chanda, notices,
   cashHolders, bank, auditLog, assets, assetLoans, volunteers, volunteerSkills, duties, rolePerms,
 } from './data.js';
 
@@ -82,7 +82,7 @@ function auditScreen() {
             <td class="text-[13px] text-ink-2 num whitespace-nowrap align-top">${t(a.at, a.atBn)}</td>
             <td class="align-top whitespace-nowrap"><span class="font-semibold">${t(a.who, a.whoBn)}</span></td>
             <td class="align-top"><span class="flex items-start gap-2">${a.flag ? `<i data-lucide="flag" class="w-4 h-4 mt-1 shrink-0 text-sindoor" aria-label="${L('Flagged', 'চিহ্নিত')}"></i>` : ''}<span><span class="chip h-5 px-1.5 text-[11.5px] bg-paper-2 text-ink-2 mr-1.5">${t(MODS[a.mod][0], MODS[a.mod][1])}</span>${t(a.en, a.bn)}</span></span></td>
-            <td class="hidden md:table-cell text-[13px] text-ink-3 whitespace-nowrap align-top">${a.device}</td>
+            <td class="hidden md:table-cell text-[13px] text-ink-3 whitespace-nowrap align-top">${t(a.device, bnText(a.device))}</td>
             <td class="text-right align-top"><i data-lucide="chevron-right" class="w-4 h-4 text-ink-3 inline"></i></td>
           </tr>`).join('') : `<tr><td colspan="5" class="!py-12 text-center text-ink-3">${t('Nothing in the log matches. Clear a filter or search for a receipt number.', 'লগে কিছু মেলেনি। একটি ফিল্টার সরান বা রসিদ নম্বর দিয়ে খুঁজুন।')}</td></tr>`}
         </tbody>
@@ -105,7 +105,7 @@ function auditDrawer(id) {
       <dl class="mt-5 grid grid-cols-2 gap-4 text-[15px]">
         <div><dt class="text-sm text-ink-3">${t('Who', 'কে')}</dt><dd class="font-semibold">${t(a.who, a.whoBn)}</dd></div>
         <div><dt class="text-sm text-ink-3">${t('When', 'কখন')}</dt><dd class="font-semibold num">${t(a.at, a.atBn)}</dd></div>
-        <div><dt class="text-sm text-ink-3">${t('Device', 'ডিভাইস')}</dt><dd>${a.device}</dd></div>
+        <div><dt class="text-sm text-ink-3">${t('Device', 'ডিভাইস')}</dt><dd>${t(a.device, bnText(a.device))}</dd></div>
         <div><dt class="text-sm text-ink-3">${t('Sign-in', 'লগইন')}</dt><dd>${a.who === 'System' ? t('Automatic', 'স্বয়ংক্রিয়') : a.who === 'Unknown' ? t('Failed', 'ব্যর্থ') : t('Password + SMS code', 'পাসওয়ার্ড + এসএমএস কোড')}</dd></div>
       </dl>
       ${a.mod === 'settings' && a.flag ? `<div class="mt-5"><p class="text-sm font-semibold text-ink-3">${t('Change', 'পরিবর্তন')}</p>
@@ -172,7 +172,7 @@ function cashScreen() {
 
       <div class="xl:col-span-5 paper-card p-5">
         <h2 class="font-display text-xl">${t('Reconciliation · November', 'মেলানো · নভেম্বর')}</h2>
-        <p class="text-sm text-ink-3">${t(bank.name, bank.nameBn)} · ${bank.account}</p>
+        <p class="text-sm text-ink-3">${t(bank.name, bank.nameBn)} · ${t(bank.account, bnText(bank.account))}</p>
         <dl class="mt-4 text-[15px]">
           <div class="flex py-1.5"><dt>${t('Bank balance as per khata', 'খাতা অনুযায়ী ব্যাংক ব্যালান্স')}</dt><dd class="ml-auto num">${inr(khataBank)}</dd></div>
           <div class="flex py-1.5 text-ink-2"><dt>${t('Add: cheques issued, not yet cashed', 'যোগ: চেক দেওয়া, এখনও ভাঙানো হয়নি')}</dt><dd class="ml-auto num">+${inr(unp)}</dd></div>
@@ -377,7 +377,7 @@ function donorsScreen() {
       <button class="btn btn-primary btn-sm" data-act="blood-urgent"><i data-lucide="droplet"></i>${t('Urgent request', 'জরুরি অনুরোধ')}</button>`)}
     <div class="paper-card p-4 sm:p-5 mb-5 flex flex-wrap items-center gap-4">
       <span class="w-12 h-12 rounded-full bg-sindoor-wash text-sindoor grid place-items-center shrink-0"><i data-lucide="heart-pulse" class="w-6 h-6"></i></span>
-      <div class="flex-1 min-w-[220px]"><p class="font-semibold">${t(camp.title, camp.titleBn)} · ${dn(camp.day)} ${t(camp.mon, camp.monBn)} · ${camp.time}</p>
+      <div class="flex-1 min-w-[220px]"><p class="font-semibold">${t(camp.title, camp.titleBn)} · ${dn(camp.day)} ${t(camp.mon, camp.monBn)} · ${t(camp.time, bnText(camp.time))}</p>
         <p class="text-sm text-ink-2">${t(`${donors.filter(eligible).length} donors are eligible (3+ months since last donation). With the blood bank, Medical College.`, `${donors.filter(eligible).length} জন যোগ্য (শেষ দানের পর ৩+ মাস)। মেডিক্যাল কলেজ ব্লাড ব্যাংকের সঙ্গে।`)}</p></div>
       <button class="btn btn-ink btn-sm" data-act="blood-invite"><i data-lucide="send"></i>${t('Invite eligible donors', 'যোগ্য দাতাদের আমন্ত্রণ')}</button>
     </div>
@@ -449,7 +449,7 @@ function volunteersScreen(param) {
     <div class="grid xl:grid-cols-12 gap-6 items-start">
       <div class="xl:col-span-7 paper-card">
         <div class="px-5 pt-4 pb-3 border-b border-rule flex flex-wrap items-center gap-2">
-          <div class="min-w-0"><h2 class="font-display text-xl">${t(ev.title, ev.titleBn)}</h2><p class="text-sm text-ink-3">${t(ev.place, ev.placeBn)} · ${ev.time}</p></div>
+          <div class="min-w-0"><h2 class="font-display text-xl">${t(ev.title, ev.titleBn)}</h2><p class="text-sm text-ink-3">${t(ev.place, ev.placeBn)} · ${t(ev.time, bnText(ev.time))}</p></div>
           <div class="ml-auto flex gap-2"><button class="btn btn-line btn-sm" data-act="vol-share"><i data-lucide="message-circle"></i>${t('Share roster', 'তালিকা পাঠান')}</button>
             <button class="btn btn-ink btn-sm" data-act="vol-attend"><i data-lucide="list-checks"></i>${t('Attendance', 'হাজিরা')}</button></div>
         </div>
@@ -457,7 +457,7 @@ function volunteersScreen(param) {
         <ul class="divide-y divide-rule">
           ${list.map((d, i) => { const gap = d.need - d.who.length; return `<li class="px-5 py-4">
             <div class="flex flex-wrap items-start gap-2">
-              <div class="min-w-0 flex-1"><p class="font-semibold">${t(d.duty, d.dutyBn)}</p><p class="text-sm text-ink-3">${d.time} · ${t(volunteerSkills[d.skill].en, volunteerSkills[d.skill].bn)}</p></div>
+              <div class="min-w-0 flex-1"><p class="font-semibold">${t(d.duty, d.dutyBn)}</p><p class="text-sm text-ink-3">${t(d.time, bnText(d.time))} · ${t(volunteerSkills[d.skill].en, volunteerSkills[d.skill].bn)}</p></div>
               <span class="chip ${gap > 0 ? 'bg-sindoor-wash text-sindoor-deep' : 'bg-tulsi-wash text-tulsi'} num">${dn(`${d.who.length}/${d.need}`)} ${gap > 0 ? t(`· ${gap} short`, `· ${bnD(gap)} কম`) : t('· full', '· পূর্ণ')}</span>
             </div>
             <div class="mt-2.5 flex flex-wrap gap-1.5">
@@ -675,7 +675,7 @@ export function wireNotice(form) {
         <div class="mt-3 rounded-xl bg-white/10 p-3 flex gap-3"><span class="w-9 h-9 rounded-lg bg-paper grid place-items-center shrink-0">${seal({ size: 30, rotate: 0 })}</span>
         <div class="min-w-0"><p class="text-[12px] text-paper/70 flex">${L('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব')}<span class="ml-auto pl-2">${L('now', 'এখন')}</span></p><p class="font-semibold leading-snug truncate">${esc(title)}</p><p class="text-[13.5px] text-paper/85 leading-snug line-clamp-2">${esc(body)}</p></div></div></div>`,
       wa: `<div class="rounded-lg bg-[#e7ddc9] p-3"><div class="bg-white rounded-lg rounded-tl-sm p-3 text-[14px] leading-relaxed mr-6 shadow-[0_1px_1px_rgba(0,0,0,.08)]">
-        <p class="text-[12.5px] font-semibold text-turmeric">${L('Maitree Club Members', 'মৈত্রী ক্লাব সদস্য')}</p><p class="font-bold">📌 ${esc(title)}</p><p class="whitespace-pre-line">${esc(body)}</p><p class="text-[#1a73e8] break-all">gedemaitree.club/n/${notices.length + 1}</p><p class="text-right text-[11px] text-ink-3">7:42 pm</p></div></div>`,
+        <p class="text-[12.5px] font-semibold text-turmeric">${L('Gede Maitree Club Members', 'গেদে মৈত্রী ক্লাব সদস্য')}</p><p class="font-bold">📌 ${esc(title)}</p><p class="whitespace-pre-line">${esc(body)}</p><p class="text-[#1a73e8] break-all">gedemaitree.club/n/${notices.length + 1}</p><p class="text-right text-[11px] text-ink-3">7:42 pm</p></div></div>`,
       web: `<div class="rounded-lg border border-rule bg-paper p-4"><p class="text-[12.5px] font-semibold text-sindoor">${L('Notice', 'নোটিস')} · <span class="text-ink-3">${L('15 Nov', '১৫ নভে')}</span></p><p class="font-display text-lg leading-snug mt-1">${esc(title)}</p><p class="text-[14px] text-ink-2 mt-1">${esc(body)}</p></div>`,
     };
     box.innerHTML = `<div class="flex items-center gap-2 mb-2"><p class="label !mb-0">${L('Preview', 'নমুনা')}</p>
@@ -854,7 +854,7 @@ const ACTIONS = {
     const busy = (n) => duties[vEvt].filter((x) => x !== d && x.who.includes(n)).map((x) => L(x.duty, x.dutyBn));
     const sorted = [...vols].sort((x, y) => (y.skills.includes(d.skill) - x.skills.includes(d.skill)) || y.hours - x.hours);
     C.formDrawer(`Assign · ${d.duty}`, `দায়িত্ব · ${d.dutyBn}`, `
-      <p class="text-sm text-ink-2 -mt-2">${d.time} · ${t(`needs ${d.need}`, `${bnD(d.need)} জন দরকার`)}</p>
+      <p class="text-sm text-ink-2 -mt-2">${t(d.time, bnText(d.time))} · ${t(`needs ${d.need}`, `${bnD(d.need)} জন দরকার`)}</p>
       <ul class="divide-y divide-rule border-y border-rule">${sorted.map((v) => `<li><label class="flex items-center gap-3 py-2.5 cursor-pointer"><input type="checkbox" value="${esc(v.name)}" ${d.who.includes(v.name) ? 'checked' : ''} class="w-5 h-5 accent-[#2b2f36]" />
         <span class="flex-1 min-w-0"><span class="block font-semibold">${t(v.name, v.nameBn)}</span><span class="block text-[13px] text-ink-3">${busy(v.name).length ? `${L('Also on', 'আরও আছেন')}: ${esc(busy(v.name).join(', '))}` : t(v.lane, v.laneBn)}</span></span>
         ${v.skills.includes(d.skill) ? `<span class="chip h-6 text-[12px] bg-tulsi-wash text-tulsi">${t('Has the skill', 'দক্ষ')}</span>` : ''}</label></li>`).join('')}</ul>`,

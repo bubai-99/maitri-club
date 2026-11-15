@@ -338,3 +338,19 @@ export const rolePerms = {
     { id: 'admin', en: 'Reports, audit log & settings', bn: 'রিপোর্ট, অডিট লগ ও সেটিংস', screens: ['reports', 'audit', 'settings'], p: { secretary: 'full', treasurer: 'full', puja: 'none', catering: 'none', nursery: 'none', volunteer: 'none' } },
   ],
 };
+
+/* Bengali for free-text sample fields (pot sizes, occasions, times). Use bnText(value) when lang is bn. */
+const BN_TEXT = {
+  '6"': '৬ ইঞ্চি', '8"': '৮ ইঞ্চি', '10"': '১০ ইঞ্চি', '12"': '১২ ইঞ্চি', 'Bulbs ×10': '১০টি কন্দ', 'Seedling tray': 'চারার ট্রে',
+  '60th birthday': '৬০তম জন্মদিন', Annaprashan: 'অন্নপ্রাশন', Reunion: 'পুনর্মিলন', Shraddha: 'শ্রাদ্ধ', 'Staff lunch': 'কর্মীদের দুপুরের খাওয়া', 'Wedding reception': 'বৌভাত', Wedding: 'বিয়ে',
+  '1 – 3 pm': 'দুপুর ১টা – ৩টা', '6 – 6:30 am': 'ভোর ৬টা – ৬:৩০', '6:30 am – 1 pm': 'সকাল ৬:৩০ – দুপুর ১টা', '7 am onwards': 'সকাল ৭টা থেকে', '7 am – 1 pm': 'সকাল ৭টা – দুপুর ১টা',
+  '7 am – 12 pm': 'সকাল ৭টা – দুপুর ১২টা', '7:30 – 9 am': 'সকাল ৭:৩০ – ৯টা', '8 – 10 am': 'সকাল ৮টা – ১০টা', '8:30 am – 2 pm': 'সকাল ৮:৩০ – দুপুর ২টা', '9 am – 2 pm': 'সকাল ৯টা – দুপুর ২টা',
+  'Bus leaves 6:30 am': 'বাস ছাড়বে সকাল ৬:৩০', 'Pushpanjali 9:30 am': 'পুষ্পাঞ্জলি সকাল ৯:৩০',
+  'Club-room laptop': 'ক্লাব ঘরের ল্যাপটপ', 'Android phone': 'অ্যান্ড্রয়েড ফোন', 'Chrome · Howrah': 'ক্রোম · হাওড়া', 'Nursery tablet': 'নার্সারির ট্যাবলেট', Server: 'সার্ভার',
+  'Savings ••••4417': 'সঞ্চয় ••••৪৪১৭', 'Ashtami morning, our lane': 'অষ্টমীর সকাল, আমাদের গলি', 'Sent on WhatsApp': 'হোয়াটসঅ্যাপে পাঠানো',
+  Wife: 'স্ত্রী', Husband: 'স্বামী', Son: 'ছেলে', Daughter: 'মেয়ে', Mother: 'মা', Father: 'বাবা', 'Mother-in-law': 'শাশুড়ি', 'Son, 9': 'ছেলে, ৯', 'Daughter, 16': 'মেয়ে, ১৬',
+};
+export const bnText = (s) => BN_TEXT[s] ?? s;
+plants.forEach((p) => { p.potBn = bnText(p.pot); });
+cateringOrders.forEach((o) => { o.occasionBn = bnText(o.occasion); });
+events.forEach((e) => { e.timeBn = bnText(e.time); });

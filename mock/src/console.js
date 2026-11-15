@@ -1,7 +1,7 @@
 import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang } from './shared.js';
 import { PHOTOS, ALBUMS, GALLERY, photo } from './photos.js';
 import { peopleOf, cardFront, cardBack, fillQrs, printCards, downloadCard } from './idcard.js';
-import { families, ledger, books, chanda, cateringOrders, cateringStatus, cateringPackages, plants, memberDiscount, notices, events, club, serversFor, memberRate, auditLog } from './data.js';
+import { bnText, families, ledger, books, chanda, cateringOrders, cateringStatus, cateringPackages, plants, memberDiscount, notices, events, club, serversFor, memberRate, auditLog } from './data.js';
 import { initAdmin, logAudit, addReceipt, canSee, lockedScreen, wireNotice, audienceRadios, searchPages } from './console-admin.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -99,7 +99,7 @@ function dashboard() {
   const collected = chanda.areas.reduce((a, b) => a + b.got, 0) + 13000;
   const dueFams = families.filter((f) => f.dueMonths >= 3);
   paint(screen('dashboard'), `
-    ${pageHead('Friday, 13 November', 'শুক্রবার, ১৩ নভেম্বর', t('Good evening, Tapas-da. Here is where the books stand.', 'শুভ সন্ধ্যা, তাপস-দা। খাতার হাল এই রকম।'))}
+    ${pageHead('Sunday, 15 November', 'রবিবার, ১৫ নভেম্বর', t('Good evening, Tapas-da. Here is where the books stand.', 'শুভ সন্ধ্যা, তাপস-দা। খাতার হাল এই রকম।'))}
 
     <div class="grid xl:grid-cols-12 gap-6">
       <!-- Books sheet -->
@@ -301,7 +301,7 @@ function applicationsScreen(param) {
             <p class="text-sm font-semibold text-ink-3">${t('Family', 'পরিবার')}</p>
             <ul class="mt-1.5 text-[15px] divide-y divide-rule border-y border-rule">
               <li class="py-2 flex"><span class="font-semibold">${t(a.head, a.headBn)}</span><span class="ml-auto text-ink-3">${t('Head of family', 'পরিবারের প্রধান')}</span></li>
-              ${a.people.map(([n, r]) => `<li class="py-2 flex"><span>${n}</span><span class="ml-auto text-ink-3">${r}</span></li>`).join('')}
+              ${a.people.map(([n, r]) => `<li class="py-2 flex"><span>${n}</span><span class="ml-auto text-ink-3">${t(r, bnText(r))}</span></li>`).join('')}
             </ul>
           </div>
           <div>
@@ -717,7 +717,7 @@ function catering() {
               <div class="space-y-2">${list.map((x) => `
                 <button data-order="${x.id}" class="w-full text-left bg-card rounded-lg border ${x.id === selOrder ? 'border-turmeric ring-2 ring-turmeric/25' : 'border-rule'} p-3 hover:border-turmeric/60">
                   <p class="font-semibold leading-tight">${t(x.customer, x.customerBn)}</p>
-                  <p class="text-[13px] text-ink-3 mt-0.5">${x.occasion} · ${dn(x.date)}</p>
+                  <p class="text-[13px] text-ink-3 mt-0.5">${t(x.occasion, x.occasionBn)} · ${dn(x.date)}</p>
                   <p class="mt-2 flex items-center gap-2 text-sm whitespace-nowrap"><span class="num text-ink-2">${dn(String(x.guests))} ${t('guests', 'জন')}</span>${x.member ? `<span class="chip h-5 px-1.5 text-[11px] bg-sindoor-wash text-sindoor-deep">${t('Member', 'সদস্য')}</span>` : ''}</p>
                   <p class="mt-1 font-semibold">${inr(x.amount)}</p>
                 </button>`).join('') || `<p class="text-sm text-ink-3 px-1.5 py-3">${t('Nothing here', 'কিছু নেই')}</p>`}</div>
@@ -730,7 +730,7 @@ function catering() {
         <div class="p-5 border-b border-rule">
           <p class="text-sm text-ink-3 num">${o.id} · ${t(cateringStatus[o.status].en, cateringStatus[o.status].bn)}</p>
           <h2 class="font-display text-2xl leading-tight">${t(o.customer, o.customerBn)}</h2>
-          <p class="text-ink-2 text-[15px]">${o.occasion} · ${dn(o.date)} · ${dn(String(o.guests))} ${t('guests', 'অতিথি')}</p>
+          <p class="text-ink-2 text-[15px]">${t(o.occasion, o.occasionBn)} · ${dn(o.date)} · ${dn(String(o.guests))} ${t('guests', 'অতিথি')}</p>
         </div>
         <div class="p-5">
           <p class="text-sm font-semibold text-ink-3">${t('Quotation', 'কোটেশন')}</p>
@@ -789,7 +789,7 @@ function nursery(param) {
           <span class="w-9 h-9 rounded-lg bg-tulsi-wash text-tulsi grid place-items-center"><i data-lucide="${p.icon}" class="w-5 h-5"></i></span>
           ${cart.has(p.id) ? `<span class="absolute top-2.5 right-2.5 chip h-6 px-2 bg-tulsi text-white num">${dn('×' + cart.get(p.id))}</span>` : ''}
           <span class="block font-semibold leading-tight mt-2 text-[15px]">${t(p.name, p.nameBn)}</span>
-          <span class="block text-sm text-ink-3 mt-0.5">${p.pot} · ${inr(p.price)}</span>
+          <span class="block text-sm text-ink-3 mt-0.5">${t(p.pot, p.potBn)} · ${inr(p.price)}</span>
           <span class="block text-[12.5px] mt-1 ${p.stock === 0 ? 'text-ink-3' : p.stock < 10 ? 'text-sindoor font-semibold' : 'text-ink-3'}">${p.stock === 0 ? t('Out of stock', 'স্টকে নেই') : t(`${p.stock} in stock`, `${p.stock}টি আছে`)}</span>
         </button>`).join('')}
       </div>
@@ -819,7 +819,7 @@ function nursery(param) {
         <thead><tr><th>${t('Plant', 'গাছ')}</th><th>${t('Pot', 'টব')}</th><th class="!text-right">${t('Price', 'দাম')}</th><th class="!text-right">${t('In stock', 'স্টক')}</th><th>${t('Sold this month', 'এ মাসে বিক্রি')}</th><th></th></tr></thead>
         <tbody>${plants.map((p, i) => `<tr>
           <td><span class="flex items-center gap-2.5"><span class="w-8 h-8 rounded-lg bg-tulsi-wash text-tulsi grid place-items-center"><i data-lucide="${p.icon}" class="w-4 h-4"></i></span><span class="font-semibold">${t(p.name, p.nameBn)}</span></span></td>
-          <td class="text-ink-2">${p.pot}</td>
+          <td class="text-ink-2">${t(p.pot, p.potBn)}</td>
           <td class="amt">${inr(p.price)}</td>
           <td class="amt font-semibold ${p.stock === 0 ? 'text-ink-3' : p.stock < 10 ? 'text-sindoor' : ''}">${p.stock === 0 ? t('Out', 'শেষ') : inr(p.stock, { plain: true })}${p.stock > 0 && p.stock < 10 ? ` <i data-lucide="triangle-alert" class="w-4 h-4 inline -mt-0.5"></i>` : ''}</td>
           <td class="num text-ink-2">${dn(String((i * 7 + 5) % 23))}</td>
@@ -852,7 +852,7 @@ function meetings() {
           <label class="block"><span class="label">${t('Title (English)', 'শিরোনাম (ইংরেজি)')}</span><input class="field" value="Committee meeting — Saraswati Puja planning" /></label>
           <label class="block"><span class="label">${t('Title (Bengali)', 'শিরোনাম (বাংলা)')}</span><input class="field" value="কমিটি সভা — সরস্বতী পূজার প্রস্তুতি" /></label>
         </div>
-        <label class="block"><span class="label">${t('Message', 'বার্তা')}</span><textarea class="field" rows="3">Sunday 16 Nov, 6 pm at the club room. Budget and volunteer list will be finalised.</textarea></label>
+        <label class="block"><span class="label">${t('Message', 'বার্তা')}</span><textarea class="field" rows="3">${lang === 'bn' ? 'রবিবার ১৬ নভে, সন্ধ্যা ৬টা, ক্লাব ঘরে। বাজেট ও স্বেচ্ছাসেবকের তালিকা চূড়ান্ত হবে।' : 'Sunday 16 Nov, 6 pm at the club room. Budget and volunteer list will be finalised.'}</textarea></label>
         <div><p class="label">${t('Who should get it', 'কারা পাবেন')}</p>
           <div class="flex flex-wrap gap-2">
             ${audienceRadios()}
@@ -933,7 +933,7 @@ function eventsScreen() {
         <thead><tr><th>${t('Date', 'তারিখ')}</th><th>${t('Event', 'অনুষ্ঠান')}</th><th>${t('Passes', 'পাস')}</th><th>${t('Registered', 'নাম দিয়েছেন')}</th><th>${t('Status', 'অবস্থা')}</th><th></th></tr></thead>
         <tbody>${rows.map((e) => `<tr>
           <td class="num whitespace-nowrap font-semibold">${dn(e.day)} ${t(e.mon, e.monBn)}</td>
-          <td><span class="font-semibold">${t(e.title, e.titleBn)}</span><span class="block text-[13px] text-ink-3">${t(e.place, e.placeBn)} · ${e.time}</span></td>
+          <td><span class="font-semibold">${t(e.title, e.titleBn)}</span><span class="block text-[13px] text-ink-3">${t(e.place, e.placeBn)} · ${t(e.time, e.timeBn || e.time)}</span></td>
           <td>${e.pass ? `<span class="chip border border-ink/40"><i data-lucide="ticket"></i>${t('Pass needed', 'পাস লাগবে')}</span>` : `<span class="text-sm text-ink-3">${t('Open to all', 'সবার জন্য')}</span>`}</td>
           <td class="num">${e.pass ? `${dn(String(e.regs))} ${t('families', 'পরিবার')}${e.cap ? ` <span class="text-ink-3">/ ${dn(String(e.cap))} ${t('seats', 'আসন')}</span>` : ''}` : '—'}</td>
           <td><span class="chip bg-paper-2 text-ink-2">${t('Published', 'প্রকাশিত')}</span></td>
@@ -1525,7 +1525,7 @@ const ACTIONS = {
       <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Send welcome on WhatsApp with the app link', 'হোয়াটসঅ্যাপে স্বাগত বার্তা ও অ্যাপের লিঙ্ক')}</label>
       <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Add their ID cards to “To print”', 'আইডি কার্ড “প্রিন্ট বাকি”-তে যোগ')}</label>`,
       'Approve and create family', 'অনুমোদন ও পরিবার তৈরি', `${a.head} is now family ${no}. Welcome message sent.`, `${a.headBn} এখন পরিবার ${no}। স্বাগত বার্তা গেছে।`,
-      { onDone: () => { a.status = 'done'; approved.unshift({ head: a.head, headBn: a.headBn, no, on: '13 Nov' }); nextFamNo++; rerender(); } });
+      { onDone: () => { a.status = 'done'; approved.unshift({ head: a.head, headBn: a.headBn, no, on: '15 Nov' }); nextFamNo++; rerender(); } });
   },
   'app-info'(b) {
     const a = applications.find((x) => x.id === b.dataset.id);
@@ -1731,7 +1731,7 @@ function galleryScreen(param) {
       <div class="px-5 pt-4 pb-3 border-b border-rule flex items-center gap-2"><h2 class="font-display text-xl">${t('Sent by members', 'সদস্যদের পাঠানো')}</h2><span class="chip h-6 px-2 bg-sindoor text-white num">${dn(String(submissions.length))}</span><span class="ml-auto text-sm text-ink-3 hidden sm:block">${t('Nothing goes public until you approve it', 'অনুমোদন ছাড়া কিছু প্রকাশ হয় না')}</span></div>
       <ul class="divide-y divide-rule">${submissions.map((s, i) => `<li class="p-4 flex items-center gap-4">
         <span class="relative w-20 h-14 rounded overflow-hidden bg-paper-2 shrink-0">${gThumb(s)}${s.v ? '<span class="absolute inset-0 grid place-items-center bg-black/25"><i data-lucide="play" class="w-5 h-5 text-white fill-current"></i></span>' : ''}</span>
-        <div class="flex-1 min-w-0"><p class="font-semibold truncate">${s.v ? t(s.v, s.vBn) : t('Photo', 'ছবি')} · ${s.from}</p><p class="text-sm text-ink-3">${s.note} · ${s.at} · ${t('for', 'অ্যালবাম')} ${t(gAlbums.find((g) => g.id === s.album).en, gAlbums.find((g) => g.id === s.album).bn)}</p></div>
+        <div class="flex-1 min-w-0"><p class="font-semibold truncate">${s.v ? t(s.v, s.vBn) : t('Photo', 'ছবি')} · ${s.from}</p><p class="text-sm text-ink-3">${t(s.note, bnText(s.note))} · ${t(s.at, bnText(s.at))} · ${t('for', 'অ্যালবাম')} ${t(gAlbums.find((g) => g.id === s.album).en, gAlbums.find((g) => g.id === s.album).bn)}</p></div>
         <button class="btn btn-ink btn-sm" data-act="g-sub-ok" data-i="${i}"><i data-lucide="check"></i><span class="hidden sm:inline">${t('Add to album', 'অ্যালবামে যোগ')}</span></button>
         <button class="btn btn-ghost btn-sm text-ink-2" data-act="g-sub-no" data-i="${i}" aria-label="Decline"><i data-lucide="x"></i></button>
       </li>`).join('')}</ul></div>` : ''}

@@ -53,10 +53,10 @@ export const person = (role) => committee.find((c) => c.role === role) || commit
 /* ---------- Public notices ---------- */
 const iso = { n1: '2026-11-12', n2: '2026-11-10', n3: '2026-11-06', n4: '2026-10-28' };
 const more = {
-  n1: { more: 'All members are welcome. The puja in-charge, Kakoli Sen, presents the draft budget of ₹85,000 and the lane-wise chanda plan. Volunteers for the pandal, bhog and the cultural evening will be listed.', moreBn: 'সব সদস্য আমন্ত্রিত। পূজা কমিটির কাকলি সেন ₹৮৫,০০০-এর খসড়া বাজেট আর গলি ধরে চাঁদা তোলার পরিকল্পনা পেশ করবেন। প্যান্ডেল, ভোগ ও সাংস্কৃতিক সন্ধ্যার স্বেচ্ছাসেবকদের তালিকা হবে।', link: ['#chanda', 'See the chanda drive', 'চাঁদা সংগ্রহ দেখুন'] },
+  n1: { more: 'All members are welcome. The puja in-charge, Kakoli Sen, presents the draft budget and the lane-wise chanda plan. Volunteers for the pandal, bhog and the cultural evening will be listed.', moreBn: 'সব সদস্য আমন্ত্রিত। পূজা কমিটির কাকলি সেন খসড়া বাজেট আর গলি ধরে চাঁদা তোলার পরিকল্পনা পেশ করবেন। প্যান্ডেল, ভোগ ও সাংস্কৃতিক সন্ধ্যার স্বেচ্ছাসেবকদের তালিকা হবে।', link: ['#chanda', 'See the chanda drive', 'চাঁদা সংগ্রহ দেখুন'] },
   n2: { more: 'Races for under-8, under-12, adults and seniors. One entry per person per race. Entries close at 9 pm on 7 December. Non-members can watch from the boundary.', moreBn: 'অনূর্ধ্ব-৮, অনূর্ধ্ব-১২, বড় ও প্রবীণদের দৌড়। প্রতি দৌড়ে একজনের একটিই নাম। ৭ ডিসেম্বর রাত ৯টায় নাম জমা বন্ধ। সদস্য না হলেও মাঠের ধার থেকে দেখতে পারেন।', link: ['#event/sports', 'Sports Day details', 'ক্রীড়া দিবসের বিস্তারিত'] },
   n3: { more: 'Seedlings sell out in the first two weeks. Message Sutapa-di on WhatsApp and she will set some aside for you.', moreBn: 'প্রথম দুই সপ্তাহেই চারা শেষ হয়ে যায়। হোয়াটসঅ্যাপে সুতপা-দিকে জানালে আপনার জন্য সরিয়ে রাখবেন।', link: ['#nursery', 'Browse the nursery', 'নার্সারি দেখুন'] },
-  n4: { more: 'Income was ₹4,82,000 from 312 households and 9 sponsors. What it was spent on, and the ₹62,000 kept for Saraswati Puja, is on the Chanda & accounts page. Every bill is in the khata.', moreBn: '৩১২টি পরিবার ও ৯ জন স্পনসরের কাছ থেকে আয় ₹৪,৮২,০০০। কোথায় খরচ হল, আর সরস্বতী পূজার জন্য রাখা ₹৬২,০০০, সব চাঁদা ও হিসাব পাতায়। প্রতিটি বিল খাতায় তোলা আছে।', link: ['#chanda', 'Chanda & accounts', 'চাঁদা ও হিসাব'] },
+  n4: { more: 'The audited accounts were presented to members. How each ₹100 of chanda was spent, including the share kept for Saraswati Puja, is on the Chanda & accounts page. Members can see every bill in the app.', moreBn: 'অডিট করা হিসাব সদস্যদের সামনে পেশ হয়েছে। প্রতি ₹১০০ চাঁদা কোথায় গেল, সরস্বতী পূজার জন্য রাখা অংশসহ, চাঁদা ও হিসাব পাতায়। প্রতিটি বিল সদস্যরা অ্যাপে দেখতে পান।', link: ['#chanda', 'Chanda & accounts', 'চাঁদা ও হিসাব'] },
 };
 const extra = [
   { id: 'n5', date: '14 Nov', iso: '2026-11-14', tag: 'Service', tagBn: 'সেবা', title: 'Donors wanted for 28 November', titleBn: '২৮ নভেম্বরের জন্য রক্তদাতা চাই', body: 'We are aiming for 60 donors this year. Give your name at the club room, or just come on the day.', bodyBn: 'এ বছর ৬০ জন দাতার লক্ষ্য। ক্লাব ঘরে নাম দিন, বা সেদিন সরাসরি চলে আসুন।', more: 'Last year 58 people gave blood. If you have given in the last three months, please wait for the next camp.', moreBn: 'গত বছর ৫৮ জন রক্ত দিয়েছিলেন। গত তিন মাসের মধ্যে রক্ত দিয়ে থাকলে পরের শিবিরের জন্য অপেক্ষা করুন।', link: ['#event/blood', 'Camp details', 'শিবিরের বিস্তারিত'] },
@@ -91,8 +91,8 @@ export const drive = {
 export const documents = [
   { en: 'Registration certificate', bn: 'নথিভুক্তির শংসাপত্র', note: 'Reg. No. S-0027153 / 2022-23', noteBn: 'রেজি. নং S-0027153 / 2022-23', size: '1 page' , sizeBn: '১ পাতা' },
   { en: 'Rules of the club (bye-laws)', bn: 'ক্লাবের নিয়মাবলী', note: 'Bengali, adopted at the 2022 AGM', noteBn: 'বাংলায়, ২০২২-এর এজিএম-এ গৃহীত', size: '6 pages', sizeBn: '৬ পাতা' },
-  { en: 'Durga Puja 2026 accounts', bn: 'দুর্গাপূজা ২০২৬-এর হিসাব', note: 'Income, spending and bills', noteBn: 'আয়, খরচ ও বিল', size: '4 pages', sizeBn: '৪ পাতা' },
-  { en: 'AGM report and audited accounts 2025–26', bn: 'এজিএম রিপোর্ট ও অডিট করা হিসাব ২০২৫–২৬', note: 'All three books: Club, Catering, Nursery', noteBn: 'তিনটি খাতাই: ক্লাব, ক্যাটারিং, নার্সারি', size: '12 pages', sizeBn: '১২ পাতা' },
+  { members: true, en: 'Durga Puja 2026 accounts', bn: 'দুর্গাপূজা ২০২৬-এর হিসাব', note: 'Income, spending and bills', noteBn: 'আয়, খরচ ও বিল', size: '4 pages', sizeBn: '৪ পাতা' },
+  { members: true, en: 'AGM report and audited accounts 2025–26', bn: 'এজিএম রিপোর্ট ও অডিট করা হিসাব ২০২৫–২৬', note: 'All three books: Club, Catering, Nursery', noteBn: 'তিনটি খাতাই: ক্লাব, ক্যাটারিং, নার্সারি', size: '12 pages', sizeBn: '১২ পাতা' },
 ];
 
 /* ---------- Contact topics → who handles them ---------- */
@@ -131,3 +131,21 @@ export const searchFaq = [
 ];
 
 export { events };
+
+/* Nursery: plant details for the plant window. light: sun | part | shade; water: often | moderate | little */
+export const plantInfo = {
+  p1: { light: 'sun', water: 'often', about: ['Big red flowers almost all year. Loved for Kali and Durga Puja.', 'প্রায় সারা বছর বড় লাল ফুল। কালী ও দুর্গাপূজায় প্রিয়।'], tip: ['Water daily in summer. Pinch the tips after flowering for more branches.', 'গরমে রোজ জল দিন। ফুল ঝরার পর ডগা ছাঁটলে ডাল বাড়ে।'] },
+  p2: { light: 'sun', water: 'moderate', about: ['Fragrant white flowers with orange stems that fall at dawn in autumn.', 'শরতে ভোরে ঝরে পড়া কমলা বোঁটার সুগন্ধি সাদা ফুল।'], tip: ['Plant in the ground once it grows past the pot. Flowers from the second year.', 'টব ছাড়িয়ে বড় হলে মাটিতে বসান। দ্বিতীয় বছর থেকে ফুল।'] },
+  p3: { light: 'sun', water: 'moderate', about: ['Bulbs for tall stems of scented white flowers in summer and the rains.', 'গ্রীষ্ম ও বর্ষায় লম্বা ডাঁটায় সুগন্ধি সাদা ফুলের কন্দ।'], tip: ['Plant 5 cm deep, 15 cm apart. Keep the soil moist but not wet.', '৫ সেমি গভীরে, ১৫ সেমি ফাঁকে পুঁতুন। মাটি ভেজা রাখুন, জল জমবে না।'] },
+  p4: { light: 'sun', water: 'moderate', about: ['A tray of seedlings for winter flowers and puja garlands.', 'শীতের ফুল ও পূজার মালার জন্য চারার ট্রে।'], tip: ['Plant out in November. Flowers in about 8 weeks.', 'নভেম্বরে বসান। প্রায় ৮ সপ্তাহে ফুল।'] },
+  p5: { light: 'sun', water: 'moderate', about: ['Large winter flowers in red, pink and yellow. Just arrived.', 'লাল, গোলাপি, হলুদ রঙের বড় শীতের ফুল। সদ্য এসেছে।'], tip: ['Needs full sun and a stick for support when the flowers open.', 'পুরো রোদ চাই। ফুল ফুটলে একটা কাঠি দিয়ে ঠেকা দিন।'] },
+  p6: { light: 'sun', water: 'moderate', about: ['Winter chrysanthemum, the flower of the Durga Puja and winter shows.', 'শীতের চন্দ্রমল্লিকা, পূজা ও ফুল প্রদর্শনীর ফুল।'], tip: ['Remove side buds for bigger flowers. Water at the base, not the leaves.', 'পাশের কুঁড়ি ছাঁটলে ফুল বড় হয়। পাতায় নয়, গোড়ায় জল দিন।'] },
+  p7: { light: 'sun', water: 'moderate', about: ['Holy basil for the courtyard and daily puja.', 'উঠোন ও নিত্য পূজার তুলসী।'], tip: ['Pinch off the flower spikes to keep it leafy.', 'মঞ্জরী ভেঙে দিলে পাতা ঘন হয়।'] },
+  p8: { light: 'part', water: 'little', about: ['Easy, hardy and good for skin and small burns.', 'সহজে বাঁচে, ত্বক ও ছোটখাটো পোড়ায় কাজে লাগে।'], tip: ['Water once a week. Too much water rots the roots.', 'সপ্তাহে একবার জল। বেশি জলে গোড়া পচে।'] },
+  p9: { light: 'sun', water: 'moderate', about: ['Kagzi lemon on a grafted plant. Fruits in about a year.', 'কলমের কাগজি লেবু। প্রায় এক বছরে ফল।'], tip: ['Give it the sunniest spot. Feed with compost every two months.', 'সবচেয়ে রোদের জায়গা দিন। দু-মাস অন্তর জৈব সার।'] },
+  p10: { light: 'sun', water: 'moderate', about: ['Grafted guava for a big pot or the garden.', 'বড় টব বা বাগানের জন্য কলমের পেয়ারা।'], tip: ['Prune after fruiting to keep it small and full.', 'ফল শেষে ছাঁটলে গাছ ছোট ও ঘন থাকে।'] },
+  p11: { light: 'shade', water: 'moderate', about: ['An indoor climber that grows in water or soil.', 'জলে বা মাটিতে বাড়ে এমন ঘরের লতা।'], tip: ['Keep away from strong sun. Change the water every week if in a bottle.', 'কড়া রোদ থেকে দূরে রাখুন। বোতলে রাখলে সপ্তাহে জল বদলান।'] },
+  p12: { light: 'shade', water: 'little', about: ['A tough indoor plant that needs very little care.', 'খুব কম যত্নে বাঁচে এমন শক্ত ঘরের গাছ।'], tip: ['Water every two weeks. Fine in a dim corner.', 'দু-সপ্তাহে একবার জল। আধো-অন্ধকার কোণেও চলে।'] },
+  p13: { light: 'sun', water: 'little', about: ['Paper-like flowers in bright pink for the gate or the roof.', 'গেট বা ছাদের জন্য উজ্জ্বল গোলাপি কাগজের মতো ফুল।'], tip: ['Flowers best when the soil dries between waterings.', 'দুবার জলের মাঝে মাটি শুকোলে ফুল বেশি।'] },
+  p14: { light: 'sun', water: 'moderate', about: ['Fresh curry leaves for the kitchen. Back in stock soon.', 'রান্নাঘরের টাটকা কারিপাতা। শিগগির আবার আসবে।'], tip: ['Pick the top leaves often; the plant grows bushier.', 'ওপরের পাতা নিয়মিত তুললে গাছ ঝোপালো হয়।'] },
+};

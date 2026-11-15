@@ -125,7 +125,7 @@ function renderNursery() {
         <li class="flex items-center gap-3 px-4 py-3">
           <span class="w-12 h-12 rounded-lg bg-tulsi-wash text-tulsi grid place-items-center shrink-0"><i data-lucide="${p.icon}" class="w-6 h-6"></i></span>
           <span class="flex-1 min-w-0"><span class="block font-semibold leading-tight">${t(p.name, p.nameBn)}${p.isNew ? ` <span class="chip h-5 px-1.5 text-[11px] bg-marigold align-middle">${t('New', 'নতুন')}</span>` : ''}</span>
-            <span class="block text-sm text-ink-3">${p.pot}${!out && p.stock <= 5 ? ` · <span class="text-sindoor-deep font-medium">${t(`only ${p.stock} left`, `মাত্র ${bnD(p.stock)}টি বাকি`)}</span>` : ''}</span>
+            <span class="block text-sm text-ink-3">${t(p.pot, p.potBn)}${!out && p.stock <= 5 ? ` · <span class="text-sindoor-deep font-medium">${t(`only ${p.stock} left`, `মাত্র ${bnD(p.stock)}টি বাকি`)}</span>` : ''}</span>
             <span class="block sm:hidden mt-0.5"><span class="font-semibold text-tulsi">${inr(price(p))}</span> <span class="text-[12.5px] text-ink-3 line-through">${inr(p.price)}</span></span></span>
           <span class="hidden sm:block text-right mr-2"><span class="block font-semibold text-tulsi">${inr(price(p))}</span><span class="block text-[12.5px] text-ink-3 line-through">${inr(p.price)}</span></span>
           ${out ? `<button type="button" class="btn btn-line btn-sm shrink-0" data-notify="${p.id}" aria-pressed="${store.notifyMe.has(p.id)}">${store.notifyMe.has(p.id) ? `<i data-lucide="bell-ring"></i>${t('We’ll tell you', 'জানাব')}` : `<i data-lucide="bell"></i>${t('Notify me', 'জানাবেন')}`}</button>`

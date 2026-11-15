@@ -102,11 +102,11 @@ export function enhanceForm(form) {
 export function confirmPanel(form, titleEn, titleBn, steps, resetLabel, { refNo = '', onReset } = {}) {
   const kids = [...form.children];
   kids.forEach((k) => (k.style.display = 'none'));
-  form.insertAdjacentHTML('beforeend', `<div data-panel class="sm:col-span-2 lg:col-span-full col-span-full relative border-2 border-ink rounded-lg p-6 sm:p-8 rise bg-card" role="status" tabindex="-1">
+  form.insertAdjacentHTML('beforeend', `<div data-panel class="sm:col-span-2 lg:col-span-full col-span-full relative card p-6 sm:p-8 rise" role="status" tabindex="-1">
     <div class="absolute right-4 top-4 ink-stamp" aria-hidden="true">${seal({ size: 96, rotate: -10, className: 'stamp-in' })}</div>
-    <h3 class="poster text-[2.2rem] pr-24">${t(titleEn, titleBn)}</h3>
+    <h3 class="font-display leading-tight text-[1.85rem] pr-24">${t(titleEn, titleBn)}</h3>
     ${refNo ? `<p class="mt-2 text-[15px] text-ink-2">${t('Reference', 'সূত্র নম্বর')}: <strong class="num text-ink tracking-wide">${refNo}</strong></p>` : ''}
-    <ol class="mt-5 space-y-3 text-[16px] max-w-[52ch]">${steps.map(([en, bn], i) => `<li class="flex gap-3"><span class="w-7 h-7 rounded-full ${i ? 'border-2 border-ink' : 'bg-ink text-white'} grid place-items-center shrink-0 font-semibold num">${i ? (lang === 'bn' ? bnNum(i + 1) : i + 1) : '<i data-lucide="check" class="w-4 h-4"></i>'}</span><span>${t(en, bn)}</span></li>`).join('')}</ol>
+    <ol class="mt-5 space-y-3 text-[16px] max-w-[52ch]">${steps.map(([en, bn], i) => `<li class="flex gap-3"><span class="w-7 h-7 rounded-full ${i ? 'border border-ink/40' : 'bg-ink text-white'} grid place-items-center shrink-0 font-semibold num">${i ? (lang === 'bn' ? bnNum(i + 1) : i + 1) : '<i data-lucide="check" class="w-4 h-4"></i>'}</span><span>${t(en, bn)}</span></li>`).join('')}</ol>
     <p class="mt-5 text-[13px] text-ink-3">${t('Prototype: nothing was sent.', 'প্রোটোটাইপ: কিছু পাঠানো হয়নি।')}</p>
     <button type="button" class="btn btn-line mt-5" data-again>${t(...resetLabel)}</button></div>`);
   const panel = form.querySelector('[data-panel]');

@@ -133,7 +133,13 @@
   .poster { @apply font-display; line-height: 1; letter-spacing: -0.015em; }
 
   /* Square media frame with charcoal rule; placeholder carries art direction until photos arrive. */
-  .frame { @apply relative border-2 border-ink bg-paper-2 overflow-hidden; }
+  .frame { @apply relative rounded-2xl bg-paper-2 overflow-hidden; }
+  /* Website surfaces: soft rounded media and light cards, no heavy frames */
+  .media { @apply relative rounded-2xl overflow-hidden bg-paper-2; }
+  .card { @apply bg-card rounded-2xl border border-rule; box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 2px 8px -2px rgba(16,24,40,.06); }
+  .card-hover { transition: box-shadow .2s, transform .2s var(--ease-out-expo), border-color .2s; }
+  .card-hover:hover { border-color: var(--color-paper-3); box-shadow: 0 2px 4px rgba(16,24,40,.04), 0 12px 28px -10px rgba(16,24,40,.18); transform: translateY(-2px); }
+  .rule-strong { border-color: var(--color-ink) !important; border-top-width: 1px !important; }
   .frame-note { @apply absolute inset-x-0 bottom-0 p-4 text-[13px] leading-snug text-ink-2 bg-white/85; }
 
   /* Halftone print field, densest at top and fading down. */
@@ -290,7 +296,7 @@ body[data-basket="on"]:has([data-screen="nursery"].is-active) .to-top { bottom: 
 .search-backdrop { position: absolute; inset: 0; background: rgba(28,30,35,.55); }
 .search-panel {
   position: relative; width: 100%; max-width: 640px; background: var(--color-paper); border-radius: 10px;
-  border: 2px solid var(--color-ink); box-shadow: 0 24px 60px -20px rgba(0,0,0,.5); overflow: hidden;
+  border: 1px solid var(--color-rule); border-radius: 16px; box-shadow: 0 24px 60px -20px rgba(0,0,0,.35); overflow: hidden;
   animation: rise .25s var(--ease-out-expo) both;
 }
 .search-group { padding: .6rem .75rem .25rem; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink-3); }
@@ -337,3 +343,49 @@ body[data-basket="on"]:has([data-screen="nursery"].is-active) .to-top { bottom: 
 .print-only { display: none; }
 /* Headings that receive focus on route change: no ring (they are not controls) */
 .site h1[tabindex="-1"]:focus, .site #main:focus { outline: none; }
+
+/* =====================================================================
+   Home as the para's front page: masthead, lead story, classifieds,
+   display ads, a khata ledger and a cut-out coupon. Newsprint, hairlines.
+   ===================================================================== */
+.gz { background: #f6f1e6; color: var(--color-ink); }
+.gz-paper { background: #fffdf8; }
+.gz-rule { border-top: 1px solid var(--color-ink); }
+.gz-hair { border-color: rgba(43,47,54,.22); }
+.gz-double { border-top: 4px double var(--color-ink); }
+.gz-kicker { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-sindoor-deep); }
+.gz-nameplate { font-family: "Tiro Bangla", "Noto Serif Bengali", serif; color: var(--color-sindoor); line-height: 1.05; letter-spacing: -0.01em; }
+.gz-sub { font-size: 12px; letter-spacing: .34em; text-transform: uppercase; font-weight: 600; }
+.gz-headline { font-family: var(--font-display); line-height: 1.02; letter-spacing: -0.015em; }
+.gz-dropcap::first-letter { font-family: var(--font-display); float: left; font-size: 3.4em; line-height: .82; padding: .06em .12em 0 0; color: var(--color-sindoor); }
+.gz-caption { font-size: 13px; line-height: 1.45; color: var(--color-ink-2); font-style: italic; padding: 7px 0 9px; border-bottom: 1px solid rgba(43,47,54,.22); }
+.gz-sections a + a::before { content: "·"; margin: 0 .7rem; color: var(--color-ink-3); }
+.gz-sections a:hover { color: var(--color-sindoor); }
+
+/* Display advertisement: a ruled box with an inner keyline */
+.gz-ad { position: relative; border: 1px solid var(--color-ink); background: #fffdf8; }
+.gz-ad::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(43,47,54,.32); pointer-events: none; }
+
+/* Ticket stub with punched notches */
+.gz-ticket { position: relative; background: var(--color-marigold); border-radius: 6px; }
+.gz-ticket::before, .gz-ticket::after { content: ""; position: absolute; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 99px; background: var(--color-paper); }
+.gz-ticket::before { left: -9px; } .gz-ticket::after { right: -9px; }
+.gz-perf { border-left: 2px dashed rgba(43,47,54,.35); }
+
+/* Cut-out coupon */
+.gz-coupon { position: relative; border: 2px dashed rgba(43,47,54,.5); background: #fffdf8; }
+.gz-scissors { position: absolute; top: -14px; left: 22px; background: #f6f1e6; padding: 0 6px; color: var(--color-ink-2); }
+.gz-box { width: 18px; height: 18px; border: 1.5px solid var(--color-ink); border-radius: 3px; flex-shrink: 0; margin-top: 3px; }
+
+/* Khata ledger: double red margin + faint blue ruling */
+.gz-ledger {
+  background-color: #fffdf8;
+  background-image:
+    linear-gradient(to right, transparent 30px, rgba(210,31,27,.38) 30px, rgba(210,31,27,.38) 31px, transparent 31px, transparent 34px, rgba(210,31,27,.38) 34px, rgba(210,31,27,.38) 35px, transparent 35px),
+    repeating-linear-gradient(to bottom, transparent 0 37px, rgba(70,110,170,.16) 37px 38px);
+}
+.gz-ledger li { min-height: 38px; }
+
+/* Photo row hover */
+.gz-photo img { transition: transform .7s var(--ease-out-expo); }
+.gz-photo:hover img { transform: scale(1.03); }

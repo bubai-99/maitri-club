@@ -246,7 +246,7 @@ let payMethod = 'upi';
 
 function payMonths() {
   const lastKnown = [...store.dues, ...receipts.filter((r) => r.kind === 'sub').flatMap((r) => r.months)].sort().pop();
-  const ahead = Array.from({ length: 4 }, (_, i) => addMonths(lastKnown, i + 1));
+  const ahead = Array.from({ length: Math.max(4, 12 - store.dues.length) }, (_, i) => addMonths(lastKnown, i + 1));
   return [...store.dues.map((m) => ({ m, due: true })), ...ahead.map((m) => ({ m, due: false }))];
 }
 
@@ -255,16 +255,18 @@ function renderPay(param) {
   const list = payMonths();
   [...paySel].forEach((m) => { if (!list.some((x) => x.m === m)) paySel.delete(m); });
   const sel = list.filter((x) => paySel.has(x.m)).map((x) => x.m);
-  const sum = sel.length * fee;
+  const free = Math.floor(sel.length / 12) * fee; // yearly plan: 12 months for the price of 11 (₹1,100)
+  const sum = sel.length * fee - free;
   const note = `${profile.family} ${sel.map(monthPlain).join(', ')}`;
   const uri = `upi://pay?pa=${club.upi}&pn=Gede%20Maitree%20Club&am=${sum}&cu=INR&tn=${encodeURIComponent(note)}`;
   const presets = [
     ['dues', 'Dues only', 'শুধু বকেয়া', store.dues],
     ['q', 'Dues + 3 months', 'বকেয়া + ৩ মাস', list.slice(0, store.dues.length + 3).map((x) => x.m)],
     ['fy', 'Up to March', 'মার্চ পর্যন্ত', list.filter((x) => x.m <= '2027-03').map((x) => x.m)],
+    ['yr', 'Full year · ₹1,100', 'পুরো বছর · ₹১,১০০', list.slice(0, 12).map((x) => x.m)],
   ];
   paint('#s-pay', `
-    ${pageHead({ en: 'Pay subscription', bn: 'চাঁদা দিন', subEn: `₹${fee} a month covers your whole household. Pay what’s due, or a few months ahead.`, subBn: `মাসে ₹${bnD(fee)}-তে পুরো পরিবার। বকেয়া দিন, বা কয়েক মাস অগ্রিম।`, actions: `<a href="#statement" class="btn btn-line btn-sm"><i data-lucide="scroll-text"></i>${t('Statement', 'বিবরণী')}</a>` })}
+    ${pageHead({ en: 'Pay subscription', bn: 'চাঁদা দিন', subEn: `₹${fee} a month covers your whole household, or ₹1,100 for a full year (one month free). Pay what’s due, or ahead.`, subBn: `মাসে ₹${bnD(fee)}-তে পুরো পরিবার। বকেয়া দিন, বা কয়েক মাস অগ্রিম।`, actions: `<a href="#statement" class="btn btn-line btn-sm"><i data-lucide="scroll-text"></i>${t('Statement', 'বিবরণী')}</a>` })}
 
     ${store.pending ? `<div class="mt-5">${duesCard()}</div>` : ''}
 
@@ -287,6 +289,7 @@ function renderPay(param) {
           <span class="text-ink-2">${t(`${sel.length} month${sel.length === 1 ? '' : 's'} × ₹${fee}`, `${bnD(sel.length)} মাস × ₹${bnD(fee)}`)}</span>
           <span class="font-semibold">${inr(sum)}</span>
         </div>
+        ${free ? `<p class="mt-2 text-sm text-tulsi font-medium flex items-center gap-1.5"><i data-lucide="gift" class="w-4 h-4"></i>${t(`Yearly plan: ${inr(free)} off, one month free`, `বার্ষিক প্ল্যান: ${inr(free)} ছাড়, এক মাস বিনামূল্যে`)}</p>` : sel.length >= 9 ? `<p class="mt-2 text-sm text-ink-3">${t(`Choose ${12 - sel.length} more for a full year and get one month free.`, `আরও ${bnD(12 - sel.length)} মাস বাছলে পুরো বছর, এক মাস বিনামূল্যে।`)}</p>` : ''}
       </div>
 
       <div class="min-w-0 lg:sticky lg:top-24">

@@ -1,7 +1,7 @@
 import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang } from './shared.js';
 import { PHOTOS, ALBUMS, GALLERY, photo, credit } from './photos.js';
 import { serversFor, memberRate, events, pastEvents, cateringPackages, plants, plantCats, committee, club } from './data.js';
-import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo } from './site-data.js';
+import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, pujaSpend } from './site-data.js';
 import { validate, enhanceForm, confirmPanel, ref, bnNum, initials, daysUntil } from './site-ui.js';
 import {
   kindLabel, ics, eventTime, renderNotices, renderNoticeDetail, renderEventDetail, renderPujaBreakdown,
@@ -13,8 +13,9 @@ const $$ = (s) => [...document.querySelectorAll(s)];
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* Seals */
-$('#logo-seal').innerHTML = seal({ size: 44, rotate: -6 });
+$('#logo-seal').innerHTML = seal({ size: innerWidth < 640 ? 38 : 44, rotate: -6 });
 $('#join-seal').innerHTML = seal({ size: 320, color: '#fff', rotate: 12 });
+$('#hero-seal').innerHTML = seal({ size: innerWidth < 640 ? 104 : 138, rotate: -12, className: 'stamp-in' });
 $('#foot-seal').innerHTML = seal({ size: 40, color: '#fff', rotate: -4 });
 
 /* ---------- Header: language, mobile menu, scroll state, back to top ---------- */
@@ -86,6 +87,20 @@ document.getElementById('hero-credit').innerHTML = `${t('Photo', 'ছবি')}: 
 document.querySelectorAll('[data-photo]').forEach((el) => { el.innerHTML = photo(el.dataset.photo, { cls: 'w-full h-full object-cover', sizes: '(min-width: 768px) 570px, 100vw' }); });
 document.querySelectorAll('[data-credit]').forEach((el) => { el.innerHTML = credit(el.dataset.credit); });
 
+/* ---------- Home: khata ledger of Durga Puja spending ---------- */
+function renderHomeLedger() {
+  const total = pujaSpend.reduce((x, y) => x + y.v, 0);
+  // Largest-remainder rounding so the shares add up to exactly ₹100
+  const raw = pujaSpend.map((p) => (p.v / total) * 100);
+  const share = raw.map(Math.floor);
+  raw.map((r, i) => [r - share[i], i]).sort((x, y) => y[0] - x[0]).slice(0, 100 - share.reduce((x, y) => x + y, 0)).forEach(([, i]) => { share[i] += 1; });
+  $('#home-ledger').innerHTML = pujaSpend.map((p, i) => `<li class="flex items-center gap-3 text-[15.5px]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${p.c}" aria-hidden="true"></span><span class="flex-1 min-w-0">${t(p.en, p.bn)}</span><span class="hidden sm:block w-28 h-1.5 rounded-full bg-ink/10 overflow-hidden" aria-hidden="true"><span class="block h-full" style="width:${share[i] * 2.5}%;background:${p.c}"></span></span><span class="w-14 text-right font-semibold num">${dn(`₹${share[i]}`)}</span></li>`).join('')
+    + `<li class="flex items-center gap-3 font-semibold border-t-2 border-ink/70"><span class="flex-1">${t('Total', 'মোট')}</span><span class="w-14 text-right text-sindoor num">${dn('₹100')}</span></li>`;
+  applyLang($('#home-ledger'));
+}
+renderHomeLedger();
+document.addEventListener('langchange', renderHomeLedger);
+
 /* ---------- Home: notice board, photo strip, committee ---------- */
 function renderHomeExtras() {
   const nb = document.getElementById('home-notices');
@@ -99,12 +114,13 @@ function renderHomeExtras() {
     </li>`).join('');
   const strip = document.getElementById('home-strip');
   strip.innerHTML = ['sindoor', 'feast2', 'pujaCrowd', 'marigold', 'runners', 'diyas', 'nurseryTable'].map((k) => `
-    <a href="#gallery" class="snap-start shrink-0 w-[260px] sm:w-[300px] aspect-[4/5] border-2 border-ink overflow-hidden group" aria-label="${lang === 'bn' ? PHOTOS[k].altBn : PHOTOS[k].alt}">
+    <a href="#gallery" class="snap-start shrink-0 w-[210px] sm:w-[260px] aspect-[4/5] rounded-[18px] overflow-hidden group bg-paper-3" aria-label="${lang === 'bn' ? PHOTOS[k].altBn : PHOTOS[k].alt}">
       ${photo(k, { w: 700, cls: 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]', sizes: '300px' })}
     </a>`).join('');
   const cm = document.getElementById('home-committee');
+  if (!cm) { applyLang(nb); applyLang(strip); refreshIcons(); return; }
   cm.innerHTML = committee.slice(0, 4).map((c) => `
-    <li class="bg-paper rounded-lg border border-rule p-5 flex items-center gap-4">
+    <li class="card p-5 flex items-center gap-4">
       <span class="w-12 h-12 shrink-0 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-semibold" aria-hidden="true">${initials(c)}</span>
       <span class="min-w-0">
         <span class="block font-semibold leading-snug">${t(c.name, c.nameBn)}</span>
@@ -116,80 +132,168 @@ function renderHomeExtras() {
 renderHomeExtras();
 document.addEventListener('langchange', renderHomeExtras);
 
-/* ---------- Gallery: date-wise, photos and videos ---------- */
+/* ---------- Gallery: albums by year, an album page, and photo / video walls ---------- */
 let album = 'all';
 let mediaType = 'all';
 let gYear = 'all';
+let gOpen = null; // album id when #gallery/<id> is open
 const years = [...new Set(GALLERY.map((g) => g.date.slice(0, 4)))];
 const isVideo = (it) => !!it.v;
 const posterOf = (it) => (isVideo(it) ? it.poster : it.p);
-function renderGallery() {
-  const tabs = [{ key: 'all', en: 'All albums', bn: 'সব অ্যালবাম' }, ...ALBUMS];
-  const tabsEl = $('#album-tabs');
-  tabsEl.innerHTML = tabs.map((a) => `<button type="button" data-album="${a.key}" aria-pressed="${album === a.key}" class="chip h-9 px-4 text-[15px] whitespace-nowrap border border-rule bg-card hover:border-ink aria-pressed:bg-ink aria-pressed:text-white aria-pressed:border-ink">${t(a.en, a.bn)}</button>`).join('');
-  const types = [['all', 'All', 'সব', 'layout-grid'], ['photo', 'Photos', 'ছবি', 'image'], ['video', 'Videos', 'ভিডিও', 'play']];
-  $('#media-type').innerHTML = types.map(([k, en, bn, icon]) => `<button type="button" data-mt="${k}" aria-pressed="${mediaType === k}" class="h-8 px-3.5 rounded-md text-sm font-semibold flex items-center gap-1.5 text-ink-2 aria-pressed:bg-card aria-pressed:text-ink aria-pressed:shadow-[0_1px_2px_rgba(0,0,0,.08)]"><i data-lucide="${icon}" class="w-4 h-4"></i>${t(en, bn)}</button>`).join('');
-  $('#g-year').innerHTML = [['all', lang === 'bn' ? 'সব বছর' : 'All years'], ...years.map((y) => [y, lang === 'bn' ? bnNum(y) : y])].map(([v, l]) => `<option value="${v}" ${gYear === v ? 'selected' : ''}>${l}</option>`).join('');
+const counts = (items) => { const v = items.filter(isVideo).length; return { p: items.length - v, v }; };
+const countLine = (items) => {
+  const { p, v } = counts(items);
+  return [p ? t(`${p} photo${p === 1 ? '' : 's'}`, `${bnNum(p)}টি ছবি`) : '', v ? t(`${v} video${v === 1 ? '' : 's'}`, `${bnNum(v)}টি ভিডিও`) : ''].filter(Boolean).join(' · ');
+};
+const albumOf = (g) => ALBUMS.find((x) => x.key === g.album);
+const coverOf = (g) => posterOf(g.items.find((it) => !isVideo(it)) || g.items[0]);
+const altOf = (k) => (lang === 'bn' ? PHOTOS[k].altBn : PHOTOS[k].alt);
+const countChips = (items) => {
+  const { p, v } = counts(items);
+  return `<span class="absolute left-3 bottom-3 flex gap-1.5">
+    ${p ? `<span class="chip h-7 px-2.5 bg-black/70 text-white"><i data-lucide="image"></i><span class="num">${dn(String(p))}</span></span>` : ''}
+    ${v ? `<span class="chip h-7 px-2.5 bg-black/70 text-white"><i data-lucide="play"></i><span class="num">${dn(String(v))}</span></span>` : ''}</span>`;
+};
+const playBadge = (size = 'w-14 h-14', icon = 'w-6 h-6') => `<span class="absolute inset-0 grid place-items-center"><span class="${size} rounded-full bg-white/95 text-ink grid place-items-center shadow-lg transition-transform group-hover:scale-105"><i data-lucide="play" class="${icon} ml-0.5 fill-current"></i></span></span>`;
 
-  const groups = GALLERY
-    .filter((g) => (album === 'all' || g.album === album) && (gYear === 'all' || g.date.startsWith(gYear)))
-    .map((g) => ({ ...g, shown: g.items.filter((it) => mediaType === 'all' || (mediaType === 'video') === isVideo(it)) }))
-    .filter((g) => g.shown.length);
-  const flat = groups.flatMap((g) => g.shown.map((it) => ({ it, g })));
-  const nP = flat.filter((x) => !isVideo(x.it)).length, nV = flat.length - nP;
-  $('#g-summary').innerHTML = t(`${nP} photo${nP === 1 ? '' : 's'} · ${nV} video${nV === 1 ? '' : 's'} · ${groups.length} event${groups.length === 1 ? '' : 's'}`, `${bnNum(nP)}টি ছবি · ${bnNum(nV)}টি ভিডিও · ${bnNum(groups.length)}টি অনুষ্ঠান`);
+/* One tile: photo or video, square by default. `i` indexes into the lightbox list. */
+function tile(it, i, { cls = 'aspect-square', sizes = '(min-width: 1024px) 280px, 50vw', w = 700 } = {}) {
+  const k = posterOf(it);
+  const label = isVideo(it) ? `${lang === 'bn' ? 'ভিডিও চালান' : 'Play video'}: ${lang === 'bn' ? it.vBn : it.v}` : `${lang === 'bn' ? 'ছবি খুলুন' : 'Open photo'}: ${altOf(k)}`;
+  return `<button type="button" data-zoom="${i}" class="group relative block w-full ${cls} rounded-xl overflow-hidden bg-paper-2 focus-visible:outline-offset-4" aria-label="${label}">
+    ${photo(k, { w, cls: 'absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]', sizes })}
+    ${isVideo(it) ? `<span class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></span>${playBadge()}
+      <span class="absolute left-2.5 bottom-2.5 chip h-6 px-2 bg-black/70 text-white text-[12px]"><span class="num">${dn(it.dur)}</span></span>` : '<span class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></span>'}
+  </button>`;
+}
 
-  let lastYear = '';
-  let idx = 0;
-  $('#gallery-grid').innerHTML = groups.length ? groups.map((g) => {
-    const y = g.date.slice(0, 4);
-    const yearHead = y !== lastYear ? `<h2 class="font-display text-[2.4rem] leading-none text-ink-3 num ${lastYear ? 'mt-16' : ''} mb-2">${dn(y)}</h2>` : '';
-    lastYear = y;
-    const a = ALBUMS.find((x) => x.key === g.album);
-    const pc = g.items.filter((it) => !isVideo(it)).length, vc = g.items.length - pc;
-    return `${yearHead}
-      <section class="pt-6 mt-6 border-t-2 border-ink first-of-type:mt-0" aria-label="${lang === 'bn' ? g.bn : g.en}">
-        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-4">
-          <p class="text-sm font-semibold text-sindoor num">${t(g.when, g.whenBn)}</p>
-          <h3 class="font-display text-[1.6rem] leading-tight">${t(g.en, g.bn)}</h3>
-          <p class="text-sm text-ink-3 sm:ml-auto">${t(a.en, a.bn)} · ${t(`${pc} photo${pc === 1 ? '' : 's'}`, `${bnNum(pc)}টি ছবি`)}${vc ? ` · ${t(`${vc} video${vc === 1 ? '' : 's'}`, `${bnNum(vc)}টি ভিডিও`)}` : ''}</p>
-        </div>
-        <div class="columns-2 lg:columns-3 gap-4 [&>*]:mb-4">
-          ${g.shown.map((it) => {
-            const k = posterOf(it);
-            const i = idx++;
-            const label = isVideo(it) ? `${lang === 'bn' ? 'ভিডিও চালান' : 'Play video'}: ${lang === 'bn' ? it.vBn : it.v}` : `${lang === 'bn' ? 'ছবি খুলুন' : 'Open photo'}: ${lang === 'bn' ? PHOTOS[k].altBn : PHOTOS[k].alt}`;
-            return `<figure class="break-inside-avoid">
-              <button type="button" data-zoom="${i}" class="relative block w-full border-2 border-ink overflow-hidden group bg-paper-2" aria-label="${label}">
-                ${photo(k, { w: 900, cls: `w-full h-auto block transition-transform duration-500 group-hover:scale-[1.03] ${isVideo(it) ? 'aspect-video object-cover' : ''}`, sizes: '(min-width: 1024px) 370px, 50vw' })}
-                ${isVideo(it) ? `<span class="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors"></span>
-                  <span class="absolute inset-0 grid place-items-center"><span class="w-14 h-14 rounded-full bg-white/95 text-ink grid place-items-center shadow-lg group-hover:scale-105 transition-transform"><i data-lucide="play" class="w-6 h-6 ml-0.5 fill-current"></i></span></span>
-                  <span class="absolute left-2 bottom-2 chip h-6 px-2 bg-black/70 text-white text-[12px]"><i data-lucide="video" class="!w-3.5 !h-3.5"></i><span class="num">${dn(it.dur)}</span></span>` : ''}
-              </button>
-              ${isVideo(it) ? `<figcaption class="mt-1.5 text-[14px] font-semibold leading-snug">${t(it.v, it.vBn)}</figcaption>` : ''}
-            </figure>`;
-          }).join('')}
-        </div>
-      </section>`;
-  }).join('') : `<div class="py-16 text-center">
-      <i data-lucide="image-off" class="w-8 h-8 mx-auto text-ink-3"></i>
+function albumCard(g, { big = false } = {}) {
+  const a = albumOf(g);
+  return `<a href="#gallery/${g.id}" class="group block" aria-label="${lang === 'bn' ? g.bn : g.en}">
+    <div class="relative ${big ? 'aspect-[16/10]' : 'aspect-[4/3]'} rounded-2xl overflow-hidden bg-paper-2">
+      ${photo(coverOf(g), { w: big ? 1400 : 800, cls: 'absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]', sizes: big ? '(min-width: 1024px) 760px, 100vw' : '(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw' })}
+      ${countChips(g.items)}
+    </div>
+    <p class="mt-3.5 text-[13px] font-semibold text-sindoor num">${t(g.when, g.whenBn)}</p>
+    <h3 class="mt-1 font-display ${big ? 'text-[1.9rem]' : 'text-[1.35rem]'} leading-snug group-hover:text-sindoor transition-colors">${t(g.en, g.bn)}</h3>
+    <p class="mt-0.5 text-[14px] text-ink-3">${t(a.en, a.bn)}</p>
+  </a>`;
+}
+
+function galleryIndex() {
+  const tabs = [{ key: 'all', en: 'All', bn: 'সব' }, ...ALBUMS];
+  const types = [['all', 'Albums', 'অ্যালবাম', 'layout-grid'], ['photo', 'Photos', 'ছবি', 'image'], ['video', 'Videos', 'ভিডিও', 'play']];
+  const list = GALLERY.filter((g) => (album === 'all' || g.album === album) && (gYear === 'all' || g.date.startsWith(gYear)));
+  const all = list.flatMap((g) => g.items);
+  const filtered = album !== 'all' || gYear !== 'all';
+  let body = '';
+  let flat = [];
+  if (!list.length) {
+    body = `<div class="py-20 text-center"><i data-lucide="image-off" class="w-8 h-8 mx-auto text-ink-3"></i>
       <p class="mt-3 font-semibold">${t('Nothing here for this choice', 'এই বাছাইয়ে কিছু নেই')}</p>
       <p class="mt-1 text-ink-2">${t('Try another album or year.', 'অন্য অ্যালবাম বা বছর দেখুন।')}</p>
       <button type="button" class="btn btn-line btn-sm mt-4" data-g-reset>${t('Show everything', 'সব দেখান')}</button></div>`;
-
-  applyLang(tabsEl); applyLang($('#media-type')); applyLang($('#g-summary')); applyLang($('#gallery-grid')); refreshIcons();
-  tabsEl.querySelectorAll('[data-album]').forEach((b) => b.addEventListener('click', () => { album = b.dataset.album; renderGallery(); }));
-  $$('#media-type [data-mt]').forEach((b) => b.addEventListener('click', () => { mediaType = b.dataset.mt; renderGallery(); }));
-  $$('#gallery-grid [data-zoom]').forEach((b) => b.addEventListener('click', () => openLightbox(Number(b.dataset.zoom), flat)));
-  $('#gallery-grid [data-g-reset]')?.addEventListener('click', () => { album = 'all'; mediaType = 'all'; gYear = 'all'; renderGallery(); });
+  } else if (mediaType !== 'all') {
+    // A wall of every photo or every video, newest first
+    flat = list.flatMap((g) => g.items.filter((it) => (mediaType === 'video') === isVideo(it)).map((it) => ({ it, g })));
+    body = flat.length ? `<div class="mt-8 grid ${mediaType === 'video' ? 'sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-8' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3'}">
+      ${flat.map(({ it, g }, i) => mediaType === 'video'
+        ? `<figure>${tile(it, i, { cls: 'aspect-video', w: 900, sizes: '(min-width: 1024px) 370px, 50vw' })}
+            <figcaption class="mt-3"><p class="font-semibold leading-snug">${t(it.v, it.vBn)}</p><p class="text-[14px] text-ink-3 mt-0.5"><a href="#gallery/${g.id}" class="hover:text-sindoor">${t(g.en, g.bn)}</a> · <span class="num">${t(g.when, g.whenBn)}</span></p></figcaption></figure>`
+        : tile(it, i)).join('')}</div>`
+      : `<p class="py-16 text-center text-ink-2">${t('No videos in this choice yet.', 'এই বাছাইয়ে এখনো ভিডিও নেই।')}</p>`;
+  } else {
+    const [latest, ...rest] = list;
+    const featured = filtered ? null : latest;
+    const shown = featured ? rest : list;
+    const byYear = years.map((y) => [y, shown.filter((g) => g.date.startsWith(y))]).filter(([, gs]) => gs.length);
+    body = `${featured ? `
+      <div class="mt-10 grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+        <div class="lg:col-span-8">${albumCard(featured, { big: true })}</div>
+        <div class="lg:col-span-4">
+          <p class="eyebrow text-ink-3">${t('Latest album', 'সাম্প্রতিক অ্যালবাম')}</p>
+          <div class="mt-4 grid grid-cols-3 gap-2">${featured.items.slice(0, 3).map((it) => `<a href="#gallery/${featured.id}" class="relative block aspect-square rounded-xl overflow-hidden bg-paper-2" tabindex="-1" aria-hidden="true">${photo(posterOf(it), { w: 300, cls: 'absolute inset-0 w-full h-full object-cover', sizes: '120px' })}${isVideo(it) ? '<span class="absolute inset-0 grid place-items-center"><span class="w-8 h-8 rounded-full bg-white/95 grid place-items-center"><i data-lucide="play" class="w-3.5 h-3.5 ml-0.5 fill-current"></i></span></span>' : ''}</a>`).join('')}</div>
+          <p class="mt-4 text-[15px] text-ink-2">${countLine(featured.items)}</p>
+          <a href="#gallery/${featured.id}" class="btn btn-ink mt-4">${t('Open the album', 'অ্যালবাম খুলুন')}<i data-lucide="arrow-right"></i></a>
+        </div>
+      </div>` : ''}
+      ${byYear.map(([y, gs]) => `
+        <section class="mt-16" aria-label="${lang === 'bn' ? bnNum(y) : y}">
+          <div class="flex items-center gap-4 mb-6"><h2 class="font-display text-[1.75rem] leading-none num">${dn(y)}</h2><span class="text-sm text-ink-3">${t(`${gs.length} album${gs.length === 1 ? '' : 's'}`, `${bnNum(gs.length)}টি অ্যালবাম`)}</span><span class="flex-1 h-px bg-rule"></span></div>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${gs.map((g) => albumCard(g)).join('')}</div>
+        </section>`).join('')}`;
+  }
+  const { p: np, v: nv } = counts(all);
+  return { flat, html: `
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <p class="eyebrow text-sindoor">${t('The para in pictures', 'ছবিতে পাড়া')}</p>
+        <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.2rem,5.5vw,3.4rem)]">${t('Gallery', 'ছবির খাতা')}</h1>
+        <p class="mt-3 text-[17px] text-ink-2 max-w-[56ch]">${t('Every puja, match and camp, kept by date. Open an album to see all its photos and videos.', 'প্রতিটি পূজা, খেলা ও শিবির, তারিখ ধরে রাখা। অ্যালবাম খুললে সব ছবি ও ভিডিও।')}</p>
+      </div>
+      <a href="https://wa.me/919830012345?text=I%20have%20photos%20or%20videos%20for%20the%20club%20gallery" target="_blank" rel="noopener" class="btn btn-line"><i data-lucide="image-plus"></i>${t('Send photos or videos', 'ছবি বা ভিডিও পাঠান')}</a>
+    </div>
+    <div class="mt-8 flex flex-col md:flex-row md:items-center gap-3 py-3 border-y border-rule">
+      <div class="flex gap-1.5 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 md:flex-1 md:min-w-0" role="group" aria-label="${lang === 'bn' ? 'অ্যালবাম' : 'Albums'}">
+        ${tabs.map((a) => `<button type="button" data-album="${a.key}" aria-pressed="${album === a.key}" class="shrink-0 h-9 px-3.5 rounded-full text-[14.5px] font-medium whitespace-nowrap text-ink-2 hover:bg-paper-2 hover:text-ink aria-pressed:bg-ink aria-pressed:text-white">${t(a.en, a.bn)}</button>`).join('')}
+      </div>
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <div class="inline-flex rounded-lg bg-paper-2 p-1" role="group" aria-label="${lang === 'bn' ? 'দেখান' : 'Show'}">
+          ${types.map(([k, en, bn, icon]) => `<button type="button" data-mt="${k}" aria-pressed="${mediaType === k}" class="h-8 px-2.5 sm:px-3 rounded-md text-[13.5px] font-semibold flex items-center gap-1.5 text-ink-2 aria-pressed:bg-card aria-pressed:text-ink aria-pressed:shadow-[0_1px_2px_rgba(0,0,0,.1)]"><i data-lucide="${icon}" class="w-4 h-4"></i>${t(en, bn)}</button>`).join('')}
+        </div>
+        <label><span class="sr-only">${lang === 'bn' ? 'বছর' : 'Year'}</span><select id="g-year" class="field h-10 w-auto pr-8 text-[14.5px]">${[['all', lang === 'bn' ? 'সব বছর' : 'All years'], ...years.map((y) => [y, lang === 'bn' ? bnNum(y) : y])].map(([v, l]) => `<option value="${v}" ${gYear === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      </div>
+    </div>
+    <p class="mt-4 text-sm text-ink-3" aria-live="polite">${t(`${list.length} album${list.length === 1 ? '' : 's'} · ${np} photo${np === 1 ? '' : 's'} · ${nv} video${nv === 1 ? '' : 's'}`, `${bnNum(list.length)}টি অ্যালবাম · ${bnNum(np)}টি ছবি · ${bnNum(nv)}টি ভিডিও`)}</p>
+    ${body}` };
 }
-$('#g-year').addEventListener('change', (e) => { gYear = e.target.value; renderGallery(); });
+
+function galleryAlbum(g) {
+  const a = albumOf(g);
+  const flat = g.items.map((it) => ({ it, g }));
+  const i0 = GALLERY.indexOf(g);
+  const more = [GALLERY[i0 + 1], GALLERY[i0 - 1], GALLERY[i0 + 2]].filter(Boolean).slice(0, 3);
+  const share = `https://wa.me/?text=${encodeURIComponent(`${g.en} · Gede Maitree Club gallery\n${location.origin}${location.pathname}#gallery/${g.id}`)}`;
+  return { flat, html: `
+    <a href="#gallery" class="inline-flex items-center gap-1.5 text-[15px] font-semibold text-ink-2 hover:text-ink"><i data-lucide="arrow-left" class="w-4 h-4"></i>${t('All albums', 'সব অ্যালবাম')}</a>
+    <div class="mt-6 flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-[60ch]">
+        <p class="eyebrow text-sindoor num">${t(g.when, g.whenBn)} · ${t(a.en, a.bn)}</p>
+        <h1 class="mt-3 font-display text-[clamp(2.2rem,5vw,3.5rem)] leading-[1.05]">${t(g.en, g.bn)}</h1>
+        <p class="mt-3 text-[16px] text-ink-2">${countLine(g.items)}</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="${share}" target="_blank" rel="noopener" class="btn btn-line"><i data-lucide="share-2"></i>${t('Share', 'শেয়ার')}</a>
+        <a href="https://wa.me/919830012345?text=${encodeURIComponent(`I have photos for the album: ${g.en}`)}" target="_blank" rel="noopener" class="btn btn-ink"><i data-lucide="image-plus"></i>${t('Add yours', 'আপনার ছবি দিন')}</a>
+      </div>
+    </div>
+    <div class="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 grid-flow-dense">
+      ${flat.map(({ it }, i) => `<div class="${i === 0 && flat.length > 2 ? 'col-span-2 row-span-2' : ''}">${tile(it, i, i === 0 && flat.length > 2 ? { w: 1200, sizes: '(min-width: 1024px) 570px, 100vw' } : {})}</div>`).join('')}
+    </div>
+    <p class="mt-4 text-[13px] text-ink-3">${t('Tap a photo to see it large. Use the arrow keys or swipe to move through the album.', 'ছবিতে চাপ দিলে বড় দেখাবে। তির চিহ্ন বা সোয়াইপে পরের ছবি।')}</p>
+    ${more.length ? `<section class="mt-20">
+      <div class="flex items-center gap-4 mb-6"><h2 class="font-display text-[1.75rem] leading-none">${t('More albums', 'আরও অ্যালবাম')}</h2><span class="flex-1 h-px bg-rule"></span><a href="#gallery" class="text-[15px] font-semibold text-sindoor hover:underline">${t('See all', 'সব দেখুন')}</a></div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${more.map((m) => albumCard(m)).join('')}</div></section>` : ''}` };
+}
+
+function renderGallery() {
+  const root = $('#gallery-root');
+  const g = gOpen && GALLERY.find((x) => x.id === gOpen);
+  const { html, flat } = g ? galleryAlbum(g) : galleryIndex();
+  root.innerHTML = html;
+  applyLang(root); refreshIcons();
+  root.querySelectorAll('[data-album]').forEach((b) => b.addEventListener('click', () => { album = b.dataset.album; renderGallery(); }));
+  root.querySelectorAll('[data-mt]').forEach((b) => b.addEventListener('click', () => { mediaType = b.dataset.mt; renderGallery(); }));
+  root.querySelector('#g-year')?.addEventListener('change', (e) => { gYear = e.target.value; renderGallery(); });
+  root.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => openLightbox(Number(b.dataset.zoom), flat)));
+  root.querySelector('[data-g-reset]')?.addEventListener('click', () => { album = 'all'; mediaType = 'all'; gYear = 'all'; renderGallery(); });
+}
 
 function openLightbox(start, list) {
   let i = start;
   const back = document.activeElement;
   const box = document.createElement('div');
-  box.className = 'fixed inset-0 z-[80] bg-black/90 flex flex-col';
+  box.className = 'fixed inset-0 z-[80] bg-[#0b0c0e]/[.97] flex flex-col';
   box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', lang === 'bn' ? 'ছবি দেখা' : 'Gallery viewer');
   const step = (d) => { i = (i + d + list.length) % list.length; draw(); };
   const draw = () => {
@@ -272,7 +376,7 @@ function tick() {
   const d = Math.floor(s / 86400); s -= d * 86400;
   const h = Math.floor(s / 3600); s -= h * 3600;
   const m = Math.floor(s / 60);
-  const cell = (v, en, bn) => `<div class="bg-white/60 rounded-[4px] px-2.5 py-1.5 min-w-[54px]"><div class="font-display text-[1.6rem] leading-none">${dn(String(v).padStart(2, '0'))}</div><div class="text-[11.5px] font-semibold mt-0.5 text-ink">${t(en, bn)}</div></div>`;
+  const cell = (v, en, bn) => `<div class="bg-white/55 rounded-lg px-2.5 py-1.5 min-w-[56px]"><div class="font-display text-[1.6rem] leading-none">${dn(String(v).padStart(2, '0'))}</div><div class="text-[11.5px] font-semibold mt-0.5 text-ink">${t(en, bn)}</div></div>`;
   $('#countdown').innerHTML = cell(d, 'days', 'দিন') + cell(h, 'hours', 'ঘণ্টা') + cell(m, 'minutes', 'মিনিট');
   $('#countdown').setAttribute('aria-label', lang === 'bn' ? `আর ${bnNum(d)} দিন ${bnNum(h)} ঘণ্টা` : `${d} days ${h} hours to go`);
   applyLang($('#countdown'));
@@ -284,14 +388,14 @@ document.addEventListener('langchange', tick);
 
 /* ---------- Event rows ---------- */
 const eventRow = (e) => `
-  <li class="grid grid-cols-[72px_1fr] sm:grid-cols-[96px_1fr_auto] gap-x-5 gap-y-1 py-5 border-b border-rule items-center">
-    <div class="row-span-2 sm:row-span-1 text-sindoor leading-none">
-      <div class="font-display text-[3.2rem] num">${dn(e.day)}</div>
-      <div class="text-[13px] font-semibold tracking-wide mt-1">${t(e.mon.toUpperCase(), e.monBn)}</div>
+  <li class="grid grid-cols-[56px_1fr] sm:grid-cols-[64px_1fr_auto] gap-x-4 sm:gap-x-5 gap-y-2 py-4 border-b border-rule items-center">
+    <div class="row-span-2 sm:row-span-1 self-start sm:self-center w-14 sm:w-16 rounded-xl border border-rule bg-card text-center overflow-hidden">
+      <div class="bg-sindoor text-white text-[11px] font-bold tracking-wide py-0.5">${t(e.mon.toUpperCase(), e.monBn)}</div>
+      <div class="font-display text-[1.6rem] sm:text-[1.8rem] leading-[1.35] num">${dn(e.day)}</div>
     </div>
     <div class="min-w-0">
-      <h3 class="poster text-[1.75rem]"><a href="#event/${e.id}" class="hover:underline decoration-2 underline-offset-4">${t(e.title, e.titleBn)}</a></h3>
-      <p class="text-[15px] text-ink-2 mt-0.5">${t(e.place, e.placeBn)} · ${eventTime(e)}</p>
+      <h3 class="font-display text-[1.2rem] sm:text-[1.35rem] leading-snug"><a href="#event/${e.id}" class="hover:text-sindoor">${t(e.title, e.titleBn)}</a></h3>
+      <p class="text-[14.5px] text-ink-2 mt-0.5">${t(e.place, e.placeBn)} · ${eventTime(e)}</p>
     </div>
     <div class="flex items-center gap-2 sm:justify-end">
       ${e.pass ? `<span class="chip bg-sindoor-wash text-sindoor-deep"><i data-lucide="ticket"></i>${t('Pass in app', 'অ্যাপে পাস')}</span>` : `<span class="chip bg-paper-2 text-ink-2"><i data-lucide="users"></i>${t('Open to all', 'সবার জন্য')}</span>`}
@@ -338,21 +442,19 @@ document.addEventListener('click', (e) => {
 });
 
 /* Puja transparency (home) */
-renderPujaBreakdown('#puja-total', '#puja-bar', '#puja-legend');
-document.addEventListener('langchange', () => renderPujaBreakdown('#puja-total', '#puja-bar', '#puja-legend'));
 
 /* ---------- Catering ---------- */
 $('#packages').innerHTML = cateringPackages.map((p) => `
-  <article class="relative bg-card rounded-lg border-2 ${p.popular ? 'border-sindoor' : 'border-ink'} p-6 flex flex-col">
+  <article class="relative card card-hover p-6 flex flex-col ${p.popular ? '!border-sindoor ring-1 ring-sindoor' : ''}">
     ${p.popular ? `<span class="absolute -top-3.5 left-6 chip bg-sindoor text-white">${t('Most booked', 'সবচেয়ে জনপ্রিয়')}</span>` : ''}
-    <h3 class="poster text-4xl">${t(p.name, p.nameBn)}</h3>
+    <h3 class="font-display text-[1.9rem] leading-tight">${t(p.name, p.nameBn)}</h3>
     <p class="text-[15px] text-ink-2 mt-1">${t(p.for, p.forBn)}</p>
     <p class="mt-4 flex items-baseline gap-1.5"><span class="font-display text-4xl text-turmeric">${inr(p.rate)}</span><span class="text-sm text-ink-3">${t('per guest', 'অতিথি প্রতি')}</span></p>
-    <ul class="mt-5 text-[15px] divide-y-2 divide-dotted divide-sindoor/70 border-y-2 border-dotted border-sindoor/70">
-      ${p.menu.map((m, i) => `<li class="py-2">${t(m, p.menuBn[i])}</li>`).join('')}
+    <ul class="mt-5 pt-5 border-t border-rule space-y-2.5 text-[15px]">
+      ${p.menu.map((m, i) => `<li class="flex gap-2.5"><i data-lucide="check" class="w-[18px] h-[18px] mt-0.5 shrink-0 text-turmeric"></i><span>${t(m, p.menuBn[i])}</span></li>`).join('')}
     </ul>
     <p class="mt-4 text-sm text-ink-3">${t(`Minimum ${p.min} guests`, `ন্যূনতম ${bnNum(p.min)} জন অতিথি`)}</p>
-    <button type="button" class="btn btn-line btn-sm mt-5 self-start" data-pick-pkg="${p.id}">${t('Get a quote for this', 'এটির দাম জানুন')}<i data-lucide="arrow-down"></i></button>
+    <button type="button" class="btn ${p.popular ? 'btn-primary' : 'btn-line'} mt-6 w-full" data-pick-pkg="${p.id}">${t('Get a quote for this', 'এটির দাম জানুন')}<i data-lucide="arrow-down"></i></button>
   </article>`).join('');
 function pkgOptions() {
   const cur = $('#pkg-select').value;
@@ -418,31 +520,105 @@ function renderPlants() {
     const q = basket.get(p.id) || 0;
     const nm = lang === 'bn' ? p.nameBn : p.name;
     return `
-    <li class="flex items-center gap-4 py-4 border-b border-rule">
-      <div class="w-16 h-16 rounded-lg bg-tulsi-wash text-tulsi grid place-items-center shrink-0 relative">
-        <i data-lucide="${p.icon}" class="w-7 h-7"></i>
-        ${p.isNew ? `<span class="absolute -top-1.5 -right-1.5 chip h-5 px-1.5 text-[11px] bg-marigold text-ink">${t('New', 'নতুন')}</span>` : ''}
+    <li class="group flex flex-col">
+      <button type="button" class="relative block aspect-square rounded-2xl overflow-hidden bg-tulsi-wash text-left" data-plant="${p.id}" aria-label="${lang === 'bn' ? `${nm}: বিস্তারিত` : `${nm}: details`}">
+        ${PHOTOS[p.id] ? photo(p.id, { w: 500, cls: `absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] ${p.stock === 0 ? 'grayscale opacity-70' : ''}`, sizes: '(min-width: 1024px) 260px, 50vw' }) : `<span class="absolute inset-0 grid place-items-center text-tulsi"><i data-lucide="${p.icon}" class="w-10 h-10"></i></span>`}
+        <span class="absolute left-2.5 top-2.5 flex gap-1.5">${p.isNew ? `<span class="chip h-6 px-2 text-[12px] bg-marigold text-ink">${t('New', 'নতুন')}</span>` : ''}${p.stock === 0 ? `<span class="chip h-6 px-2 text-[12px] bg-ink text-white">${t('Out of stock', 'স্টক নেই')}</span>` : p.stock <= 10 ? `<span class="chip h-6 px-2 text-[12px] bg-white text-sindoor-deep">${t(`Only ${p.stock} left`, `মাত্র ${bnNum(p.stock)}টি`)}</span>` : ''}</span>
+        <span class="absolute right-2.5 bottom-2.5 w-8 h-8 rounded-full bg-white/95 text-ink grid place-items-center shadow opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true"><i data-lucide="maximize-2" class="w-4 h-4"></i></span>
+      </button>
+      <div class="mt-3 flex-1">
+        <button type="button" class="text-left font-semibold leading-snug hover:text-tulsi" data-plant="${p.id}">${t(p.name, p.nameBn)}</button>
+        <p class="text-[13.5px] text-ink-3 mt-0.5">${lang === 'bn' ? p.name : p.nameBn} · ${t(p.pot, p.potBn)}</p>
       </div>
-      <div class="min-w-0 flex-1">
-        <p class="font-semibold leading-tight">${t(p.name, p.nameBn)}</p>
-        <p class="text-sm text-ink-3 mt-0.5">${lang === 'bn' ? p.name : p.nameBn} · ${p.pot}</p>
-        <p class="mt-1 flex items-center gap-2"><span class="font-semibold">${inr(p.price)}</span>${stockLabel(p)}</p>
+      <div class="mt-2.5 flex items-center justify-between gap-2">
+        <span class="font-semibold text-[17px] num">${inr(p.price)}</span>
+        ${p.stock === 0 ? `<span class="text-[13px] text-ink-3">${t('Back soon', 'শিগগির আসবে')}</span>` : q === 0
+          ? `<button class="btn btn-sm border border-tulsi/40 text-tulsi hover:bg-tulsi-wash" data-add="${p.id}" aria-label="${lang === 'bn' ? `${nm} যোগ করুন` : `Add ${nm}`}"><i data-lucide="plus"></i>${t('Add', 'যোগ')}</button>`
+          : `<div class="flex items-center rounded-lg bg-tulsi text-white" role="group" aria-label="${nm}">
+               <button class="w-9 h-9 grid place-items-center" data-dec="${p.id}" aria-label="${lang === 'bn' ? 'একটি কমান' : 'Remove one'}"><i data-lucide="minus" class="w-4 h-4"></i></button>
+               <span class="w-6 text-center font-semibold" aria-live="polite">${dn(String(q))}</span>
+               <button class="w-9 h-9 grid place-items-center disabled:opacity-40" data-add="${p.id}" aria-label="${lang === 'bn' ? 'আরও একটি' : 'Add one'}" ${q >= p.stock ? 'disabled' : ''}><i data-lucide="plus" class="w-4 h-4"></i></button>
+             </div>`}
       </div>
-      ${p.stock === 0 ? '' : q === 0
-        ? `<button class="btn btn-line btn-sm border-tulsi/40 text-tulsi hover:bg-tulsi-wash" data-add="${p.id}" aria-label="${lang === 'bn' ? `${nm} যোগ করুন` : `Add ${nm}`}"><i data-lucide="plus"></i>${t('Add', 'যোগ')}</button>`
-        : `<div class="flex items-center rounded-lg bg-tulsi text-white" role="group" aria-label="${nm}">
-             <button class="w-9 h-9 grid place-items-center" data-dec="${p.id}" aria-label="${lang === 'bn' ? 'একটি কমান' : 'Remove one'}"><i data-lucide="minus" class="w-4 h-4"></i></button>
-             <span class="w-6 text-center font-semibold" aria-live="polite">${dn(String(q))}</span>
-             <button class="w-9 h-9 grid place-items-center disabled:opacity-40" data-add="${p.id}" aria-label="${lang === 'bn' ? 'আরও একটি' : 'Add one'}" ${q >= p.stock ? 'disabled' : ''}><i data-lucide="plus" class="w-4 h-4"></i></button>
-           </div>`}
     </li>`;
   }).join('');
+  $('#plant-list').querySelectorAll('[data-plant]').forEach((b) => b.addEventListener('click', () => openPlant(b.dataset.plant)));
   const keepFocus = (sel) => requestAnimationFrame(() => $(sel)?.focus());
   $('#plant-list').querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => { const p = plants.find((x) => x.id === b.dataset.add); basket.set(p.id, Math.min(p.stock, (basket.get(p.id) || 0) + 1)); renderPlants(); keepFocus(`#plant-list [data-add="${p.id}"]`); }));
   $('#plant-list').querySelectorAll('[data-dec]').forEach((b) => b.addEventListener('click', () => { const id = b.dataset.dec; const v = (basket.get(id) || 0) - 1; if (v <= 0) basket.delete(id); else basket.set(id, v); renderPlants(); keepFocus(v > 0 ? `#plant-list [data-dec="${id}"]` : `#plant-list [data-add="${id}"]`); }));
   applyLang($('#plant-list'));
   refreshIcons();
   renderBasket();
+}
+
+/* Plant window: photo, care, price and quantity */
+function openPlant(id) {
+  const p = plants.find((x) => x.id === id);
+  const info = plantInfo[id] || {};
+  const back = document.activeElement;
+  const LIGHT = { sun: ['Full sun', 'পুরো রোদ', 'sun'], part: ['Some sun', 'হালকা রোদ', 'cloud-sun'], shade: ['Indoor light', 'ঘরের আলো', 'lamp'] };
+  const WATER = { often: ['Water daily', 'রোজ জল', 'droplets'], moderate: ['Every 2–3 days', '২–৩ দিন অন্তর', 'droplet'], little: ['Once a week', 'সপ্তাহে একবার', 'droplet'] };
+  const facts = [LIGHT[info.light], WATER[info.water], [p.pot, p.potBn, 'ruler']].filter(Boolean);
+  let qty = Math.max(1, basket.get(id) || 1);
+  const wrap = document.createElement('div');
+  wrap.className = 'fixed inset-0 z-[85] flex items-end sm:items-center justify-center sm:p-6';
+  wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', lang === 'bn' ? p.nameBn : p.name);
+  const draw = () => {
+    const member = Math.round(p.price * 0.9);
+    wrap.innerHTML = `
+      <div class="absolute inset-0 bg-black/55" data-x></div>
+      <div class="relative w-full sm:max-w-[820px] max-h-[92dvh] overflow-y-auto bg-paper rounded-t-3xl sm:rounded-3xl shadow-2xl grid sm:grid-cols-2 rise">
+        <div class="relative aspect-[4/3] sm:aspect-auto sm:min-h-[460px] bg-tulsi-wash">
+          ${PHOTOS[id] ? photo(id, { w: 900, cls: 'absolute inset-0 w-full h-full object-cover', sizes: '(min-width: 640px) 410px, 100vw', eager: true }) : ''}
+          <span class="absolute left-3 bottom-3 text-[11.5px] text-white bg-black/50 px-1.5 rounded">${PHOTOS[id] ? credit(id) : ''}</span>
+          <button type="button" data-x class="absolute right-3 top-3 w-10 h-10 rounded-full bg-white/95 text-ink grid place-items-center shadow sm:hidden" aria-label="${lang === 'bn' ? 'বন্ধ' : 'Close'}"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="p-6 sm:p-8 flex flex-col">
+          <div class="flex items-start gap-3">
+            <div class="min-w-0">
+              <p class="eyebrow text-tulsi">${t(plantCats[p.cat]?.en || 'Plant', plantCats[p.cat]?.bn || 'গাছ')}</p>
+              <h2 class="mt-2 font-display text-[1.9rem] leading-tight">${t(p.name, p.nameBn)}</h2>
+              <p class="text-[15px] text-ink-3">${lang === 'bn' ? p.name : p.nameBn}</p>
+            </div>
+            <button type="button" data-x class="ml-auto hidden sm:grid w-10 h-10 rounded-full hover:bg-paper-2 place-items-center shrink-0" aria-label="${lang === 'bn' ? 'বন্ধ' : 'Close'}"><i data-lucide="x" class="w-5 h-5"></i></button>
+          </div>
+          ${info.about ? `<p class="mt-4 text-[16px] text-ink-2 leading-relaxed">${t(...info.about)}</p>` : ''}
+          <ul class="mt-5 grid grid-cols-3 gap-2">${facts.map(([en, bn, ic]) => `<li class="rounded-xl bg-paper-2 px-3 py-3 text-center"><i data-lucide="${ic}" class="w-5 h-5 mx-auto text-tulsi"></i><span class="block mt-1.5 text-[13px] font-semibold leading-tight">${t(en, bn)}</span></li>`).join('')}</ul>
+          ${info.tip ? `<p class="mt-4 text-[14.5px] text-ink-2 flex gap-2"><i data-lucide="lightbulb" class="w-[18px] h-[18px] text-marigold shrink-0 mt-0.5"></i><span>${t(...info.tip)}</span></p>` : ''}
+          <div class="mt-6 pt-5 border-t border-rule flex items-end justify-between gap-3">
+            <div>
+              <p class="font-display text-[2rem] leading-none num">${inr(p.price)}</p>
+              <p class="mt-1.5 text-[13.5px] text-ink-2">${t(`Members ${inr(member)}`, `সদস্যদের ${inr(member)}`)}</p>
+            </div>
+            <p class="text-[13.5px] ${p.stock === 0 ? 'text-ink-3' : p.stock <= 10 ? 'text-sindoor-deep font-semibold' : 'text-tulsi font-semibold'}">${p.stock === 0 ? t('Out of stock', 'স্টক নেই') : p.stock <= 10 ? t(`Only ${p.stock} left`, `মাত্র ${bnNum(p.stock)}টি বাকি`) : t('In stock', 'স্টকে আছে')}</p>
+          </div>
+          ${p.stock === 0
+            ? `<a href="https://wa.me/919830012345?text=${encodeURIComponent(`Please tell me when ${p.name} is back at the nursery.`)}" target="_blank" rel="noopener" class="btn btn-line h-12 mt-5"><i data-lucide="bell"></i>${t('Tell me when it is back', 'এলে জানাবেন')}</a>`
+            : `<div class="mt-5 flex items-center gap-3">
+                <div class="flex items-center rounded-xl border border-rule h-12" role="group" aria-label="${lang === 'bn' ? 'সংখ্যা' : 'Quantity'}">
+                  <button type="button" class="w-11 h-full grid place-items-center disabled:opacity-35" data-q="-1" ${qty <= 1 ? 'disabled' : ''} aria-label="${lang === 'bn' ? 'কমান' : 'Less'}"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                  <span class="w-8 text-center font-semibold num" aria-live="polite">${dn(String(qty))}</span>
+                  <button type="button" class="w-11 h-full grid place-items-center disabled:opacity-35" data-q="1" ${qty >= p.stock ? 'disabled' : ''} aria-label="${lang === 'bn' ? 'বাড়ান' : 'More'}"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <button type="button" class="btn flex-1 h-12 bg-tulsi text-white hover:bg-[#1f5029]" data-put><i data-lucide="shopping-basket"></i>${basket.get(id) ? t(`Update basket · ${inr(qty * p.price)}`, `ঝুড়ি বদলান · ${inr(qty * p.price)}`) : t(`Add to basket · ${inr(qty * p.price)}`, `ঝুড়িতে দিন · ${inr(qty * p.price)}`)}</button>
+              </div>`}
+          <p class="mt-4 text-[13px] text-ink-3">${t('Pick up at the club gate, 7–10 am and 4–7 pm. Pay at the gate in cash or UPI.', 'ক্লাবের গেট থেকে নিন, সকাল ৭–১০টা ও বিকেল ৪–৭টা। গেটে নগদ বা ইউপিআই-এ দাম দিন।')}</p>
+        </div>
+      </div>`;
+    applyLang(wrap); refreshIcons();
+    wrap.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { qty = Math.min(p.stock, Math.max(1, qty + Number(b.dataset.q))); draw(); wrap.querySelector(`[data-q="${b.dataset.q}"]`)?.focus(); }));
+    wrap.querySelector('[data-put]')?.addEventListener('click', () => { basket.set(id, qty); renderPlants(); close(); toast(`<i data-lucide="shopping-basket"></i>${t(`${qty} × ${p.name} in your basket`, `ঝুড়িতে ${bnNum(qty)} × ${p.nameBn}`)}`); });
+    wrap.querySelectorAll('[data-x]').forEach((b) => b.addEventListener('click', close));
+  };
+  const key = (e) => {
+    if (e.key === 'Escape') close();
+    if (e.key === 'Tab') { const f = [...wrap.querySelectorAll('button:not([disabled]), a[href]')]; if (!f.length) return; const first = f[0], last = f[f.length - 1]; if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } }
+  };
+  function close() { wrap.remove(); document.removeEventListener('keydown', key); document.documentElement.style.overflow = ''; back?.focus?.(); }
+  document.addEventListener('keydown', key);
+  document.documentElement.style.overflow = 'hidden';
+  document.body.append(wrap); draw();
+  (wrap.querySelector('[data-put]') || wrap.querySelector('[data-x]:not(.sm\\:hidden)') || wrap.querySelector('[data-x]'))?.focus();
 }
 function renderBasket() {
   const items = [...basket.entries()].map(([id, q]) => ({ p: plants.find((x) => x.id === id), q }));
@@ -464,7 +640,7 @@ function renderBasket() {
 function renderCommittee() {
   $('#committee-list').innerHTML = committee.map((c) => {
     const ask = askAbout[c.role] || ['', ''];
-    return `<li class="rounded-lg border border-rule p-5">
+    return `<li class="card card-hover p-6">
       <div class="flex items-center gap-4">
         <span class="w-14 h-14 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-display text-xl shrink-0" aria-hidden="true">${initials(c)}</span>
         <div class="min-w-0"><p class="font-display text-xl leading-tight">${t(c.name, c.nameBn)}</p><p class="text-[15px] text-sindoor font-semibold">${t(c.role, c.roleBn)}</p></div>
@@ -509,16 +685,60 @@ aadhaar.addEventListener('input', (e) => { e.target.value = e.target.value.repla
 const joinForm = $('#join-form');
 joinForm.querySelector('input[type="tel"]').dataset.phone = '';
 enhanceForm(joinForm);
+/* Join: three steps, each checked before moving on, then a review */
+let joinStep = 1;
+const stepEl = (n) => joinForm.querySelector(`[data-step="${n}"]`);
+function showJoinStep(n, { focus = true } = {}) {
+  joinStep = n;
+  [1, 2, 3].forEach((k) => { stepEl(k).hidden = k !== n; });
+  $('#join-step-n').textContent = lang === 'bn' ? bnNum(n) : n;
+  $$('#join-steps [data-dot]').forEach((d) => {
+    const k = Number(d.dataset.dot);
+    d.classList.toggle('text-ink-3', k > n);
+    d.firstElementChild.className = `block h-1.5 rounded-full ${k < n ? 'bg-tulsi' : k === n ? 'bg-sindoor' : 'bg-paper-3'}`;
+  });
+  $('#join-back').hidden = n === 1;
+  $('#join-next').hidden = n === 3;
+  $('#join-send').hidden = n !== 3;
+  if (n === 3) renderJoinReview();
+  if (focus) {
+    joinForm.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    stepEl(n).querySelector('h2')?.setAttribute('tabindex', '-1');
+    stepEl(n).querySelector('h2')?.focus({ preventScroll: true });
+  }
+}
+function renderJoinReview() {
+  const v = (sel) => stepEl(1).querySelector(sel)?.value?.trim() || '';
+  const fam = [...$('#dependents').querySelectorAll('input')].map((i) => i.value.trim()).filter(Boolean);
+  const rows = [
+    [t('Name', 'নাম'), v('#join-name'), 1],
+    [t('Mobile', 'মোবাইল'), stepEl(1).querySelector('input[type=tel]').value, 1],
+    [t('Blood group', 'রক্তের গ্রুপ'), stepEl(1).querySelector('select').selectedOptions[0]?.textContent || '', 1],
+    [t('Address', 'ঠিকানা'), stepEl(2).querySelector('textarea').value.trim(), 2],
+    [t('Family on this form', 'এই ফর্মে পরিবার'), fam.length ? fam.join(', ') : t('Only you', 'শুধু আপনি'), 2],
+  ];
+  $('#join-review').innerHTML = rows.map(([k, val, step]) => `<div class="flex items-start gap-3 px-4 py-3"><span class="w-36 shrink-0 text-ink-2">${k}</span><span class="flex-1 min-w-0 break-words font-medium">${val || '—'}</span><button type="button" class="text-[14px] font-semibold text-sindoor hover:underline shrink-0" data-goto="${step}">${t('Edit', 'বদলান')}</button></div>`).join('');
+  applyLang($('#join-review'));
+  $$('#join-review [data-goto]').forEach((btn) => btn.addEventListener('click', () => showJoinStep(Number(btn.dataset.goto))));
+}
+$('#join-next').addEventListener('click', () => { if (validate(stepEl(joinStep))) showJoinStep(joinStep + 1); });
+$('#join-back').addEventListener('click', () => showJoinStep(joinStep - 1));
+joinForm.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.tagName === 'INPUT' && joinStep < 3) { e.preventDefault(); $('#join-next').click(); }
+});
 joinForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  if (!validate(joinForm)) return;
+  if (joinStep < 3) { $('#join-next').click(); return; }
+  if (!validate(stepEl(3))) return;
   const fam = [...$('#dependents').querySelectorAll('input')].filter((i) => i.value.trim()).length;
   confirmPanel(e.currentTarget, 'Application received', 'আবেদন পেয়েছি', [
     [fam ? `Your form covers you and ${fam} family member${fam === 1 ? '' : 's'}. Each of you gets an ID card.` : 'Your form is with the committee.', fam ? `আপনার ফর্মে আপনি ও পরিবারের ${bnNum(fam)} জন। প্রত্যেকে আইডি কার্ড পাবেন।` : 'আপনার ফর্ম কমিটির কাছে।'],
-    ['Bring your Aadhaar card to the club room once. They approve the form at the next meeting, Sunday 16 Nov, and send you an SMS.', 'আধার কার্ড একবার ক্লাব ঘরে দেখিয়ে যাবেন। পরের সভায় (রবি ১৬ নভে) অনুমোদন হবে, এসএমএস পাবেন।'],
+    ['Bring your Aadhaar card to the club room once. The committee approves forms at the next meeting, Sunday 16 Nov, and sends you an SMS.', 'আধার কার্ড একবার ক্লাব ঘরে দেখিয়ে যাবেন। পরের সভায় (রবি ১৬ নভে) অনুমোদন হবে, এসএমএস পাবেন।'],
     ['Pay the ₹500 admission and your member card appears in the app.', '₹৫০০ ভর্তি ফি দিলে সদস্য কার্ড অ্যাপে চলে আসবে।'],
-  ], ['Edit the application', 'আবেদন বদলান'], { refNo: ref('GMC-J') });
+  ], ['Edit the application', 'আবেদন বদলান'], { refNo: ref('GMC-J'), onReset: () => showJoinStep(1, { focus: false }) });
 });
+showJoinStep(1, { focus: false });
+document.addEventListener('langchange', () => { $('#join-step-n').textContent = lang === 'bn' ? bnNum(joinStep) : joinStep; if (joinStep === 3) renderJoinReview(); });
 
 document.addEventListener('langchange', () => { renderPlants(); });
 
@@ -564,7 +784,7 @@ document.head.append(ld);
 const TITLES = {
   home: ['Gede Maitree Club · Netaji Para', 'গেদে মৈত্রী ক্লাব · নেতাজি পাড়া'],
   events: ['Events', 'অনুষ্ঠান'], notices: ['Notices', 'নোটিস'], catering: ['Maitree Serving', 'মৈত্রী পরিবেশন'],
-  nursery: ['Maitree Nursery', 'মৈত্রী নার্সারি'], gallery: ['Gallery', 'ছবি'], committee: ['Committee', 'কমিটি'],
+  nursery: ['Maitree Nursery', 'মৈত্রী নার্সারি'], gallery: ['Gallery', 'ছবি'], committee: ['About the club', 'ক্লাবের কথা'],
   chanda: ['Chanda & accounts', 'চাঁদা ও হিসাব'], contact: ['Contact & directions', 'যোগাযোগ ও পথ'],
   join: ['Become a member', 'সদস্য হোন'], privacy: ['Privacy & terms', 'গোপনীয়তা ও শর্ত'],
   notfound: ['Page not found', 'পাতা পাওয়া যায়নি'], event: ['Event', 'অনুষ্ঠান'], notice: ['Notice', 'নোটিস'],
@@ -610,6 +830,7 @@ function onRoute(screen, param) {
   }
   let title = () => null;
   if (screen === 'event') { renderEventDetail(param); title = () => { const e = events.find((x) => x.id === param); return e ? (lang === 'bn' ? e.titleBn : e.title) : null; }; scrollTo({ top: 0 }); }
+  if (screen === 'gallery') { const g = GALLERY.find((x) => x.id === param); gOpen = g ? g.id : null; renderGallery(); if (g) { title = () => (lang === 'bn' ? g.bn : g.en); } scrollTo({ top: 0 }); }
   if (screen === 'notice') { renderNoticeDetail(param); title = () => { const n = publicNotices.find((x) => x.id === param); return n ? (lang === 'bn' ? n.titleBn : n.title) : null; }; scrollTo({ top: 0 }); }
   markNav(screen);
   Object.assign(current, { screen, param, title });

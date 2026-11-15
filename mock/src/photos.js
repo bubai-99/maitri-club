@@ -21,6 +21,21 @@ export const PHOTOS = {
   blood: { src: u('1536856136534-bb679c52a9aa'), by: 'LuAnn Hunt', page: 'https://unsplash.com/photos/X20g2GQsVdA', alt: 'A volunteer donating blood at a blood drive', altBn: 'রক্তদান শিবিরে রক্ত দিচ্ছেন একজন' },
   garlands: { src: u('1789971649660-eefc756ee5dd'), by: 'Sangram Rakate', page: 'https://unsplash.com/photos/V15kJDxvqKk', alt: 'Garlands of marigold and jasmine', altBn: 'গাঁদা ও জুঁইয়ের মালা' },
   marigold: { src: u('1716747449890-d3f1cfa83d2f'), by: 'Aravind Reddy Tarugu', page: 'https://unsplash.com/photos/F0jsLyrEnQI', alt: 'A marigold in full bloom', altBn: 'পূর্ণ প্রস্ফুটিত গাঁদা ফুল' },
+/* Nursery: one photo per plant (key = plant id) */
+  p1: { src: u('1567990989224-6441e1483ac8'), by: 'Robert Thiemann', page: 'https://unsplash.com/photos/TTaxId0Im2s', alt: 'A red hibiscus flower', altBn: 'লাল জবা ফুল' },
+  p2: { src: u('1728046591877-95c5cce10910'), by: 'Anindita Barma', page: 'https://unsplash.com/photos/Pnj57CLXSec', alt: 'Shiuli flowers with orange stems on a white cloth', altBn: 'সাদা কাপড়ে কমলা বোঁটার শিউলি ফুল' },
+  p3: { src: u('1728046726837-9798a510fe36'), by: 'Anindita Barma', page: 'https://unsplash.com/photos/BQ301L37Cm0', alt: 'White rajanigandha flowers in a wooden bowl', altBn: 'কাঠের বাটিতে রজনীগন্ধা' },
+  p4: { src: u('1716747449890-d3f1cfa83d2f'), by: 'Aravind Reddy Tarugu', page: 'https://unsplash.com/photos/F0jsLyrEnQI', alt: 'A marigold in full bloom', altBn: 'পূর্ণ প্রস্ফুটিত গাঁদা ফুল' },
+  p5: { src: u('1601021215663-ee72b7063578'), by: 'Timo C. Dinger', page: 'https://unsplash.com/photos/GjQ9mpJg4OQ', alt: 'A dahlia flower', altBn: 'ডালিয়া ফুল' },
+  p6: { src: u('1724073339133-938ada52e511'), by: 'Anh Tuan Thomas', page: 'https://unsplash.com/photos/Pyx3V0XO0gU', alt: 'Yellow chrysanthemum flowers', altBn: 'হলুদ চন্দ্রমল্লিকা' },
+  p7: { src: u('1669131080043-f69be198e64f'), by: 'Liz Pullan Pattathy', page: 'https://unsplash.com/photos/sotuQuIBxKM', alt: 'A tulsi plant', altBn: 'তুলসী গাছ' },
+  p8: { src: u('1509423350716-97f9360b4e09'), by: 'Stephanie Harvey', page: 'https://unsplash.com/photos/T0inbt7nRME', alt: 'Aloe vera in a white pot', altBn: 'সাদা টবে ঘৃতকুমারী' },
+  p9: { src: u('1526438281712-35d96b8586e5'), by: 'Dan Gold', page: 'https://unsplash.com/photos/cUaXzFXVKkA', alt: 'Lemons on the tree', altBn: 'গাছে লেবু' },
+  p10: { src: u('1633349202776-39545fa23de7'), by: 'Anisa Wulan Asri', page: 'https://unsplash.com/photos/dSb8R7QAeLM', alt: 'Green guavas on a branch', altBn: 'ডালে সবুজ পেয়ারা' },
+  p11: { src: u('1579621970795-87facc2f976d'), by: 'micheile henderson', page: 'https://unsplash.com/photos/ZVprbBmT8QA', alt: 'A money plant in a glass vase', altBn: 'কাচের পাত্রে মানি প্ল্যান্ট' },
+  p12: { src: u('1593482892290-f54927ae1bb6'), by: 'Jake Goossen', page: 'https://unsplash.com/photos/iIuyXTcEBTI', alt: 'A snake plant in a pot', altBn: 'টবে স্নেক প্ল্যান্ট' },
+  p13: { src: u('1637924925587-2551d0661c52'), by: 'Ilham Abitama', page: 'https://unsplash.com/photos/0vZz7v9bFEA', alt: 'Pink bougainvillea flowers', altBn: 'গোলাপি বাগানবিলাস' },
+  p14: { src: u('1758649094570-9dc3b30ce80d'), by: 'Santhosh Sethumadhavan', page: 'https://unsplash.com/photos/qklO7VepVZw', alt: 'Curry leaves on a branch', altBn: 'ডালে কারিপাতা' },
 };
 
 /* Albums are the kinds of event; the gallery filters by them. */
