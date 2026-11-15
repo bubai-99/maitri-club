@@ -569,7 +569,7 @@ function renderPlants() {
       </button>
       <div class="mt-3 flex-1">
         <button type="button" class="text-left font-semibold leading-snug hover:text-tulsi" data-plant="${p.id}">${t(p.name, p.nameBn)}</button>
-        <p class="text-[13.5px] text-ink-3 mt-0.5">${lang === 'bn' ? p.name : p.nameBn} · ${t(p.pot, p.potBn)}</p>
+        <p class="text-[13.5px] text-ink-3 mt-0.5">${t(p.pot, p.potBn)}</p>
       </div>
       <div class="mt-2.5 flex items-center justify-between gap-2">
         <span class="font-semibold text-[17px] num">${inr(p.price)}</span>
@@ -619,7 +619,6 @@ function openPlant(id) {
             <div class="min-w-0">
               <p class="eyebrow text-tulsi">${t(plantCats[p.cat]?.en || 'Plant', plantCats[p.cat]?.bn || 'গাছ')}</p>
               <h2 class="mt-2 font-display text-[1.9rem] leading-tight">${t(p.name, p.nameBn)}</h2>
-              <p class="text-[15px] text-ink-3">${lang === 'bn' ? p.name : p.nameBn}</p>
             </div>
             <button type="button" data-x class="ml-auto hidden sm:grid w-10 h-10 rounded-full hover:bg-paper-2 place-items-center shrink-0" aria-label="${lang === 'bn' ? 'বন্ধ' : 'Close'}"><i data-lucide="x" class="w-5 h-5"></i></button>
           </div>
