@@ -84,7 +84,7 @@ S.login = () => isCommittee ? `
   <p class="mt-8 text-[15px] text-ink-2">${t('Got an invite from the secretary?', 'সম্পাদকের আমন্ত্রণ পেয়েছেন?')} <a href="#invite" class="font-semibold text-sindoor hover:underline">${t('Accept it here', 'এখানে গ্রহণ করুন')}</a></p>
   <p class="mt-2 text-[15px] text-ink-2"><a href="login.html" class="font-semibold text-ink hover:underline">${t('Member sign-in', 'সদস্য লগইন')}</a></p>`
 : `
-  ${head('Sign in', 'লগইন', 'Members of Maitri Club, Netaji Para.', 'মৈত্রী ক্লাব, নেতাজি পাড়ার সদস্যরা।')}
+  ${head('Sign in', 'লগইন', 'Members of Gede Maitree Club, Netaji Para.', 'গেদে মৈত্রী ক্লাব, নেতাজি পাড়ার সদস্যরা।')}
   <div class="mt-8 grid grid-cols-2 p-1 rounded-[7px] bg-paper-2" role="tablist" aria-label="Sign-in method">
     <button role="tab" data-method="password" aria-selected="${state.method === 'password'}" class="h-10 rounded-[5px] text-[15px] font-semibold text-ink-2 aria-selected:bg-white aria-selected:text-ink aria-selected:shadow-[0_1px_2px_rgba(0,0,0,.12)]">${t('Password', 'পাসওয়ার্ড')}</button>
     <button role="tab" data-method="otp" aria-selected="${state.method === 'otp'}" class="h-10 rounded-[5px] text-[15px] font-semibold text-ink-2 aria-selected:bg-white aria-selected:text-ink aria-selected:shadow-[0_1px_2px_rgba(0,0,0,.12)]">${t('One-time code', 'ওটিপি')}</button>

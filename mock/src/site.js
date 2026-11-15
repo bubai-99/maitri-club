@@ -34,7 +34,17 @@ function renderHomeExtras() {
     <a href="#gallery" class="snap-start shrink-0 w-[260px] sm:w-[300px] aspect-[4/5] border-2 border-ink overflow-hidden group" aria-label="${PHOTOS[k].alt}">
       ${photo(k, { w: 700, cls: 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]', sizes: '300px' })}
     </a>`).join('');
-  applyLang(nb); applyLang(strip);
+  const cm = document.getElementById('home-committee');
+  const initials = (name) => name.split(' ').map((w) => w[0]).slice(0, 2).join('');
+  cm.innerHTML = committee.slice(0, 4).map((c) => `
+    <li class="bg-paper rounded-lg border border-rule p-5 flex items-center gap-4">
+      <span class="w-12 h-12 shrink-0 rounded-full bg-sindoor-wash text-sindoor-deep grid place-items-center font-semibold" aria-hidden="true">${lang === 'bn' ? c.nameBn[0] : initials(c.name)}</span>
+      <span class="min-w-0">
+        <span class="block font-semibold leading-snug">${t(c.name, c.nameBn)}</span>
+        <span class="block text-[14px] text-ink-2">${t(c.role, c.roleBn)}</span>
+      </span>
+    </li>`).join('');
+  applyLang(nb); applyLang(strip); applyLang(cm);
 }
 renderHomeExtras();
 document.addEventListener('langchange', renderHomeExtras);
@@ -272,7 +282,7 @@ function renderBasket() {
   $('#basket-count').innerHTML = t(`${count} plant${count === 1 ? '' : 's'}`, `${count}টি গাছ`);
   $('#basket-items').textContent = items.map(({ p, q }) => `${q}× ${lang === 'bn' ? p.nameBn : p.name}`).join(', ');
   $('#basket-total').innerHTML = inr(sum);
-  const msg = `Namaskar, I would like to order from Maitri Nursery:\n${items.map(({ p, q }) => `• ${q} × ${p.name} (${p.pot}) — ₹${p.price * q}`).join('\n')}\nTotal ₹${sum}. I will collect from the club gate.`;
+  const msg = `Namaskar, I would like to order from Maitree Nursery:\n${items.map(({ p, q }) => `• ${q} × ${p.name} (${p.pot}) — ₹${p.price * q}`).join('\n')}\nTotal ₹${sum}. I will collect from the club gate.`;
   $('#basket-wa').href = `https://wa.me/${club.whatsapp}?text=${encodeURIComponent(msg)}`;
   applyLang($('#basket'));
 }

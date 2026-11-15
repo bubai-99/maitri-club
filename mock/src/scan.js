@@ -23,7 +23,7 @@ const RESULTS = {
   },
   bad: {
     bg: 'bg-sindoor', icon: 'x', head: ['Pass not found', 'পাস পাওয়া যায়নি'],
-    who: ['This QR is not a Maitri Club pass', 'এটি মৈত্রী ক্লাবের পাস নয়'],
+    who: ['This QR is not a Gede Maitree Club pass', 'এটি গেদে মৈত্রী ক্লাবের পাস নয়'],
     detail: ['Ask for the member card, or type the family number', 'সদস্য কার্ড চান, বা পরিবার নম্বর লিখুন'], add: 0,
   },
 };

@@ -1,4 +1,4 @@
-# Maitri Club: Project Plan
+# Gede Maitree Club: Project Plan
 
 _Companion to [01-design-brief.md](01-design-brief.md). Solo developer, low budget. Time estimates assume part-time work (~15 hrs/week)._
 
@@ -12,13 +12,14 @@ _Companion to [01-design-brief.md](01-design-brief.md). Solo developer, low budg
 | 1 | **HTML mock** (clickable prototype) | All four surfaces, EN/বাংলা toggle, sample data | 1–1.5 weeks |
 | 2 | Committee review | Feedback round on the mock, sign-off | 1 week |
 | 3 | Foundation | Next.js + Supabase project, auth, roles, design tokens, i18n | 1 week |
-| 4 | **MVP: Members & Fees** | Members, cash entry, receipts, dues, WhatsApp reminders, member app basics | 2–3 weeks |
+| 4 | **MVP: Members & Fees** | Members, cash entry, receipts, dues, WhatsApp reminders; Member and Admin web apps (laptop + phone) with separate sign-in | 2–3 weeks |
 | 5 | Public website | Home, Events, Catering, Nursery, Committee, Join | 1–2 weeks |
 | 6 | Events & Chanda + Gate scanner | Puja budget, chanda book, passes, offline scanner | 2 weeks |
 | 7 | Catering + Nursery | Enquiry → bill flow; catalogue, counter sale, stock | 2–3 weeks |
 | 8 | Accounts (Khata) + AGM report | Three books, P&L, yearly report | 1–2 weeks |
 | 9 | Notices, meetings, polls, push | Notices, minutes, AGM polls, PWA push | 1 week |
 | 10 | Data migration & launch | Import register/Excel, train treasurer, soft launch | 1 week |
+| 11 | Store apps (optional) | Capacitor builds of the Member and Admin apps, Play Store listings (App Store if wanted) | 1–2 weeks |
 
 **Recommended launch point:** go live after **Phase 5**, so the treasurer and members get value before Puja season. Later phases ship as updates.
 
@@ -36,7 +37,7 @@ Single prototype with a top switcher: **Website · Member App · Console · Scan
 - Committee
 - Join / Membership
 
-**Member app** (phone frames)
+**Member app** (phone frames today; a laptop web layout with a sidebar is still to be added)
 - Home (dues card, next event, notices)
 - Pay (UPI QR + reference entry)
 - Digital ID (seal + QR)
@@ -44,16 +45,18 @@ Single prototype with a top switcher: **Website · Member App · Console · Scan
 - Notices
 - Nursery tile
 
-**Console**
-- Dashboard (collection this month, dues, three-book summary)
-- Members list + family detail
+**Console** (Admin app: sidebar on laptop, bottom bar on phone)
+- Dashboard (collection this month, dues, three-book summary, UPI and expense approvals)
+- Membership applications (approve → family number, admission fee, welcome, ID cards; ask for info; decline)
+- Members list + family detail (family members, waive dues, reprint receipts)
 - Collect payment (2-tap cash entry → receipt)
 - Dues & WhatsApp reminders
-- Puja chanda book
-- Catering orders (pipeline + quotation)
-- Nursery counter sale + stock
+- Puja chanda book (areas, sponsors, budget)
+- Catering orders (enquiry → quote → advance → served → final bill → settled; lost / cancelled)
+- Nursery counter sale, stock, catalogue, WhatsApp orders
 - Khata (three books)
-- Meetings & notices
+- Events (create, edit, registrations, cancel)
+- Meetings, notices & polls (AGM votes)
 
 **Scanner**
 - Scan screen
@@ -122,20 +125,30 @@ Receipt numbers are sequential per book, e.g. `MC-25-0142`, `CT-25-0018`, `NS-25
 
 ## Project structure (Phase 3+)
 
+One repository and one deployment. Member and Admin are separate apps inside it: their own routes, layout, navigation, sign-in page and install manifest, sharing components, data access and translations.
+
 ```
 maitri-club/
   app/
-    (site)/           public website, bilingual routes
-    (member)/app/     member PWA
-    (console)/console/ committee console
-    scan/             gate scanner (offline-first)
-  components/ui/      tokens-based components (khata table, seal, receipt)
-  lib/supabase/       client, server, RLS-aware queries
-  messages/           en.json, bn.json
+    (site)/                public website, bilingual routes
+    (member)/app/          Member app: web + installable (own login, own manifest)
+      login/
+      manifest.ts          "Gede Maitree Club" member icon
+    (admin)/admin/         Admin app (committee console): web + installable
+      login/
+      scan/                gate scanner (offline-first)
+      manifest.ts          "GMC Admin" icon
+  components/
+    ui/                    shared tokens-based components (khata table, seal, receipt)
+    member/  admin/        app-specific components
+  lib/supabase/            client, server, RLS-aware queries
+  lib/auth/                role checks; middleware keeps members out of /admin
+  messages/                en.json, bn.json
   supabase/
-    migrations/       SQL schema + RLS policies
-    seed.sql          sample data
-  public/manifest.webmanifest, icons, sw
+    migrations/            SQL schema + RLS policies
+    seed.sql               sample data
+  capacitor/               (Phase 11) store builds of Member and Admin
+  public/                  icons, service worker
 ```
 
 ---
@@ -145,7 +158,8 @@ maitri-club/
 | Risk | Mitigation |
 |---|---|
 | Treasurer prefers the paper register | 2-tap cash entry, phone-friendly console, printable monthly sheet that looks like the old register |
-| Members don't install the app | Website works without installing. Reminders go through WhatsApp anyway |
+| Members don't install the app | The Member app is a full web app, so everything works in the browser without installing. Reminders go through WhatsApp anyway |
+| A member reaches admin screens | Separate app and login, middleware role check on `/admin`, and Row-Level Security in the database as the real guard |
 | Weak network at puja gate | Offline scanner with cached passes, syncs later |
 | SMS OTP cost | Low volume (under 300 families). Long-lived sessions |
 | Supabase free tier pauses after inactivity | Weekly cron ping, or upgrade if usage grows |

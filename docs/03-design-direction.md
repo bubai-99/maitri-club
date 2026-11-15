@@ -1,4 +1,4 @@
-# Maitri Club: Design Direction (Refero research)
+# Gede Maitree Club: Design Direction (Refero research)
 
 _Applied to the prototype in [mock/](../mock/) on 13 Nov 2026._
 
@@ -45,6 +45,6 @@ _Applied to the prototype in [mock/](../mock/) on 13 Nov 2026._
 | Opening section: centred title with star marks, buttons along the bottom | Roberta's | Replaces the text-beside-card layout |
 | Club, Kitchen and Nursery as alternating photo-and-text sections | Roberta's | Replaces three rows that all looked alike |
 | Red dotted lines between catering menu items | Roberta's | Looks like a printed menu |
-| Charcoal halftone sign-up section, then a giant "মৈত্রী ক্লাব" | Roberta's + Hungry Tiger | An ending you remember, not a thin legal strip |
+| Charcoal halftone sign-up section, then a giant "গেদে মৈত্রী ক্লাব" | Roberta's + Hungry Tiger | An ending you remember, not a thin legal strip |
 | Member card: centred, large QR code | Nike membership-pass screens | Scans faster at the gate, especially at night |
 | Khata shows each date once, with a rule between days | Monarch Money ledger screens | Easier to scan, and still looks like a handwritten register |

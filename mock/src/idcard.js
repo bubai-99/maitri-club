@@ -55,7 +55,7 @@ export function cardFront(p) {
   <div class="idc" role="img" aria-label="Member card front for ${p.name}, ${p.id}">
     <div class="idc-band">
       <span class="idc-seal">${seal({ size: 100, color: '#fff', rotate: -6 })}</span>
-      <span class="idc-club"><span class="font-display">${t('Maitri Club', 'মৈত্রী ক্লাব')}</span><span class="idc-sub">MAITRI CLUB · NETAJI PARA · ESTD 1972</span></span>
+      <span class="idc-club"><span class="font-display">${t('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব')}</span><span class="idc-sub">GEDE MAITREE CLUB · NETAJI PARA · ESTD 1972</span></span>
       <span class="idc-kind">MEMBER</span>
     </div>
     <div class="idc-body">
@@ -129,6 +129,6 @@ export async function downloadCard(p) {
   try {
     const url = await toPng(stage, { pixelRatio: 1, cacheBust: true, backgroundColor: '#ffffff', style: { position: 'static', left: '0', top: '0' } });
     const a = document.createElement('a');
-    a.href = url; a.download = `${p.id}-maitri-club-card.png`; a.click();
+    a.href = url; a.download = `${p.id}-gede-maitree-club-card.png`; a.click();
   } finally { stage.remove(); }
 }

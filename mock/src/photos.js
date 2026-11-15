@@ -26,7 +26,7 @@ export const PHOTOS = {
 export const ALBUMS = [
   { key: 'puja', en: 'Durga Puja', bn: 'দুর্গাপূজা', photos: ['pujaNight', 'sindoor', 'pujaIdol', 'pujaMorning', 'pujaCrowd'] },
   { key: 'sports', en: 'Sports Day', bn: 'ক্রীড়া দিবস', photos: ['race', 'runners'] },
-  { key: 'kitchen', en: 'Maitri Kitchen', bn: 'মৈত্রী রান্নাঘর', photos: ['feast', 'feast2', 'kadai'] },
+  { key: 'kitchen', en: 'Maitree Kitchen', bn: 'মৈত্রী রান্নাঘর', photos: ['feast', 'feast2', 'kadai'] },
   { key: 'nursery', en: 'Nursery', bn: 'নার্সারি', photos: ['potted', 'nurseryTable', 'garlands', 'marigold'] },
   { key: 'kali', en: 'Kali Puja', bn: 'কালীপূজা', photos: ['diyas', 'diyaTray'] },
   { key: 'service', en: 'Blood donation', bn: 'রক্তদান', photos: ['blood'] },

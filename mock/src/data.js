@@ -1,8 +1,8 @@
 // Sample data for the prototype. Placeholders until the club confirms real details.
 
 export const club = {
-  name: 'Maitri Club',
-  nameBn: 'মৈত্রী ক্লাব',
+  name: 'Gede Maitree Club',
+  nameBn: 'গেদে মৈত্রী ক্লাব',
   para: 'Netaji Para',
   paraBn: 'নেতাজি পাড়া',
   estd: 1972,

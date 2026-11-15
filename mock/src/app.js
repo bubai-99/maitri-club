@@ -47,7 +47,7 @@ function updatePay() {
   const sum = sel.reduce((a, b) => a + b.amount, 0);
   $('#pay-total').innerHTML = inr(sum);
   const note = `MC-0104 ${sel.map((m) => m.month).join(', ')}`;
-  const uri = `upi://pay?pa=${club.upi}&pn=Maitri%20Club&am=${sum}&cu=INR&tn=${encodeURIComponent(note)}`;
+  const uri = `upi://pay?pa=${club.upi}&pn=Gede%20Maitree%20Club&am=${sum}&cu=INR&tn=${encodeURIComponent(note)}`;
   $('#upi-link').href = uri;
   qr($('#upi-qr'), uri);
   $('#upi-link').classList.toggle('pointer-events-none', sum === 0);
@@ -89,7 +89,7 @@ $('#history').addEventListener('click', (e) => {
     <div class="relative">
       <div class="flex items-start justify-between">
         <div>
-          <p class="font-display text-xl text-sindoor">${t('Maitri Club', 'মৈত্রী ক্লাব')}</p>
+          <p class="font-display text-xl text-sindoor">${t('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব')}</p>
           <p class="text-[11px] tracking-[0.16em] font-semibold text-ink-3">MONEY RECEIPT · ${t('CLUB BOOK', 'ক্লাব খাতা')}</p>
         </div>
         <button data-close class="w-9 h-9 grid place-items-center rounded-full hover:bg-paper-2 -mr-2 -mt-1" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>

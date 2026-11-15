@@ -28,7 +28,7 @@ const statusChip = (s) => ({
 $('#side-seal').innerHTML = seal({ size: 38, rotate: -6 });
 const NAV = [
   { group: ['', ''], items: [['dashboard', 'layout-dashboard', 'Today', 'আজ']] },
-  { group: ['Members', 'সদস্য'], items: [['members', 'users', 'Families', 'পরিবার'], ['collect', 'hand-coins', 'Collect payment', 'টাকা জমা'], ['dues', 'bell-ring', 'Dues & reminders', 'বকেয়া ও তাগাদা', String(families.filter((f) => f.due).length)], ['cards', 'id-card', 'ID cards', 'পরিচয়পত্র']] },
+  { group: ['Members', 'সদস্য'], items: [['applications', 'user-check', 'Applications', 'আবেদন', '3'], ['members', 'users', 'Families', 'পরিবার'], ['collect', 'hand-coins', 'Collect payment', 'টাকা জমা'], ['dues', 'bell-ring', 'Dues & reminders', 'বকেয়া ও তাগাদা', String(families.filter((f) => f.due).length)], ['cards', 'id-card', 'ID cards', 'পরিচয়পত্র']] },
   { group: ['Books', 'খাতা'], items: [['khata', 'book-open', 'Khata', 'খাতা'], ['chanda', 'hand-heart', 'Puja chanda', 'পূজার চাঁদা']] },
   { group: ['Businesses', 'ব্যবসা'], items: [['catering', 'chef-hat', 'Catering', 'ক্যাটারিং', '2'], ['nursery', 'sprout', 'Nursery', 'নার্সারি']] },
   { group: ['Club', 'ক্লাব'], items: [['events', 'calendar-days', 'Events', 'অনুষ্ঠান'], ['meetings', 'megaphone', 'Notices & meetings', 'নোটিস ও সভা']] },
@@ -50,6 +50,7 @@ $('#side-btn').addEventListener('click', () => { side.classList.remove('-transla
 lgMq.addEventListener('change', syncInert); syncInert();
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !lgMq.matches) closeSide(); });
 scrim.addEventListener('click', closeSide);
+$('#more-btn').addEventListener('click', () => $('#side-btn').click());
 $$('#side-nav a').forEach((a) => a.addEventListener('click', closeSide));
 
 /* ---------------- Drawer ---------------- */
@@ -135,6 +136,28 @@ function dashboard() {
               <button class="btn btn-ghost btn-sm" data-flag="${i}">${t('Not in bank yet', 'ব্যাংকে আসেনি')}</button>
             </div>
           </li>`).join('')}
+          ${pendingExpenses.map((x, i) => `
+          <li class="paper-card p-4" data-exp="${i}">
+            <div class="flex items-start gap-3">
+              <span class="w-9 h-9 rounded-full bg-ink text-white grid place-items-center shrink-0"><i data-lucide="stamp" class="w-[18px] h-[18px]"></i></span>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold leading-snug">${t('Second signature needed', 'দ্বিতীয় সই দরকার')} · ${t(x.head, x.headBn)}</p>
+                <p class="text-sm text-ink-3 mt-0.5">${t(`Entered by ${x.by} · ${x.note}`, `লিখেছেন ${x.by} · ${x.note}`)}</p>
+              </div>
+              <span class="font-semibold">${inr(x.amount)}</span>
+            </div>
+            <div class="flex gap-2 mt-3 pl-12">
+              <button class="btn btn-ink btn-sm" data-exp-ok="${i}"><i data-lucide="check"></i>${t('Approve', 'অনুমোদন')}</button>
+              <button class="btn btn-ghost btn-sm" data-act="bill" data-head="${x.head}" data-amt="${x.amount}">${t('See bill', 'বিল দেখুন')}</button>
+              <button class="btn btn-ghost btn-sm" data-exp-no="${i}">${t('Send back', 'ফেরত')}</button>
+            </div>
+          </li>`).join('')}
+          ${openApps().length ? `<li class="paper-card p-4 flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-tulsi-wash text-tulsi grid place-items-center shrink-0"><i data-lucide="user-check" class="w-[18px] h-[18px]"></i></span>
+            <div class="flex-1"><p class="font-semibold leading-snug">${t(`${openApps().length} membership applications to review`, `${openApps().length}টি সদস্যপদের আবেদন দেখতে হবে`)}</p>
+            <p class="text-sm text-ink-3 mt-0.5">${openApps().map((a) => t(a.head, a.headBn)).join(', ')}</p></div>
+            <a href="#applications" class="btn btn-line btn-sm shrink-0">${t('Review', 'দেখুন')}</a>
+          </li>` : ''}
           <li class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-sindoor-wash text-sindoor grid place-items-center shrink-0"><i data-lucide="bell-ring" class="w-[18px] h-[18px]"></i></span>
             <div class="flex-1"><p class="font-semibold leading-snug">${t(`${dueFams.length} families owe 3 months or more`, `${dueFams.length}টি পরিবারের ৩ মাস বা বেশি বকেয়া`)}</p>
@@ -186,7 +209,103 @@ function dashboard() {
       <p class="text-sm text-ink-3 mt-0.5">${t('Not entered in the khata. Member asked to check the UTR.', 'খাতায় ওঠেনি। সদস্যকে UTR দেখতে বলা হয়েছে।')}</p></div>
       <button class="btn btn-ghost btn-sm" data-undo>${t('Undo', 'ফেরান')}</button></div>`);
   }));
+  $$('[data-exp-ok]').forEach((b) => b.addEventListener('click', () => {
+    const x = pendingExpenses[b.dataset.expOk];
+    settle(b, `<div class="flex items-center gap-3" role="status"><span class="w-9 h-9 rounded-full bg-ink text-white grid place-items-center shrink-0"><i data-lucide="check" class="w-[18px] h-[18px]"></i></span>
+      <div class="flex-1 min-w-0"><p class="font-semibold leading-snug">${t('Approved', 'অনুমোদিত')} · ${t(x.head, x.headBn)} · ${inr(x.amount)}</p>
+      <p class="text-sm text-ink-3 mt-0.5">${t(`Signed by ${x.by} and Tapas Mondal · entered in the Club book`, `${x.by} ও তাপস মণ্ডলের সই · ক্লাব খাতায় উঠেছে`)}</p></div>
+      <button class="btn btn-ghost btn-sm" data-undo>${t('Undo', 'ফেরান')}</button></div>`);
+  }));
+  $$('[data-exp-no]').forEach((b) => b.addEventListener('click', () => {
+    const x = pendingExpenses[b.dataset.expNo];
+    formDrawer('Send back for changes', 'সংশোধনের জন্য ফেরত', `
+      <div class="rounded-lg bg-paper-2 p-4 text-[15px]"><p class="font-semibold">${t(x.head, x.headBn)}</p><p class="text-ink-2">${inr(x.amount)} · ${x.by}</p></div>
+      ${fld('What needs to change? (required)', 'কী বদলাতে হবে? (বাধ্যতামূলক)', '<textarea class="field" rows="3" required placeholder="e.g. Get a second quotation before paying the advance"></textarea>')}`,
+      'Send back', 'ফেরত পাঠান', `Sent back to ${x.by}. Nothing entered in the khata.`, `${x.by}-কে ফেরত পাঠানো হয়েছে। খাতায় কিছু ওঠেনি।`);
+  }));
 }
+
+/* ---------------- Membership applications ---------------- */
+const applications = [
+  { id: 'AP-26-019', head: 'Soumen Pramanik', headBn: 'সৌমেন প্রামানিক', phone: '9830551274', lane: 'Lane 3', laneBn: '৩ নং গলি', address: '22/1 Netaji Subhas Road', people: [['Mitali Pramanik', 'Wife'], ['Riju Pramanik', 'Son, 9']], plan: 'monthly', applied: '12 Nov', via: 'Website', status: 'new', note: '' },
+  { id: 'AP-26-018', head: 'Farida Begum', headBn: 'ফরিদা বেগম', phone: '9874012388', lane: 'Pukur Par', laneBn: 'পুকুর পাড়', address: '5 Pukur Par Lane', people: [['Rafiq Ali', 'Husband'], ['Sana Ali', 'Daughter, 16'], ['Amina Bibi', 'Mother-in-law']], plan: 'yearly', applied: '10 Nov', via: 'Website', status: 'new', note: '' },
+  { id: 'AP-26-017', head: 'Kaushik Ghoshal', headBn: 'কৌশিক ঘোষাল', phone: '9903318820', lane: 'School Road', laneBn: 'স্কুল রোড', address: '41 School Road, 2nd floor', people: [], plan: 'monthly', applied: '6 Nov', via: 'At the club', status: 'info', note: 'Asked for address proof: new tenant' },
+];
+const approved = [
+  { head: 'Pallab Sen', headBn: 'পল্লব সেন', no: 'MC-0172', on: '2 Nov' },
+  { head: 'Mousumi Dhar', headBn: 'মৌসুমী ধর', no: 'MC-0171', on: '28 Oct' },
+];
+let nextFamNo = 173;
+const openApps = () => applications.filter((a) => a.status === 'new' || a.status === 'info');
+let selApp = applications[0].id;
+function applicationsScreen(param) {
+  if (param) selApp = param;
+  const open = openApps();
+  const badge = document.querySelector('#side-nav [data-nav="applications"] .chip');
+  if (badge) { badge.textContent = open.length; badge.classList.toggle('hidden', !open.length); }
+  if (!open.find((a) => a.id === selApp)) selApp = open[0]?.id;
+  const a = applications.find((x) => x.id === selApp);
+  const plan = (p) => (p === 'yearly' ? t('₹1,100 / year', '₹১,১০০ / বছর') : t('₹100 / month', '₹১০০ / মাস'));
+  paint(screen('applications'), `
+    ${pageHead('Membership applications', 'সদস্যপদের আবেদন', t('From the website Join form and the club counter. The committee approves at the next meeting.', 'ওয়েবসাইটের ফর্ম ও ক্লাব কাউন্টার থেকে। কমিটি পরের সভায় অনুমোদন করে।'), `
+      <button class="btn btn-ink btn-sm" data-act="app-new"><i data-lucide="plus"></i>${t('Add at the counter', 'কাউন্টারে আবেদন')}</button>`)}
+    <div class="grid xl:grid-cols-12 gap-6 items-start">
+      <div class="xl:col-span-5 space-y-3">
+        ${open.length ? open.map((x) => `
+          <a href="#applications/${x.id}" class="block paper-card p-4 ${x.id === selApp ? 'ring-2 ring-sindoor/30 border-sindoor' : 'hover:border-ink/30'}">
+            <div class="flex items-start gap-3">
+              <div class="flex-1 min-w-0"><p class="font-semibold">${t(x.head, x.headBn)}</p><p class="text-sm text-ink-3 num">${x.id} · ${t(x.lane, x.laneBn)} · ${t(`${x.people.length + 1} people`, `${x.people.length + 1} জন`)}</p></div>
+              ${x.status === 'info' ? `<span class="chip bg-marigold-wash text-turmeric">${t('Waiting for info', 'তথ্যের অপেক্ষা')}</span>` : `<span class="chip bg-sindoor-wash text-sindoor-deep">${t('New', 'নতুন')}</span>`}
+            </div>
+            <p class="text-sm text-ink-2 mt-2">${t(`Applied ${x.applied} · ${x.via}`, `আবেদন ${x.applied} · ${x.via === 'Website' ? 'ওয়েবসাইট' : 'ক্লাবে'}`)}</p>
+          </a>`).join('') : `<div class="paper-card p-8 text-center text-ink-3">${t('No applications waiting.', 'কোনো আবেদন বাকি নেই।')}</div>`}
+        <div class="paper-card">
+          <p class="px-4 pt-3.5 pb-2 text-sm font-semibold text-ink-3">${t('Recently approved', 'সম্প্রতি অনুমোদিত')}</p>
+          <ul class="px-4 pb-2">${approved.map((r) => `<li class="py-2.5 border-t border-rule flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-tulsi"></i><span class="flex-1 font-semibold">${t(r.head, r.headBn)}</span><span class="text-sm text-ink-3 num">${r.no} · ${r.on}</span></li>`).join('')}</ul>
+        </div>
+      </div>
+      ${a ? `<div class="xl:col-span-7 paper-card">
+        <div class="p-5 border-b border-rule">
+          <p class="text-sm text-ink-3 num">${a.id} · ${t(`applied ${a.applied}`, `আবেদন ${a.applied}`)}</p>
+          <h2 class="font-display text-2xl leading-tight">${t(a.head, a.headBn)}</h2>
+          <p class="text-ink-2 text-[15px]">${a.address} · ${t(a.lane, a.laneBn)}</p>
+        </div>
+        <div class="p-5 space-y-5">
+          ${a.status === 'info' ? `<div class="rounded-lg bg-marigold-wash p-3.5 text-[15px] flex gap-2.5"><i data-lucide="info" class="w-5 h-5 shrink-0 text-turmeric"></i>${a.note}</div>` : ''}
+          <dl class="grid sm:grid-cols-3 gap-4 text-[15px]">
+            <div><dt class="text-sm text-ink-3">${t('Mobile', 'মোবাইল')}</dt><dd class="font-semibold num">${a.phone.replace(/(\d{5})(\d{5})/, '$1 $2')}</dd></div>
+            <div><dt class="text-sm text-ink-3">${t('Plan', 'প্ল্যান')}</dt><dd class="font-semibold">${plan(a.plan)}</dd></div>
+            <div><dt class="text-sm text-ink-3">${t('Admission', 'ভর্তি ফি')}</dt><dd class="font-semibold">${inr(club.admissionFee)} <span class="font-normal text-ink-3">${t('on approval', 'অনুমোদনে')}</span></dd></div>
+          </dl>
+          <div>
+            <p class="text-sm font-semibold text-ink-3">${t('Family', 'পরিবার')}</p>
+            <ul class="mt-1.5 text-[15px] divide-y divide-rule border-y border-rule">
+              <li class="py-2 flex"><span class="font-semibold">${t(a.head, a.headBn)}</span><span class="ml-auto text-ink-3">${t('Head of family', 'পরিবারের প্রধান')}</span></li>
+              ${a.people.map(([n, r]) => `<li class="py-2 flex"><span>${n}</span><span class="ml-auto text-ink-3">${r}</span></li>`).join('')}
+            </ul>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-ink-3">${t('Checks', 'যাচাই')}</p>
+            <ul class="mt-1.5 space-y-1.5 text-[15px]">
+              <li class="flex gap-2"><i data-lucide="check" class="w-5 h-5 text-tulsi shrink-0"></i>${t('Mobile number verified by OTP', 'মোবাইল ওটিপি দিয়ে যাচাই')}</li>
+              <li class="flex gap-2"><i data-lucide="check" class="w-5 h-5 text-tulsi shrink-0"></i>${t('No existing family with this number or address', 'এই নম্বর বা ঠিকানায় আগের পরিবার নেই')}</li>
+              <li class="flex gap-2">${a.status === 'info' ? `<i data-lucide="circle-dashed" class="w-5 h-5 text-turmeric shrink-0"></i>${t('Address proof pending', 'ঠিকানার প্রমাণ বাকি')}` : `<i data-lucide="check" class="w-5 h-5 text-tulsi shrink-0"></i>${t('Lives inside the para boundary', 'পাড়ার সীমার মধ্যে থাকেন')}`}</li>
+            </ul>
+          </div>
+          <div class="grid sm:grid-cols-3 gap-2 pt-1">
+            <button class="btn btn-primary" data-act="app-approve" data-id="${a.id}"><i data-lucide="check"></i>${t('Approve', 'অনুমোদন')}</button>
+            <a class="btn btn-line" target="_blank" rel="noopener" href="https://wa.me/91${a.phone}?text=${encodeURIComponent(`Namaskar ${a.head}, this is Gede Maitree Club about your membership application ${a.id}. Could you please share an address proof (Aadhaar or electricity bill)? Thank you.`)}" data-act="app-info" data-id="${a.id}"><i data-lucide="message-circle"></i>${t('Ask for info', 'তথ্য চান')}</a>
+            <button class="btn btn-ghost text-ink-2" data-act="app-reject" data-id="${a.id}"><i data-lucide="x"></i>${t('Decline', 'নামঞ্জুর')}</button>
+          </div>
+        </div>
+      </div>` : ''}
+    </div>`);
+}
+
+/* Expense approvals (two signatures over ₹10,000) */
+const pendingExpenses = [
+  { head: 'Pandal advance — Saraswati Puja', headBn: 'প্যান্ডেল অগ্রিম — সরস্বতী পূজা', amount: 15000, by: 'Kakoli Sen', book: 'club', note: 'Maa Tara Decorators, 50% advance' },
+];
 
 let receiptSeq = 412;
 const nextReceipt = () => `MC-26-${String(++receiptSeq).padStart(4, '0')}`;
@@ -281,10 +400,20 @@ function familyDrawer(no) {
         <a href="https://wa.me/91${f.phone}" target="_blank" rel="noopener" class="btn btn-line btn-sm flex-1"><i data-lucide="message-circle"></i>WhatsApp</a>
         <button class="btn btn-line btn-sm flex-1" data-act="family" data-no="${f.no}"><i data-lucide="pencil"></i>${t('Edit', 'সম্পাদনা')}</button>
       </div>
+      ${f.due ? `<button class="mt-2 text-sm font-semibold text-ink-2 hover:text-ink hover:underline" data-act="waive" data-no="${f.no}">${t('Waive dues (hardship, death in family…)', 'বকেয়া মকুব (অসুবিধা, শোক…)')}</button>` : ''}
+      <div class="flex items-center mt-7"><h3 class="font-display text-lg">${t('Family members', 'পরিবারের সদস্য')}</h3>
+        <button class="ml-auto btn btn-ghost btn-sm text-sindoor" data-act="person" data-no="${f.no}"><i data-lucide="user-plus"></i>${t('Add', 'যোগ')}</button></div>
+      <ul class="mt-1 text-[15px] divide-y divide-rule border-y border-rule">
+        ${peopleOf(f, families.indexOf(f)).map((p, k) => `<li class="py-2.5 flex items-center gap-3">
+          <span class="flex-1 min-w-0"><span class="block font-semibold truncate">${t(p.name, p.nameBn)}</span><span class="block text-sm text-ink-3">${t(p.rel, p.relBn)}</span></span>
+          ${k ? `<button class="btn btn-ghost btn-sm text-ink-2" data-act="person" data-no="${f.no}" data-name="${p.name}" data-rel="${p.rel}">${t('Edit', 'সম্পাদনা')}</button>` : `<span class="chip bg-paper-2 text-ink-2">${t('Head', 'প্রধান')}</span>`}
+        </li>`).join('')}
+      </ul>
       <h3 class="font-display text-lg mt-7">${t('Payment history', 'পেমেন্টের ইতিহাস')}</h3>
+      <p class="text-sm text-ink-3">${t('Tap a receipt to print it again or resend it.', 'আবার প্রিন্ট বা পাঠাতে রসিদে চাপুন।')}</p>
       <ul class="mt-2 text-[15px]">
         ${[['12 Sep 2026', 'MC-26-0388', 300, 'Cash'], ['04 Jun 2026', 'MC-26-0214', 300, 'UPI'], ['09 Mar 2026', 'MC-26-0097', 300, 'Cash'], ['02 Dec 2025', 'MC-25-0512', 300, 'Cash']].map(([d, r, a, m]) => `
-        <li class="flex items-center py-2.5 border-b border-rule"><span class="num">${r}</span><span class="text-ink-3 text-sm ml-3">${dn(d)} · ${m}</span><span class="ml-auto font-semibold">${inr(a)}</span></li>`).join('')}
+        <li class="border-b border-rule"><button class="w-full flex items-center py-2.5 hover:bg-paper-2 -mx-2 px-2 rounded" data-act="receipt" data-ref="${r}" data-amt="${a}" data-no="${f.no}"><span class="num">${r}</span><span class="text-ink-3 text-sm ml-3">${dn(d)} · ${m}</span><span class="ml-auto font-semibold">${inr(a)}</span><i data-lucide="chevron-right" class="w-4 h-4 ml-2 text-ink-3"></i></button></li>`).join('')}
       </ul>
       <h3 class="font-display text-lg mt-7">${t('Activity', 'কার্যকলাপ')}</h3>
       <ul class="mt-2 text-sm text-ink-2 space-y-2">
@@ -338,7 +467,7 @@ function collect(param) {
         <div class="relative bg-card border border-rule rounded-lg p-6 shadow-[0_1px_2px_rgba(29,33,64,.05),0_16px_32px_-20px_rgba(29,33,64,.35)]">
           <div class="flex items-center gap-3 border-b border-ink/20 pb-3">
             <span>${seal({ size: 48, rotate: -4 })}</span>
-            <div class="leading-tight"><p class="font-display text-xl text-sindoor">${t('Maitri Club', 'মৈত্রী ক্লাব')}</p><p class="text-[11px] tracking-[0.14em] font-semibold text-ink-3">NETAJI PARA · ESTD 1972</p></div>
+            <div class="leading-tight"><p class="font-display text-xl text-sindoor">${t('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব')}</p><p class="text-[11px] tracking-[0.14em] font-semibold text-ink-3">NETAJI PARA · ESTD 1972</p></div>
             <p class="ml-auto text-right text-sm"><span class="block text-ink-3">${t('Receipt', 'রসিদ')}</span><span class="font-semibold num">${col.receipt || t('next no.', 'পরের নং')}</span></p>
           </div>
           <p class="mt-4 text-[15px] leading-relaxed">${t('Received with thanks from', 'ধন্যবাদের সঙ্গে গৃহীত')} <strong>${t(f.head, f.headBn)}</strong> (${f.no}) ${t('the sum of', 'মোট')} <strong>${inr(amount)}</strong> ${t(`towards subscription for ${col.months} month${col.months > 1 ? 's' : ''}, by`, `${col.months} মাসের চাঁদা বাবদ,`)} ${col.mode === 'cash' ? t('cash', 'নগদে') : 'UPI'}.</p>
@@ -349,8 +478,8 @@ function collect(param) {
           ${col.done ? `<div class="absolute right-24 top-16 ink-stamp">${seal({ size: 120, rotate: -10, className: 'stamp-in' })}</div>` : ''}
         </div>
         ${col.done ? `<div class="mt-3 flex gap-2">
-          <a target="_blank" rel="noopener" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(lang === 'bn' ? `নমস্কার, মৈত্রী ক্লাবে ₹${amount} জমা হয়েছে। রসিদ নং ${col.receipt}। ধন্যবাদ।` : `Namaskar, ₹${amount} received by Maitri Club. Receipt no. ${col.receipt}. Thank you.`)}" class="btn btn-line btn-sm flex-1"><i data-lucide="message-circle"></i>${t('Also send on WhatsApp', 'হোয়াটসঅ্যাপেও পাঠান')}</a>
-          <button class="btn btn-line btn-sm flex-1"><i data-lucide="printer"></i>${t('Print', 'প্রিন্ট')}</button></div>` : ''}
+          <a target="_blank" rel="noopener" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(lang === 'bn' ? `নমস্কার, গেদে মৈত্রী ক্লাবে ₹${amount} জমা হয়েছে। রসিদ নং ${col.receipt}। ধন্যবাদ।` : `Namaskar, ₹${amount} received by Gede Maitree Club. Receipt no. ${col.receipt}. Thank you.`)}" class="btn btn-line btn-sm flex-1"><i data-lucide="message-circle"></i>${t('Also send on WhatsApp', 'হোয়াটসঅ্যাপেও পাঠান')}</a>
+          <button class="btn btn-line btn-sm flex-1" data-act="receipt-print" data-ref="${col.receipt}"><i data-lucide="printer"></i>${t('Print', 'প্রিন্ট')}</button></div>` : ''}
       </div>
     </div>`);
   const pick = $('#fam-pick'), list = $('#fam-list');
@@ -388,8 +517,8 @@ function dues() {
   const list = families.filter((f) => f.due).sort((a, b) => b.dueMonths - a.dueMonths);
   const total = list.reduce((a, b) => a + b.due, 0);
   const msg = (f) => (lang === 'bn'
-    ? `নমস্কার ${f.headBn}, মৈত্রী ক্লাবের ${f.dueMonths} মাসের চাঁদা ₹${f.due} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।`
-    : `Namaskar ${f.head}, your Maitri Club subscription of ₹${f.due} for ${f.dueMonths} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.`);
+    ? `নমস্কার ${f.headBn}, গেদে মৈত্রী ক্লাবের ${f.dueMonths} মাসের চাঁদা ₹${f.due} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।`
+    : `Namaskar ${f.head}, your Gede Maitree Club subscription of ₹${f.due} for ${f.dueMonths} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.`);
   paint(screen('dues'), `
     ${pageHead('Dues & reminders', 'বকেয়া ও তাগাদা', `${t(`${list.length} families owe`, `${list.length}টি পরিবারের বকেয়া`)} <strong class="text-sindoor">${inr(total)}</strong>`)}
     <div class="grid lg:grid-cols-12 gap-6 items-start">
@@ -426,8 +555,8 @@ function khata(param) {
   const rows = ledger.filter((r) => khataBook === 'all' || r.book === khataBook);
   paint(screen('khata'), `
     ${pageHead('Khata', 'খাতা', t('November 2026 · three books, one AGM report', 'নভেম্বর ২০২৬ · তিনটি খাতা, একটি এজিএম রিপোর্ট'), `
-      <button class="btn btn-line btn-sm"><i data-lucide="printer"></i>${t('Print month', 'মাসের প্রিন্ট')}</button>
-      <button class="btn btn-line btn-sm"><i data-lucide="file-spreadsheet"></i>${t('AGM report', 'এজিএম রিপোর্ট')}</button>
+      <button class="btn btn-line btn-sm" data-act="print-month"><i data-lucide="printer"></i>${t('Print month', 'মাসের প্রিন্ট')}</button>
+      <a href="#reports" class="btn btn-line btn-sm"><i data-lucide="file-spreadsheet"></i>${t('AGM report', 'এজিএম রিপোর্ট')}</a>
       <button class="btn btn-ink btn-sm" id="add-entry"><i data-lucide="plus"></i>${t('New entry', 'নতুন এন্ট্রি')}</button>`)}
     <div class="flex flex-wrap gap-2 mb-4" role="tablist">
       <button role="tab" data-book="all" aria-selected="${khataBook === 'all'}" class="chip h-9 px-3.5 text-sm border border-rule bg-card aria-selected:bg-ink aria-selected:text-paper aria-selected:border-ink">${t('All books', 'সব খাতা')}</button>
@@ -458,7 +587,8 @@ function entryDrawer() {
       <label class="block"><span class="label">${t('Head', 'খাত')}</span><select class="field"><option>Electricity</option><option>Puja expenses</option><option>Repairs</option><option>Stationery</option><option>Other</option></select></label>
       <label class="block"><span class="label">${t('Note', 'বিবরণ')}</span><input class="field" value="CESC bill, October" /></label>
       <div><p class="label">${t('Bill photo', 'বিলের ছবি')}</p>
-        <button type="button" class="w-full h-28 rounded-lg border-2 border-dashed border-rule bg-card text-ink-2 flex flex-col items-center justify-center gap-1.5 hover:border-ink/30"><i data-lucide="camera" class="w-6 h-6"></i><span class="text-sm">${t('Take a photo of the bill', 'বিলের ছবি তুলুন')}</span></button></div>
+        <label class="w-full h-28 rounded-lg border-2 border-dashed border-rule bg-card text-ink-2 flex flex-col items-center justify-center gap-1.5 hover:border-ink/30 cursor-pointer"><i data-lucide="camera" class="w-6 h-6"></i><span class="text-sm" data-photo-name>${t('Take a photo of the bill', 'বিলের ছবি তুলুন')}</span><input type="file" accept="image/*" capture="environment" class="sr-only" data-photo-input /></label>
+        <p class="text-sm text-ink-3 mt-2">${t('Over ₹10,000 needs a second signature before it enters the khata.', '₹১০,০০০-এর বেশি হলে খাতায় ওঠার আগে দ্বিতীয় সই লাগবে।')}</p></div>
       <button class="btn btn-ink w-full h-12">${t('Save entry', 'এন্ট্রি সেভ করুন')}</button>
     </form>`);
   $('#entry-form').addEventListener('submit', (e) => { e.preventDefault(); $('#drawer').classList.add('hidden'); toast(`<i data-lucide="check-circle-2"></i>${t('Entry saved in the Club book', 'ক্লাব খাতায় এন্ট্রি সেভ হয়েছে')}`); });
@@ -491,7 +621,7 @@ function chandaScreen() {
         <div class="px-5 pt-4 pb-3 border-b border-rule"><h2 class="font-display text-xl">${t('By area', 'এলাকা অনুযায়ী')}</h2></div>
         <table class="khata-table min-w-[640px]">
           <thead><tr><th>${t('Area', 'এলাকা')}</th><th>${t('Volunteer', 'স্বেচ্ছাসেবক')}</th><th>${t('Houses visited', 'বাড়ি গেছেন')}</th><th class="w-[30%]">${t('Collected / target', 'সংগ্রহ / লক্ষ্য')}</th></tr></thead>
-          <tbody>${chanda.areas.map((a) => {
+          <tbody>${chanda.areas.map((a, ai) => {
             const pct = Math.round((a.got / a.target) * 100);
             return `<tr>
               <td class="font-semibold">${t(a.lane, a.laneBn)}</td>
@@ -504,13 +634,15 @@ function chandaScreen() {
       </div>
       <div class="xl:col-span-4 space-y-6">
         <div class="paper-card">
-          <div class="px-5 pt-4 pb-3 border-b border-rule"><h2 class="font-display text-xl">${t('Sponsors', 'স্পনসর')}</h2></div>
-          <ul class="px-5">${chanda.sponsors.map((s) => `<li class="py-3 border-b border-rule last:border-0 flex items-start gap-3">
+          <div class="px-5 pt-4 pb-3 border-b border-rule flex items-center"><h2 class="font-display text-xl">${t('Sponsors', 'স্পনসর')}</h2>
+            <button class="ml-auto btn btn-ghost btn-sm text-sindoor" data-act="sponsor"><i data-lucide="plus"></i>${t('Add', 'যোগ')}</button></div>
+          <ul class="px-5">${chanda.sponsors.map((s, si) => `<li class="py-3 border-b border-rule last:border-0 flex items-start gap-3">
             <div class="flex-1"><p class="font-semibold">${t(s.name, s.nameBn)}</p><p class="text-sm text-ink-3">${t(s.gives, s.givesBn)}</p></div>
-            <div class="text-right"><p class="font-semibold">${inr(s.amount)}</p><p class="text-[12.5px] ${s.status === 'paid' ? 'text-tulsi' : 'text-turmeric'} font-semibold">${s.status === 'paid' ? t('Received', 'পেয়েছি') : t('Promised', 'প্রতিশ্রুত')}</p></div></li>`).join('')}</ul>
+            <div class="text-right"><p class="font-semibold">${inr(s.amount)}</p>${s.status === 'paid' ? `<p class="text-[12.5px] text-tulsi font-semibold">${t('Received', 'পেয়েছি')}</p>` : `<button class="text-[12.5px] text-turmeric font-semibold hover:underline" data-act="sponsor-paid" data-i="${si}">${t('Promised · mark received', 'প্রতিশ্রুত · পেয়েছি')}</button>`}</div></li>`).join('')}</ul>
         </div>
         <div class="paper-card">
-          <div class="px-5 pt-4 pb-3 border-b border-rule"><h2 class="font-display text-xl">${t('Budget', 'বাজেট')}</h2></div>
+          <div class="px-5 pt-4 pb-3 border-b border-rule flex items-center"><h2 class="font-display text-xl">${t('Budget', 'বাজেট')}</h2>
+            <button class="ml-auto btn btn-ghost btn-sm text-ink-2" data-act="budget"><i data-lucide="pencil"></i>${t('Edit', 'সম্পাদনা')}</button></div>
           <ul class="px-5 text-[15px]">${chanda.budget.map((b) => `<li class="py-2.5 border-b border-rule last:border-0 flex"><span>${t(b.head, b.headBn)}</span><span class="ml-auto num">${inr(b.amount)}</span></li>`).join('')}</ul>
         </div>
       </div>
@@ -563,12 +695,21 @@ function catering() {
           </table>
           <p class="text-sm font-semibold text-ink-3 mt-5">${t('Menu', 'মেনু')}</p>
           <p class="text-[15px] text-ink-2 mt-1 leading-relaxed">${pkg.menu.map((m, i) => t(m, pkg.menuBn[i])).join(' · ')}</p>
-          <div class="grid grid-cols-2 gap-2 mt-5">
-            <button class="btn btn-ink btn-sm" data-act="quote"><i data-lucide="send"></i>${t('Send quote', 'কোটেশন পাঠান')}</button>
-            <button class="btn btn-line btn-sm" data-act="cat-pay"><i data-lucide="indian-rupee"></i>${t('Record payment', 'টাকা জমা')}</button>
+          ${{
+            enquiry: `<button class="btn btn-ink w-full mt-5" data-act="quote" data-id="${o.id}"><i data-lucide="send"></i>${t('Send quotation', 'কোটেশন পাঠান')}</button>`,
+            quoted: `<button class="btn btn-ink w-full mt-5" data-act="cat-pay" data-id="${o.id}" data-kind="advance"><i data-lucide="indian-rupee"></i>${t('Record advance (confirms the booking)', 'অগ্রিম জমা (বুকিং নিশ্চিত)')}</button>`,
+            advance: `<button class="btn btn-ink w-full mt-5" data-act="cat-served" data-id="${o.id}"><i data-lucide="utensils"></i>${t('Mark as served', 'পরিবেশিত')}</button>`,
+            done: `<button class="btn btn-ink w-full mt-5" data-act="cat-pay" data-id="${o.id}" data-kind="final"><i data-lucide="file-check"></i>${t('Final bill & settle', 'চূড়ান্ত বিল ও মেটান')}</button>`,
+            settled: `<div class="mt-5 rounded-lg bg-tulsi-wash text-tulsi p-3.5 flex items-center gap-2.5 font-semibold"><i data-lucide="check-circle-2" class="w-5 h-5"></i>${t(`Settled · profit ${inr(Math.round(o.amount * 0.22))} to the Catering book`, `মিটেছে · লাভ ${inr(Math.round(o.amount * 0.22))} ক্যাটারিং খাতায়`)}</div>`,
+          }[o.status]}
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            ${o.status !== 'enquiry' && o.status !== 'settled' ? `<button class="btn btn-line btn-sm" data-act="cat-pay" data-id="${o.id}" data-kind="other"><i data-lucide="indian-rupee"></i>${t('Record payment', 'টাকা জমা')}</button>` : ''}
+            ${o.status !== 'settled' ? `<button class="btn btn-line btn-sm" data-act="quote" data-id="${o.id}"><i data-lucide="pencil"></i>${t(o.status === 'enquiry' ? 'Edit menu & plates' : 'Change plates / menu', o.status === 'enquiry' ? 'মেনু ও প্লেট' : 'প্লেট / মেনু বদল')}</button>` : ''}
             <button class="btn btn-line btn-sm" data-act="bazaar"><i data-lucide="shopping-basket"></i>${t('Bazaar list', 'বাজারের ফর্দ')}</button>
             <button class="btn btn-line btn-sm" data-act="cat-exp"><i data-lucide="receipt"></i>${t('Expenses', 'খরচ')}</button>
           </div>
+          ${['enquiry', 'quoted'].includes(o.status) ? `<button class="mt-3 text-sm font-semibold text-ink-2 hover:underline" data-act="cat-lost" data-id="${o.id}">${t('Customer went elsewhere? Mark as lost', 'অন্য জায়গায় গেছেন? হারানো অর্ডার')}</button>` : ''}
+          ${o.status === 'advance' ? `<button class="mt-3 text-sm font-semibold text-ink-2 hover:underline" data-act="cat-cancel" data-id="${o.id}">${t('Booking cancelled? Refund or keep advance', 'বুকিং বাতিল? অগ্রিম ফেরত বা রাখা')}</button>` : ''}
         </div>
       </div>
     </div>`);
@@ -585,7 +726,9 @@ function nursery(param) {
   const sub = items.reduce((a, b) => a + b.q * b.p.price, 0);
   const disc = cartMember ? Math.round(sub * memberDiscount) : 0;
   paint(screen('nursery'), `
-    ${pageHead('Nursery', 'নার্সারি', t('Sutapa Bose · counter open 5–8 pm', 'সুতপা বসু · কাউন্টার খোলা বিকেল ৫–৮টা'))}
+    ${pageHead('Nursery', 'নার্সারি', t('Sutapa Bose · counter open 5–8 pm', 'সুতপা বসু · কাউন্টার খোলা বিকেল ৫–৮টা'), `
+      <button class="btn btn-line btn-sm" data-act="wa-orders"><i data-lucide="message-circle"></i>${t('WhatsApp orders', 'হোয়াটসঅ্যাপ অর্ডার')} <span class="chip h-5 px-1.5 text-[11.5px] bg-tulsi text-white num">${dn('2')}</span></button>
+      <button class="btn btn-ink btn-sm" data-act="plant"><i data-lucide="plus"></i>${t('Add plant', 'গাছ যোগ')}</button>`)}
     <div class="flex gap-2 mb-5" role="tablist">
       <button role="tab" data-nt="counter" aria-selected="${nTab === 'counter'}" class="chip h-9 px-3.5 text-sm border border-rule bg-card aria-selected:bg-tulsi aria-selected:text-white aria-selected:border-tulsi"><i data-lucide="shopping-cart"></i>${t('Counter sale', 'কাউন্টার বিক্রি')}</button>
       <button role="tab" data-nt="stock" aria-selected="${nTab === 'stock'}" class="chip h-9 px-3.5 text-sm border border-rule bg-card aria-selected:bg-tulsi aria-selected:text-white aria-selected:border-tulsi"><i data-lucide="boxes"></i>${t('Stock', 'স্টক')}</button>
@@ -631,7 +774,7 @@ function nursery(param) {
           <td class="amt">${inr(p.price)}</td>
           <td class="amt font-semibold ${p.stock === 0 ? 'text-ink-3' : p.stock < 10 ? 'text-sindoor' : ''}">${p.stock === 0 ? t('Out', 'শেষ') : inr(p.stock, { plain: true })}${p.stock > 0 && p.stock < 10 ? ` <i data-lucide="triangle-alert" class="w-4 h-4 inline -mt-0.5"></i>` : ''}</td>
           <td class="num text-ink-2">${dn(String((i * 7 + 5) % 23))}</td>
-          <td class="text-right whitespace-nowrap"><button class="btn btn-ghost btn-sm" data-act="stock-in" data-plant="${p.id}">${t('Stock in', 'স্টক যোগ')}</button><button class="btn btn-ghost btn-sm text-ink-2" data-act="loss" data-plant="${p.id}">${t('Loss', 'নষ্ট')}</button></td>
+          <td class="text-right whitespace-nowrap"><button class="btn btn-ghost btn-sm text-ink-2" data-act="plant" data-plant="${p.id}">${t('Edit', 'সম্পাদনা')}</button><button class="btn btn-ghost btn-sm" data-act="stock-in" data-plant="${p.id}">${t('Stock in', 'স্টক যোগ')}</button><button class="btn btn-ghost btn-sm text-ink-2" data-act="loss" data-plant="${p.id}">${t('Loss', 'নষ্ট')}</button></td>
         </tr>`).join('')}</tbody>
       </table>
     </div>`}`);
@@ -646,6 +789,10 @@ function nursery(param) {
 }
 
 /* ---------------- Meetings & notices ---------------- */
+const polls = [
+  { q: 'Winter picnic: where shall we go?', qBn: 'শীতের পিকনিক: কোথায় যাব?', closes: '20 Nov', open: true, options: [['Gadiara', 'গাদিয়াড়া', 92], ['Bakkhali', 'বকখালি', 61], ['Taki', 'টাকি', 28]] },
+  { q: 'AGM 2026: raise subscription to ₹120 / month from April?', qBn: 'এজিএম ২০২৬: এপ্রিল থেকে চাঁদা মাসে ₹১২০?', closes: '', open: false, agm: true, options: [['Yes', 'হ্যাঁ', 118], ['No', 'না', 74], ['Abstain', 'বিরত', 9]] },
+];
 function meetings() {
   paint(screen('meetings'), `
     ${pageHead('Notices & meetings', 'নোটিস ও সভা')}
@@ -666,7 +813,7 @@ function meetings() {
           <label class="flex items-center gap-2"><input type="checkbox" checked class="w-5 h-5 accent-[#d21f1b]" />${t('Pin to top', 'উপরে পিন')}</label>
           <label class="flex items-center gap-2"><input type="checkbox" class="w-5 h-5 accent-[#d21f1b]" />${t('Show on website', 'ওয়েবসাইটে দেখান')}</label>
         </div>
-        <div class="flex gap-2"><button class="btn btn-primary">${t('Publish notice', 'নোটিস প্রকাশ')}</button><button type="button" class="btn btn-line"><i data-lucide="message-circle"></i>${t('Copy for WhatsApp group', 'হোয়াটসঅ্যাপ গ্রুপের জন্য কপি')}</button></div>
+        <div class="flex gap-2"><button class="btn btn-primary">${t('Publish notice', 'নোটিস প্রকাশ')}</button><button type="button" class="btn btn-line" data-act="copy-notice"><i data-lucide="message-circle"></i>${t('Copy for WhatsApp group', 'হোয়াটসঅ্যাপ গ্রুপের জন্য কপি')}</button></div>
       </form>
 
       <div class="xl:col-span-5 space-y-6">
@@ -679,7 +826,25 @@ function meetings() {
             <li>${t('Catering: second cook for December', 'ক্যাটারিং: ডিসেম্বরের জন্য দ্বিতীয় রাঁধুনি')}</li>
             <li>${t('Lapsed members: final reminder', 'মেয়াদোত্তীর্ণ সদস্য: শেষ তাগাদা')}</li>
           </ol>
-          <button class="btn btn-line btn-sm mt-4" data-act="minutes"><i data-lucide="notebook-pen"></i>${t('Write minutes', 'কার্যবিবরণী লিখুন')}</button>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <button class="btn btn-line btn-sm" data-act="minutes"><i data-lucide="notebook-pen"></i>${t('Write minutes', 'কার্যবিবরণী লিখুন')}</button>
+            <button class="btn btn-ghost btn-sm" data-act="meeting"><i data-lucide="calendar-plus"></i>${t('Call a meeting', 'সভা ডাকুন')}</button>
+          </div>
+        </div>
+        <div class="paper-card">
+          <div class="px-5 pt-4 pb-3 border-b border-rule flex items-center"><h2 class="font-display text-xl">${t('Polls', 'ভোট')}</h2>
+            <button class="ml-auto btn btn-ghost btn-sm text-sindoor" data-act="poll"><i data-lucide="plus"></i>${t('New poll', 'নতুন ভোট')}</button></div>
+          ${polls.map((pl, pi) => {
+            const total = pl.options.reduce((a, o) => a + o[2], 0);
+            return `<div class="px-5 py-4 border-b border-rule last:border-0">
+              <p class="text-[12.5px] font-semibold ${pl.open ? 'text-tulsi' : 'text-ink-3'}">${pl.open ? t(`Open · closes ${pl.closes}`, `চলছে · শেষ ${pl.closes}`) : t('Closed', 'বন্ধ')} · ${t(`${total} families voted`, `${total}টি পরিবার ভোট দিয়েছে`)}${pl.agm ? ` · <span class="text-sindoor">${t('AGM vote, one per family', 'এজিএম ভোট, পরিবার প্রতি এক')}</span>` : ''}</p>
+              <p class="font-semibold mt-0.5">${t(pl.q, pl.qBn)}</p>
+              <ul class="mt-2.5 space-y-2">${pl.options.map(([en, bn, v]) => `<li>
+                <div class="flex text-sm"><span>${t(en, bn)}</span><span class="ml-auto num text-ink-2">${dn(String(v))} · ${dn(String(Math.round((v / total) * 100)))}%</span></div>
+                <div class="mt-1 h-2 rounded-full bg-paper-2 overflow-hidden"><div class="h-full rounded-full bg-sindoor" style="width:${(v / total) * 100}%"></div></div></li>`).join('')}</ul>
+              ${pl.open ? `<button class="btn btn-line btn-sm mt-3" data-act="poll-close" data-i="${pi}">${t('Close and share result', 'বন্ধ করে ফল জানান')}</button>` : ''}
+            </div>`;
+          }).join('')}
         </div>
         <div class="paper-card">
           <div class="px-5 pt-4 pb-3 border-b border-rule"><h2 class="font-display text-xl">${t('Published', 'প্রকাশিত')}</h2></div>
@@ -709,22 +874,30 @@ function eventsScreen() {
           <td>${e.pass ? `<span class="chip border border-ink/40"><i data-lucide="ticket"></i>${t('Pass needed', 'পাস লাগবে')}</span>` : `<span class="text-sm text-ink-3">${t('Open to all', 'সবার জন্য')}</span>`}</td>
           <td class="num">${e.pass ? `${dn(String(e.regs))} ${t('families', 'পরিবার')}${e.cap ? ` <span class="text-ink-3">/ ${dn(String(e.cap))} ${t('seats', 'আসন')}</span>` : ''}` : '—'}</td>
           <td><span class="chip bg-paper-2 text-ink-2">${t('Published', 'প্রকাশিত')}</span></td>
-          <td class="text-right whitespace-nowrap"><button class="btn btn-ghost btn-sm" data-act="event-edit">${t('Edit', 'সম্পাদনা')}</button>${e.pass ? `<a href="scan.html" class="btn btn-ghost btn-sm">${t('Gate', 'গেট')}</a>` : ''}</td></tr>`).join('')}</tbody>
+          <td class="text-right whitespace-nowrap">${e.pass ? `<button class="btn btn-ghost btn-sm" data-act="regs" data-id="${e.id}">${t('Who’s coming', 'কারা আসছেন')}</button>` : ''}<button class="btn btn-ghost btn-sm" data-act="event-edit" data-id="${e.id}">${t('Edit', 'সম্পাদনা')}</button>${e.pass ? `<a href="scan.html" class="btn btn-ghost btn-sm">${t('Gate', 'গেট')}</a>` : ''}</td></tr>`).join('')}</tbody>
       </table>
     </div>`);
-  $('#new-event').addEventListener('click', () => openDrawer(`
+  $('#new-event').addEventListener('click', () => eventDrawer());
+}
+function eventDrawer(e) {
+  const iso = e ? e.date : '2027-01-23';
+  openDrawer(`
     <form class="p-6 space-y-4" id="event-form">
-      <div class="flex items-center"><h2 class="font-display text-[1.7rem]">${t('New event', 'নতুন অনুষ্ঠান')}</h2>
+      <div class="flex items-center"><h2 class="font-display text-[1.7rem]">${e ? t('Edit event', 'অনুষ্ঠান সম্পাদনা') : t('New event', 'নতুন অনুষ্ঠান')}</h2>
         <button type="button" data-close class="ml-auto w-10 h-10 grid place-items-center rounded-full hover:bg-paper-2" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-      <label class="block"><span class="label">${t('Name (English)', 'নাম (ইংরেজি)')}</span><input class="field" required placeholder="Netaji Jayanti flag hoisting" /></label>
-      <label class="block"><span class="label">${t('Name (Bengali)', 'নাম (বাংলা)')}</span><input class="field" placeholder="নেতাজি জয়ন্তী পতাকা উত্তোলন" lang="bn" /></label>
-      <div class="grid grid-cols-2 gap-3"><label class="block"><span class="label">${t('Date', 'তারিখ')}</span><input type="date" class="field" value="2027-01-23" /></label>
-        <label class="block"><span class="label">${t('Time', 'সময়')}</span><input type="time" class="field" value="08:00" /></label></div>
-      <label class="block"><span class="label">${t('Place', 'জায়গা')}</span><input class="field" value="Club ground" /></label>
-      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" />${t('Members need a pass (QR at the gate)', 'সদস্যদের পাস লাগবে (গেটে QR)')}</label>
+      <label class="block"><span class="label">${t('Name (English)', 'নাম (ইংরেজি)')}</span><input class="field" required value="${e ? e.title : ''}" placeholder="Netaji Jayanti flag hoisting" /></label>
+      <label class="block"><span class="label">${t('Name (Bengali)', 'নাম (বাংলা)')}</span><input class="field" value="${e ? e.titleBn : ''}" placeholder="নেতাজি জয়ন্তী পতাকা উত্তোলন" lang="bn" /></label>
+      <div class="grid grid-cols-2 gap-3"><label class="block"><span class="label">${t('Date', 'তারিখ')}</span><input type="date" class="field" value="${iso}" /></label>
+        <label class="block"><span class="label">${t('Time', 'সময়')}</span><input class="field" value="${e ? e.time : '8:00 am'}" /></label></div>
+      <label class="block"><span class="label">${t('Place', 'জায়গা')}</span><input class="field" value="${e ? e.place : 'Club ground'}" /></label>
+      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" ${e?.pass ? 'checked' : ''} />${t('Members need a pass (QR at the gate)', 'সদস্যদের পাস লাগবে (গেটে QR)')}</label>
+      <div class="grid grid-cols-2 gap-3">${fld('Seats (blank = no limit)', 'আসন (ফাঁকা = সীমা নেই)', inp(`class="field num" inputmode="numeric" value="${e?.id === 'picnic' ? 120 : ''}"`))}${fld('Fee per person', 'মাথাপিছু ফি', inp(`class="field num" value="${e?.id === 'picnic' ? '₹350' : '₹0'}"`))}</div>
+      ${fld('Registration closes', 'নাম দেওয়ার শেষ দিন', inp(`type="date" class="field" value="${e?.id === 'sports' ? '2026-12-07' : ''}"`))}
       <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Show on the website', 'ওয়েবসাইটে দেখান')}</label>
-      <div class="grid grid-cols-2 gap-2 pt-2"><button type="button" data-close class="btn btn-line">${t('Save draft', 'খসড়া রাখুন')}</button><button class="btn btn-primary">${t('Publish', 'প্রকাশ করুন')}</button></div>
-    </form>`));
+      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Notify members in the app', 'অ্যাপে সদস্যদের জানান')}</label>
+      <div class="grid grid-cols-2 gap-2 pt-2"><button type="button" data-close class="btn btn-line">${t('Save draft', 'খসড়া রাখুন')}</button><button class="btn btn-primary">${e ? t('Save changes', 'সেভ করুন') : t('Publish', 'প্রকাশ করুন')}</button></div>
+      ${e ? `<button type="button" data-act="event-cancel" data-id="${e.id}" class="w-full text-sm font-semibold text-sindoor hover:underline">${t('Cancel this event and tell everyone', 'অনুষ্ঠান বাতিল করে সবাইকে জানান')}</button>` : ''}
+    </form>`);
 }
 document.addEventListener('submit', (e) => {
   if (e.target.id !== 'event-form') return;
@@ -781,8 +954,8 @@ function settings(param) {
   const tabs = [['club', 'Club', 'ক্লাব'], ['fees', 'Fees', 'চাঁদা'], ['people', 'Users & roles', 'ব্যবহারকারী ও ভূমিকা'], ['security', 'Security', 'নিরাপত্তা']];
   const body = {
     club: `<form class="paper-card p-5 sm:p-6 grid sm:grid-cols-2 gap-4 max-w-3xl" data-save>
-      <label class="block"><span class="label">${t('Club name (English)', 'ক্লাবের নাম (ইংরেজি)')}</span><input class="field" value="Maitri Club" /></label>
-      <label class="block"><span class="label">${t('Club name (Bengali)', 'ক্লাবের নাম (বাংলা)')}</span><input class="field" value="মৈত্রী ক্লাব" lang="bn" /></label>
+      <label class="block"><span class="label">${t('Club name (English)', 'ক্লাবের নাম (ইংরেজি)')}</span><input class="field" value="Gede Maitree Club" /></label>
+      <label class="block"><span class="label">${t('Club name (Bengali)', 'ক্লাবের নাম (বাংলা)')}</span><input class="field" value="গেদে মৈত্রী ক্লাব" lang="bn" /></label>
       <label class="block"><span class="label">${t('Locality', 'এলাকা')}</span><input class="field" value="Netaji Para" /></label>
       <label class="block"><span class="label">${t('Founded', 'প্রতিষ্ঠা')}</span><input class="field num" value="1972" inputmode="numeric" /></label>
       <label class="block sm:col-span-2"><span class="label">${t('Address', 'ঠিকানা')}</span><input class="field" value="14/2 Netaji Subhas Road, Kolkata 700 084" /></label>
@@ -808,10 +981,10 @@ function settings(param) {
       <table class="khata-table min-w-[640px]"><thead><tr><th>${t('Name', 'নাম')}</th><th>${t('Role', 'ভূমিকা')}</th><th>${t('Two-step', 'দুই-ধাপ')}</th><th>${t('Last active', 'শেষ সক্রিয়')}</th><th></th></tr></thead>
       <tbody>${staff.map((s) => `<tr>
         <td class="font-semibold">${t(s.name, s.nameBn)}</td>
-        <td><select class="field h-9 text-sm w-auto" aria-label="Role for ${s.name}"><option>${s.role[0]}</option><option>Treasurer</option><option>Puja in-charge</option><option>Catering in-charge</option><option>Nursery in-charge</option><option>Volunteer</option></select></td>
+        <td><select class="field h-9 text-sm w-auto" aria-label="Role for ${s.name}" data-role-for="${s.name}"><option>${s.role[0]}</option><option>Treasurer</option><option>Puja in-charge</option><option>Catering in-charge</option><option>Nursery in-charge</option><option>Volunteer</option></select></td>
         <td>${s.twofa ? `<span class="chip bg-paper-2 text-ink-2"><i data-lucide="shield-check"></i>${t('On', 'চালু')}</span>` : `<span class="chip border border-ink/40"><i data-lucide="shield-alert"></i>${t('Off', 'বন্ধ')}</span>`}</td>
         <td class="text-sm text-ink-2">${s.pending ? `<span class="chip border border-ink/40"><i data-lucide="mail"></i>${t('Invited', 'আমন্ত্রিত')}</span>` : s.last}</td>
-        <td class="text-right whitespace-nowrap">${s.pending ? `<button class="btn btn-ghost btn-sm">${t('Resend', 'আবার পাঠান')}</button>` : `<button class="btn btn-ghost btn-sm">${t('Remove access', 'অ্যাক্সেস বাতিল')}</button>`}</td></tr>`).join('')}</tbody></table>
+        <td class="text-right whitespace-nowrap">${s.pending ? `<button class="btn btn-ghost btn-sm" data-act="resend" data-name="${s.name}">${t('Resend', 'আবার পাঠান')}</button>` : `<button class="btn btn-ghost btn-sm" data-act="revoke" data-name="${s.name}">${t('Remove access', 'অ্যাক্সেস বাতিল')}</button>`}</td></tr>`).join('')}</tbody></table>
       <div class="px-5 py-4 border-t border-rule text-sm text-ink-2">${t('Roles decide what each person sees: the treasurer sees all books, in-charges see their own book, volunteers only the gate scanner and chanda entry.', 'ভূমিকা অনুযায়ী দেখা যায়: কোষাধ্যক্ষ সব খাতা, দায়িত্বপ্রাপ্তরা নিজের খাতা, স্বেচ্ছাসেবক শুধু গেট স্ক্যানার ও চাঁদা।')}</div></div>`,
     security: `<form class="paper-card p-5 sm:p-6 max-w-3xl divide-y divide-rule" data-save>
       ${[
@@ -972,7 +1145,7 @@ function cardsScreen(param) {
 const fld = (en, bn, input) => `<label class="block"><span class="label">${t(en, bn)}</span>${input}</label>`;
 const inp = (attrs = '') => `<input class="field" ${attrs} />`;
 const sel = (opts) => `<select class="field">${opts.map((o) => `<option>${o}</option>`).join('')}</select>`;
-function formDrawer(titleEn, titleBn, body, submitEn, submitBn, doneEn, doneBn, { danger = false } = {}) {
+function formDrawer(titleEn, titleBn, body, submitEn, submitBn, doneEn, doneBn, { danger = false, onDone } = {}) {
   openDrawer(`
     <form class="p-6 space-y-4" data-drawer-form>
       <div class="flex items-center"><h2 class="font-display text-[1.7rem] leading-tight pr-4">${t(titleEn, titleBn)}</h2>
@@ -981,8 +1154,12 @@ function formDrawer(titleEn, titleBn, body, submitEn, submitBn, doneEn, doneBn, 
       <div class="grid grid-cols-2 gap-2 pt-2"><button type="button" data-close class="btn btn-line">${t('Cancel', 'বাতিল')}</button>
         <button class="btn ${danger ? 'btn-ink' : 'btn-primary'}">${t(submitEn, submitBn)}</button></div>
     </form>`);
-  $('[data-drawer-form]').addEventListener('submit', (e) => { e.preventDefault(); closeDrawer(); toast(`<i data-lucide="check-circle-2"></i>${t(doneEn, doneBn)}`); });
+  $('[data-drawer-form]').addEventListener('submit', (e) => { e.preventDefault(); closeDrawer(); onDone?.(e.target); toast(`<i data-lucide="check-circle-2"></i>${t(doneEn, doneBn)}`); });
 }
+const rerender = () => SCREENS[current]?.(currentParam);
+const proto = (en, bn) => toast(`<i data-lucide="info"></i>${t(`${en} (Prototype: nothing is printed or downloaded.)`, `${bn} (প্রোটোটাইপ: কিছু প্রিন্ট বা ডাউনলোড হয় না।)`)}`);
+const closeBtn = `<button type="button" data-close class="ml-auto w-10 h-10 grid place-items-center rounded-full hover:bg-paper-2 shrink-0" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>`;
+const radioRow = (name, opts) => `<div class="grid grid-cols-${opts.length} gap-2">${opts.map(([en, bn], i) => `<label class="flex items-center justify-center h-11 rounded-lg border border-rule bg-card cursor-pointer text-sm font-semibold text-center px-2 has-[:checked]:bg-ink has-[:checked]:text-paper has-[:checked]:border-ink"><input type="radio" name="${name}" value="${i}" class="sr-only" ${i ? '' : 'checked'} />${t(en, bn)}</label>`).join('')}</div>`;
 const LANES = ['Lane 1', 'Lane 2', 'Lane 3', 'Pukur Par', 'School Road'];
 
 const ACTIONS = {
@@ -1007,7 +1184,7 @@ const ACTIONS = {
           <button type="button" data-close class="ml-auto w-10 h-10 grid place-items-center rounded-full hover:bg-paper-2" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button></div>
         <ol class="mt-4 space-y-2 text-[15px] text-ink-2 list-decimal pl-5">
           <li>${t('Copy the old register into Excel or Google Sheets: one row per family.', 'পুরনো খাতা এক্সেল বা গুগল শিটে তুলুন: প্রতি পরিবার এক সারি।')}</li>
-          <li>${t('Columns: family no., head, mobile, lane, months due.', 'কলাম: পরিবার নং, প্রধান, মোবাইল, গলি, বকেয়া মাস।')} <a href="#" class="font-semibold text-sindoor hover:underline">${t('Download template', 'টেমপ্লেট ডাউনলোড')}</a></li>
+          <li>${t('Columns: family no., head, mobile, lane, months due.', 'কলাম: পরিবার নং, প্রধান, মোবাইল, গলি, বকেয়া মাস।')} <button type="button" data-act="template" class="font-semibold text-sindoor hover:underline">${t('Download template', 'টেমপ্লেট ডাউনলোড')}</button></li>
           <li>${t('Upload it here. You check every row before anything is saved.', 'এখানে আপলোড করুন। সেভের আগে প্রতিটি সারি দেখে নেবেন।')}</li>
         </ol>
         <label class="mt-5 w-full h-32 rounded-lg border-2 border-dashed border-rule bg-paper-2 text-ink-2 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-ink/40">
@@ -1030,8 +1207,8 @@ const ACTIONS = {
   message() {
     formDrawer('Reminder message', 'তাগাদার বার্তা', `
       <p class="text-sm text-ink-2">${t('{name}, {months} and {amount} are filled in for each family.', '{name}, {months} ও {amount} প্রতিটি পরিবারের জন্য বসবে।')}</p>
-      ${fld('Bengali', 'বাংলা', `<textarea class="field" rows="5" lang="bn">নমস্কার {name}, মৈত্রী ক্লাবের {months} মাসের চাঁদা ₹{amount} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।</textarea>`)}
-      ${fld('English', 'ইংরেজি', `<textarea class="field" rows="4">Namaskar {name}, your Maitri Club subscription of ₹{amount} for {months} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.</textarea>`)}`,
+      ${fld('Bengali', 'বাংলা', `<textarea class="field" rows="5" lang="bn">নমস্কার {name}, গেদে মৈত্রী ক্লাবের {months} মাসের চাঁদা ₹{amount} বাকি আছে। অ্যাপে ইউপিআই-এ দিতে পারেন বা সন্ধ্যায় ক্লাব ঘরে তাপস-দাকে দিন। ধন্যবাদ।</textarea>`)}
+      ${fld('English', 'ইংরেজি', `<textarea class="field" rows="4">Namaskar {name}, your Gede Maitree Club subscription of ₹{amount} for {months} months is due. Pay by UPI in the app, or to Tapas-da at the club room in the evening. Thank you.</textarea>`)}`,
       'Save message', 'সেভ করুন', 'Reminder message saved.', 'বার্তা সেভ হয়েছে।');
   },
   'remind-all'() {
@@ -1091,21 +1268,35 @@ const ACTIONS = {
       <div class="grid grid-cols-2 gap-3">${fld('Mobile', 'মোবাইল', inp('class="field num" type="tel"'))}${fld('Occasion', 'অনুষ্ঠান', sel(['Wedding', 'Reception', 'Annaprashan', 'Birthday', 'Shraddha', 'Office']))}</div>
       <div class="grid grid-cols-2 gap-3">${fld('Date', 'তারিখ', inp('type="date" value="2026-12-28"'))}${fld('Guests', 'অতিথি', inp('class="field num" inputmode="numeric" value="120"'))}</div>
       ${fld('Menu', 'মেনু', sel(cateringPackages.map((p) => `${p.name} · ₹${p.rate}`)))}
-      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" />${t('Maitri Club member (₹20 off a plate)', 'মৈত্রী ক্লাবের সদস্য (প্লেটে ₹২০ ছাড়)')}</label>`,
+      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" />${t('Gede Maitree Club member (₹20 off a plate)', 'গেদে মৈত্রী ক্লাবের সদস্য (প্লেটে ₹২০ ছাড়)')}</label>`,
       'Add enquiry', 'যোগ করুন', 'Enquiry added to the board.', 'জিজ্ঞাসা বোর্ডে যোগ হয়েছে।');
   },
-  quote() {
+  quote(b) {
+    const o = cateringOrders.find((x) => x.id === b.dataset.id) || cateringOrders.find((x) => x.id === selOrder);
     formDrawer('Send quotation', 'কোটেশন পাঠান', `
+      <div class="grid grid-cols-2 gap-3">${fld('Plates', 'প্লেট', inp(`class="field num" inputmode="numeric" value="${o.guests}"`))}${fld('Menu', 'মেনু', sel(cateringPackages.map((p) => `${p.name} · ₹${p.rate}`)))}</div>
       <p class="text-[15px] text-ink-2">${t('A PDF with the menu, plates, total and 20% advance goes on WhatsApp, signed with the club seal.', 'মেনু, প্লেট, মোট ও ২০% অগ্রিম সহ সিলমোহর দেওয়া PDF হোয়াটসঅ্যাপে যাবে।')}</p>
       ${fld('Valid until', 'বৈধ', inp('type="date" value="2026-11-25"'))}
       ${fld('Note to customer', 'গ্রাহকের জন্য নোট', '<textarea class="field" rows="3">Fish items depend on market price on the day. Final count needed 3 days before.</textarea>')}`,
-      'Send on WhatsApp', 'হোয়াটসঅ্যাপে পাঠান', 'Quotation sent.', 'কোটেশন পাঠানো হয়েছে।');
+      'Send on WhatsApp', 'হোয়াটসঅ্যাপে পাঠান', 'Quotation sent.', 'কোটেশন পাঠানো হয়েছে।',
+      { onDone: () => { if (o.status === 'enquiry') o.status = 'quoted'; rerender(); } });
   },
-  'cat-pay'() {
-    formDrawer('Record catering payment', 'ক্যাটারিং টাকা জমা', `
-      <div class="grid grid-cols-2 gap-3">${fld('Kind', 'ধরন', sel(['Advance', 'Final bill']))}${fld('Amount', 'টাকা', inp('class="field num text-lg" inputmode="numeric" required'))}</div>
-      ${fld('Paid by', 'মাধ্যম', sel(['Cash', 'UPI', 'Bank transfer']))}`,
-      'Record and send receipt', 'জমা ও রসিদ পাঠান', 'Payment recorded in the Catering book.', 'ক্যাটারিং খাতায় জমা হয়েছে।');
+  'cat-pay'(b) {
+    const o = cateringOrders.find((x) => x.id === b.dataset.id) || cateringOrders.find((x) => x.id === selOrder);
+    const kind = b.dataset.kind || 'other';
+    const pkgO = cateringPackages.find((p) => p.id === o.pkg);
+    const total = o.guests * (pkgO.rate - (o.member ? 20 : 0));
+    const balance = total - o.paid;
+    const amt = kind === 'advance' ? Math.round(total * 0.2) : kind === 'final' ? balance : '';
+    formDrawer(kind === 'final' ? `Final bill · ${o.customer}` : 'Record catering payment', kind === 'final' ? `চূড়ান্ত বিল · ${o.customerBn}` : 'ক্যাটারিং টাকা জমা', `
+      ${kind === 'final' ? `<table class="w-full text-[15px]"><tr><td class="py-1">${t('Total', 'মোট')}</td><td class="text-right num">${inr(total)}</td></tr><tr><td class="py-1 text-ink-2">${t('Already paid', 'আগে দিয়েছেন')}</td><td class="text-right num text-ink-2">−${inr(o.paid)}</td></tr><tr class="border-t border-ink/20 font-semibold"><td class="py-1.5">${t('Balance', 'বাকি')}</td><td class="text-right">${inr(balance)}</td></tr></table>` : ''}
+      <div class="grid grid-cols-2 gap-3">${fld('Kind', 'ধরন', sel(kind === 'advance' ? ['Advance', 'Part payment'] : kind === 'final' ? ['Final bill', 'Part payment'] : ['Part payment', 'Advance', 'Final bill']))}${fld('Amount', 'টাকা', inp(`class="field num text-lg" inputmode="numeric" required value="${amt}"`))}</div>
+      ${fld('Paid by', 'মাধ্যম', sel(['Cash', 'UPI', 'Bank transfer']))}
+      ${kind === 'final' ? `<label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Close the order and move profit to the Catering book', 'অর্ডার বন্ধ, লাভ ক্যাটারিং খাতায়')}</label>` : ''}`,
+      'Record and send receipt', 'জমা ও রসিদ পাঠান',
+      kind === 'advance' ? 'Advance recorded. Booking confirmed.' : kind === 'final' ? 'Bill settled. Order closed.' : 'Payment recorded in the Catering book.',
+      kind === 'advance' ? 'অগ্রিম জমা। বুকিং নিশ্চিত।' : kind === 'final' ? 'বিল মিটেছে। অর্ডার বন্ধ।' : 'ক্যাটারিং খাতায় জমা হয়েছে।',
+      { onDone: () => { if (kind === 'advance') { o.status = 'advance'; o.paid += amt; } if (kind === 'final') { o.status = 'settled'; o.paid = total; } rerender(); } });
   },
   bazaar() {
     openDrawer(`
@@ -1114,7 +1305,7 @@ const ACTIONS = {
           <button type="button" data-close class="ml-auto w-10 h-10 grid place-items-center rounded-full hover:bg-paper-2" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button></div>
         <p class="mt-1 text-sm text-ink-2">${t('Worked out from the Bhoj menu. Edit before you go to the market.', 'ভোজ মেনু থেকে হিসাব। বাজারে যাওয়ার আগে বদলে নিন।')}</p>
         <ul class="mt-4 text-[15px]">${[['Basmati rice', 'বাসমতী চাল', '28 kg'], ['Bhetki fillet', 'ভেটকি ফিলে', '24 kg'], ['Golda chingri', 'গলদা চিংড়ি', '30 kg'], ['Mutton', 'খাসির মাংস', '35 kg'], ['Maida (luchi)', 'ময়দা (লুচি)', '18 kg'], ['Mustard oil', 'সর্ষের তেল', '20 L'], ['Mishti doi', 'মিষ্টি দই', '220 cups'], ['Rosogolla', 'রসগোল্লা', '440 pcs']].map(([en, bn, q]) => `<li class="leader py-2"><span>${t(en, bn)}</span><span class="font-semibold num">${q}</span></li>`).join('')}</ul>
-        <div class="grid grid-cols-2 gap-2 mt-5"><button class="btn btn-line"><i data-lucide="printer"></i>${t('Print', 'প্রিন্ট')}</button><button class="btn btn-ink"><i data-lucide="message-circle"></i>WhatsApp</button></div>
+        <div class="grid grid-cols-2 gap-2 mt-5"><button class="btn btn-line" data-act="print-doc"><i data-lucide="printer"></i>${t('Print', 'প্রিন্ট')}</button><a class="btn btn-ink" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('Bazaar list · 220 plates · 6 Dec\nBasmati rice 28 kg\nBhetki fillet 24 kg\nGolda chingri 30 kg\nMutton 35 kg\nMaida 18 kg\nMustard oil 20 L\nMishti doi 220 cups\nRosogolla 440 pcs')}"><i data-lucide="message-circle"></i>WhatsApp</a></div>
       </div>`);
   },
   'cat-exp'() {
@@ -1144,7 +1335,230 @@ const ACTIONS = {
       <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Share with members in the app', 'অ্যাপে সদস্যদের সঙ্গে শেয়ার')}</label>`,
       'Save minutes', 'সেভ করুন', 'Minutes saved and shared.', 'কার্যবিবরণী সেভ ও শেয়ার হয়েছে।');
   },
-  'event-edit'() { $('#new-event')?.click(); },
+  'event-edit'(b) { eventDrawer(events.find((e) => e.id === b.dataset.id)); },
+  'event-cancel'(b) {
+    const ev = events.find((e) => e.id === b.dataset.id);
+    formDrawer(`Cancel · ${ev.title}`, `বাতিল · ${ev.titleBn}`, `
+      <p class="text-[15px] text-ink-2">${t('Everyone who registered gets an app notification. Passes stop working at the gate. Any fees paid are listed for refund.', 'যাঁরা নাম দিয়েছেন তাঁরা অ্যাপে জানবেন। গেটে পাস আর চলবে না। দেওয়া ফি ফেরতের তালিকায় উঠবে।')}</p>
+      ${fld('Reason shown to members', 'সদস্যদের জন্য কারণ', '<textarea class="field" rows="3" required placeholder="e.g. Ground not available because of the by-election"></textarea>')}`,
+      'Cancel event', 'বাতিল করুন', 'Event cancelled. Members notified.', 'অনুষ্ঠান বাতিল। সদস্যদের জানানো হয়েছে।', { danger: true });
+  },
+  regs(b) {
+    const ev = events.find((e) => e.id === b.dataset.id);
+    const regs = families.filter((f, i) => (i + (ev.id === 'picnic' ? 1 : 0)) % 3 !== 2).slice(0, 12);
+    openDrawer(`
+      <div class="p-6">
+        <div class="flex items-center"><h2 class="font-display text-[1.7rem] leading-tight pr-4">${t(ev.title, ev.titleBn)}</h2>${closeBtn}</div>
+        <p class="text-[15px] text-ink-2 mt-1">${t(`${regs.length} of a sample · passes issued in the app`, `নমুনা ${regs.length}টি · অ্যাপে পাস দেওয়া হয়েছে`)}</p>
+        <div class="grid grid-cols-3 gap-px bg-rule border border-rule rounded-lg overflow-hidden mt-4 text-center">
+          <div class="bg-card p-3"><p class="font-display text-2xl num">${dn(ev.id === 'picnic' ? '38' : '74')}</p><p class="text-[12.5px] text-ink-3">${t('families', 'পরিবার')}</p></div>
+          <div class="bg-card p-3"><p class="font-display text-2xl num">${dn(ev.id === 'picnic' ? '112' : '231')}</p><p class="text-[12.5px] text-ink-3">${t('people', 'জন')}</p></div>
+          <div class="bg-card p-3"><p class="font-display text-2xl num">${dn('0')}</p><p class="text-[12.5px] text-ink-3">${t('checked in', 'ঢুকেছেন')}</p></div>
+        </div>
+        <ul class="mt-4 divide-y divide-rule border-y border-rule text-[15px]">${regs.map((f) => `<li class="py-2.5 flex items-center gap-3"><span class="flex-1 min-w-0"><span class="block font-semibold truncate">${t(f.head, f.headBn)}</span><span class="block text-sm text-ink-3 num">${f.no}${f.due ? ` · <span class="text-sindoor">${t('dues pending', 'বকেয়া')}</span>` : ''}</span></span><span class="chip bg-paper-2 text-ink-2 num">${dn(String(Math.min(f.size, 4)))} ${t('passes', 'পাস')}</span></li>`).join('')}</ul>
+        <div class="grid grid-cols-2 gap-2 mt-4"><button class="btn btn-line" data-act="print-doc"><i data-lucide="printer"></i>${t('Print list', 'তালিকা প্রিন্ট')}</button><button class="btn btn-ink" data-act="add-reg" data-id="${ev.id}"><i data-lucide="user-plus"></i>${t('Register a family', 'পরিবারের নাম দিন')}</button></div>
+        <button class="w-full mt-3 text-sm font-semibold text-ink-2 hover:underline" data-act="close-regs">${t('Close registrations now', 'এখনই নাম নেওয়া বন্ধ করুন')}</button>
+      </div>`);
+  },
+  'add-reg'() {
+    formDrawer('Register a family', 'পরিবারের নাম দিন', `
+      ${fld('Family', 'পরিবার', inp('required placeholder="Name, MC number or phone"'))}
+      ${fld('How many people?', 'কতজন?', inp('class="field num" inputmode="numeric" value="3"'))}
+      <p class="text-sm text-ink-2">${t('For members who come to the club instead of using the app. Their passes appear in their app.', 'যাঁরা অ্যাপ না ব্যবহার করে ক্লাবে আসেন। পাস তাঁদের অ্যাপে চলে যাবে।')}</p>`,
+      'Register and issue passes', 'নাম দিন ও পাস দিন', 'Registered. Passes issued.', 'নাম নেওয়া হয়েছে। পাস দেওয়া হয়েছে।');
+  },
+  'close-regs'() { closeDrawer(); toast(`<i data-lucide="lock"></i>${t('Registrations closed. The app shows “Registration closed”.', 'নাম নেওয়া বন্ধ। অ্যাপে “নাম নেওয়া বন্ধ” দেখাবে।')}`); },
+
+  /* Applications */
+  'app-new'() {
+    formDrawer('Application at the counter', 'কাউন্টারে আবেদন', `
+      ${fld('Head of family', 'পরিবারের প্রধান', inp('required'))}
+      <div class="grid grid-cols-2 gap-3">${fld('Mobile', 'মোবাইল', inp('class="field num" type="tel" required'))}${fld('Lane', 'গলি', sel(LANES))}</div>
+      ${fld('Address', 'ঠিকানা', inp())}
+      ${fld('Other family members (one per line)', 'অন্য সদস্য (প্রতি লাইনে একজন)', '<textarea class="field" rows="3" placeholder="Name, relation"></textarea>')}
+      ${fld('Plan', 'প্ল্যান', sel(['₹100 / month', '₹1,100 / year']))}`,
+      'Add application', 'আবেদন যোগ', 'Application added. It goes to the next committee meeting.', 'আবেদন যোগ হয়েছে। পরের সভায় উঠবে।');
+  },
+  'app-approve'(b) {
+    const a = applications.find((x) => x.id === b.dataset.id);
+    const no = `MC-${String(nextFamNo).padStart(4, '0')}`;
+    formDrawer(`Approve · ${a.head}`, `অনুমোদন · ${a.headBn}`, `
+      <div class="rounded-lg bg-paper-2 p-4 text-[15px]"><p>${t('New family number', 'নতুন পরিবার নম্বর')}: <strong class="num">${no}</strong></p><p class="text-ink-2">${t(`${a.people.length + 1} member cards will be created`, `${a.people.length + 1}টি সদস্য কার্ড তৈরি হবে`)}</p></div>
+      ${fld('Approved at', 'কোথায় অনুমোদন', sel(['Committee meeting, 16 Nov', 'Secretary (between meetings)']))}
+      <div><p class="label">${t(`Admission fee ${inr(club.admissionFee)}`, `ভর্তি ফি ${inr(club.admissionFee)}`)}</p>${radioRow('adm', [['Paid cash', 'নগদ পেয়েছি'], ['Paid UPI', 'ইউপিআই'], ['Pay in app', 'অ্যাপে দেবেন']])}</div>
+      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Send welcome on WhatsApp with the app link', 'হোয়াটসঅ্যাপে স্বাগত বার্তা ও অ্যাপের লিঙ্ক')}</label>
+      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Add their ID cards to “To print”', 'আইডি কার্ড “প্রিন্ট বাকি”-তে যোগ')}</label>`,
+      'Approve and create family', 'অনুমোদন ও পরিবার তৈরি', `${a.head} is now family ${no}. Welcome message sent.`, `${a.headBn} এখন পরিবার ${no}। স্বাগত বার্তা গেছে।`,
+      { onDone: () => { a.status = 'done'; approved.unshift({ head: a.head, headBn: a.headBn, no, on: '13 Nov' }); nextFamNo++; rerender(); } });
+  },
+  'app-info'(b) {
+    const a = applications.find((x) => x.id === b.dataset.id);
+    window.open(b.href, '_blank', 'noopener');
+    a.status = 'info'; a.note = t('Asked on WhatsApp for an address proof · today', 'হোয়াটসঅ্যাপে ঠিকানার প্রমাণ চাওয়া হয়েছে · আজ');
+    rerender();
+    toast(`<i data-lucide="message-circle"></i>${t('WhatsApp opened. Marked as waiting for info.', 'হোয়াটসঅ্যাপ খুলেছে। তথ্যের অপেক্ষায় রাখা হয়েছে।')}`);
+  },
+  'app-reject'(b) {
+    const a = applications.find((x) => x.id === b.dataset.id);
+    formDrawer(`Decline · ${a.head}`, `নামঞ্জুর · ${a.headBn}`, `
+      ${fld('Reason', 'কারণ', sel(['Lives outside the para', 'Already a member of another family', 'Duplicate application', 'Other']))}
+      ${fld('Message to the applicant', 'আবেদনকারীকে বার্তা', '<textarea class="field" rows="3">Namaskar, thank you for applying to Gede Maitree Club. We are sorry we cannot accept the application at this time. You are always welcome at our pujas and events.</textarea>')}
+      <p class="text-sm text-ink-2">${t('The decision and reason are kept in the meeting minutes.', 'সিদ্ধান্ত ও কারণ সভার কার্যবিবরণীতে থাকবে।')}</p>`,
+      'Decline and send', 'নামঞ্জুর ও পাঠান', 'Application declined. Message sent.', 'আবেদন নামঞ্জুর। বার্তা গেছে।',
+      { danger: true, onDone: () => { a.status = 'rejected'; rerender(); } });
+  },
+
+  /* Families */
+  person(b) {
+    const editing = !!b.dataset.name;
+    formDrawer(editing ? `Edit · ${b.dataset.name}` : 'Add a family member', editing ? 'সদস্য সম্পাদনা' : 'পরিবারে সদস্য যোগ', `
+      <p class="text-sm text-ink-3 num">${b.dataset.no}</p>
+      ${fld('Name', 'নাম', inp(`required value="${b.dataset.name || ''}"`))}
+      <div class="grid grid-cols-2 gap-3">${fld('Relation', 'সম্পর্ক', sel([b.dataset.rel || 'Son', 'Spouse', 'Son', 'Daughter', 'Father', 'Mother', 'Daughter-in-law', 'Other']))}${fld('Date of birth', 'জন্ম তারিখ', inp('type="date"'))}</div>
+      <div class="grid grid-cols-2 gap-3">${fld('Blood group', 'রক্তের গ্রুপ', sel(['Not known', 'A+', 'A−', 'B+', 'B−', 'O+', 'O−', 'AB+', 'AB−']))}${fld('Own mobile (optional)', 'নিজের মোবাইল (ঐচ্ছিক)', inp('class="field num" type="tel"'))}</div>
+      <label class="w-full h-20 rounded-lg border-2 border-dashed border-rule bg-paper-2 text-ink-2 flex items-center justify-center gap-2 cursor-pointer"><i data-lucide="camera" class="w-5 h-5"></i><span class="text-sm font-semibold">${t('Photo for the ID card', 'আইডি কার্ডের ছবি')}</span><input type="file" accept="image/*" class="sr-only" /></label>
+      ${editing ? `<div><p class="label">${t('Remove from the family', 'পরিবার থেকে বাদ')}</p>${radioRow('rm', [['Keep', 'থাকবেন'], ['Moved out', 'অন্যত্র'], ['Passed away', 'প্রয়াত']])}<p class="text-sm text-ink-3 mt-1.5">${t('Their card stops working at the gate. History is kept.', 'কার্ড গেটে আর চলবে না। ইতিহাস থাকবে।')}</p></div>` : ''}`,
+      editing ? 'Save' : 'Add and create card', editing ? 'সেভ করুন' : 'যোগ ও কার্ড তৈরি',
+      editing ? 'Saved. The change is in the audit trail.' : 'Member added. Their card is in “To print”.', editing ? 'সেভ হয়েছে।' : 'সদস্য যোগ হয়েছে। কার্ড প্রিন্টের তালিকায়।');
+  },
+  waive(b) {
+    const f = families.find((x) => x.no === b.dataset.no);
+    formDrawer(`Waive dues · ${f.head}`, `বকেয়া মকুব · ${f.headBn}`, `
+      <div class="rounded-lg bg-sindoor-wash p-4 text-[15px]"><p>${t(`${f.dueMonths} months due`, `${f.dueMonths} মাস বকেয়া`)} · <strong>${inr(f.due)}</strong></p></div>
+      ${fld('Waive', 'মকুব', sel([`All ${f.dueMonths} months (${inr(f.due)})`, '1 month (₹100)', '3 months (₹300)']))}
+      ${fld('Reason (shown at the AGM)', 'কারণ (এজিএম-এ দেখানো হবে)', sel(['Financial hardship', 'Death in the family', 'Long illness', 'Committee decision', 'Other']))}
+      ${fld('Note', 'নোট', '<textarea class="field" rows="2" required></textarea>')}
+      <p class="text-sm text-ink-2">${t('Needs the secretary’s approval too. No money entry is made; the dues are marked “waived”.', 'সম্পাদকের অনুমোদনও লাগবে। টাকার এন্ট্রি হয় না; বকেয়া “মকুব” হিসেবে থাকে।')}</p>`,
+      'Send for approval', 'অনুমোদনে পাঠান', 'Sent to the secretary for approval.', 'অনুমোদনের জন্য সম্পাদকের কাছে গেছে।');
+  },
+  receipt(b) {
+    const f = families.find((x) => x.no === b.dataset.no);
+    openDrawer(`
+      <div class="p-6">
+        <div class="flex items-center"><h2 class="font-display text-[1.7rem]">${t('Receipt', 'রসিদ')} <span class="num">${b.dataset.ref}</span></h2>${closeBtn}</div>
+        <div class="mt-4 rounded-lg border border-rule p-5">
+          <div class="flex items-center gap-3 border-b border-ink/20 pb-3"><span>${seal({ size: 44, rotate: -4 })}</span><p class="font-display text-lg text-sindoor">${t('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব')}</p></div>
+          <p class="mt-3 text-[15px]">${t('Received from', 'গৃহীত')} <strong>${t(f.head, f.headBn)}</strong> (${f.no}) <strong>${inr(Number(b.dataset.amt))}</strong> ${t('towards subscription.', 'চাঁদা বাবদ।')}</p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-4"><button class="btn btn-line" data-act="receipt-print" data-ref="${b.dataset.ref}"><i data-lucide="printer"></i>${t('Print', 'প্রিন্ট')}</button>
+          <a class="btn btn-ink" target="_blank" rel="noopener" href="https://wa.me/91${f.phone}?text=${encodeURIComponent(`Gede Maitree Club receipt ${b.dataset.ref}: ₹${b.dataset.amt} received. Thank you.`)}"><i data-lucide="message-circle"></i>${t('Resend', 'আবার পাঠান')}</a></div>
+        <p class="mt-3 text-sm text-ink-3">${t('Wrong amount or family? Reverse it in the khata with a note.', 'ভুল টাকা বা পরিবার? খাতায় নোট দিয়ে উল্টান।')}</p>
+      </div>`);
+  },
+  'receipt-print'(b) { proto(`Receipt ${b.dataset.ref || ''} sent to the printer.`, `রসিদ ${b.dataset.ref || ''} প্রিন্টারে গেছে।`); },
+  'print-month'() { proto('November khata prepared for A4, in the old register layout.', 'নভেম্বরের খাতা A4-এ পুরনো খাতার মতো তৈরি।'); },
+  'print-doc'() { proto('Sent to the printer.', 'প্রিন্টারে গেছে।'); },
+  template() { proto('Template register-template.xlsx prepared.', 'register-template.xlsx তৈরি।'); },
+  'copy-notice'() {
+    const f = $('#notice-form');
+    const [title] = f.querySelectorAll('input');
+    const text = `*${title.value}*\n${f.querySelector('textarea').value}\n— Gede Maitree Club`;
+    navigator.clipboard?.writeText(text).catch(() => {});
+    toast(`<i data-lucide="clipboard-check"></i>${t('Copied. Paste it in the club WhatsApp group.', 'কপি হয়েছে। ক্লাবের হোয়াটসঅ্যাপ গ্রুপে পেস্ট করুন।')}`);
+  },
+
+  /* Settings: people */
+  resend(b) { toast(`<i data-lucide="send"></i>${t(`Invite sent again to ${b.dataset.name}.`, `${b.dataset.name}-কে আবার আমন্ত্রণ গেছে।`)}`); },
+  revoke(b) {
+    formDrawer(`Remove access · ${b.dataset.name}`, `অ্যাক্সেস বাতিল · ${b.dataset.name}`, `
+      <p class="text-[15px] text-ink-2">${t('They are signed out everywhere and can no longer open the admin app. Their past entries stay in the khata with their name.', 'সব জায়গা থেকে লগআউট হবেন, অ্যাডমিন অ্যাপ আর খুলবে না। আগের এন্ট্রি তাঁদের নামেই খাতায় থাকবে।')}</p>
+      ${fld('Reason', 'কারণ', sel(['Term ended', 'Stepped down', 'Phone lost', 'Other']))}`,
+      'Remove access', 'বাতিল করুন', 'Access removed.', 'অ্যাক্সেস বাতিল হয়েছে।', { danger: true });
+  },
+
+  /* Catering stages */
+  'cat-served'(b) {
+    const o = cateringOrders.find((x) => x.id === b.dataset.id);
+    formDrawer(`Served · ${o.customer}`, `পরিবেশিত · ${o.customerBn}`, `
+      ${fld('Final plate count', 'শেষ প্লেট সংখ্যা', inp(`class="field num text-lg" inputmode="numeric" value="${o.guests}"`))}
+      <p class="text-sm text-ink-2">${t('Extra plates are added to the final bill at the same rate.', 'বাড়তি প্লেট একই দামে চূড়ান্ত বিলে যোগ হবে।')}</p>`,
+      'Mark served', 'পরিবেশিত', 'Marked as served. The final bill is ready.', 'পরিবেশিত। চূড়ান্ত বিল তৈরি।',
+      { onDone: () => { o.status = 'done'; rerender(); } });
+  },
+  'cat-lost'(b) {
+    const o = cateringOrders.find((x) => x.id === b.dataset.id);
+    formDrawer(`Lost · ${o.customer}`, `হারানো · ${o.customerBn}`, `
+      ${fld('Why?', 'কেন?', sel(['Price too high', 'Date not free', 'Chose another caterer', 'Event called off', 'No reply']))}
+      <p class="text-sm text-ink-2">${t('Lost orders leave the board and show in the season report, so you can see why.', 'হারানো অর্ডার বোর্ড থেকে সরে মরসুমের রিপোর্টে থাকে।')}</p>`,
+      'Mark as lost', 'হারানো', 'Order marked as lost.', 'অর্ডার হারানো হিসেবে চিহ্নিত।',
+      { danger: true, onDone: () => { o.status = 'lost'; selOrder = cateringOrders.find((x) => x.status !== 'lost').id; rerender(); } });
+  },
+  'cat-cancel'(b) {
+    const o = cateringOrders.find((x) => x.id === b.dataset.id);
+    formDrawer(`Cancel booking · ${o.customer}`, `বুকিং বাতিল · ${o.customerBn}`, `
+      <p class="text-[15px]">${t('Advance received', 'অগ্রিম পাওয়া')}: <strong>${inr(o.paid)}</strong></p>
+      <div><p class="label">${t('Advance', 'অগ্রিম')}</p>${radioRow('adv', [['Refund all', 'পুরো ফেরত'], ['Refund half', 'অর্ধেক'], ['Keep', 'রাখা']])}</div>
+      ${fld('Note', 'নোট', '<textarea class="field" rows="2" required></textarea>')}`,
+      'Cancel booking', 'বাতিল করুন', 'Booking cancelled. Any refund is entered in the Catering book.', 'বুকিং বাতিল। ফেরত ক্যাটারিং খাতায় উঠেছে।',
+      { danger: true, onDone: () => { o.status = 'lost'; selOrder = cateringOrders.find((x) => x.status !== 'lost').id; rerender(); } });
+  },
+
+  /* Chanda */
+  sponsor() {
+    formDrawer('Add a sponsor', 'স্পনসর যোগ', `
+      ${fld('Business or name', 'প্রতিষ্ঠান বা নাম', inp('required'))}
+      <div class="grid grid-cols-2 gap-3">${fld('Amount', 'টাকা', inp('class="field num text-lg" inputmode="numeric" required'))}${fld('Status', 'অবস্থা', sel(['Promised', 'Received']))}</div>
+      ${fld('What they get', 'বিনিময়ে', sel(['Gate banner', 'Stage mention', 'Bhog counter board', 'Name in the souvenir', 'Nothing']))}`,
+      'Add sponsor', 'যোগ করুন', 'Sponsor added.', 'স্পনসর যোগ হয়েছে।');
+  },
+  'sponsor-paid'(b) {
+    const s = chanda.sponsors[b.dataset.i];
+    formDrawer(`Received · ${s.name}`, `পেয়েছি · ${s.nameBn}`, `
+      <div class="grid grid-cols-2 gap-3">${fld('Amount', 'টাকা', inp(`class="field num text-lg" value="${s.amount}"`))}${fld('Paid by', 'মাধ্যম', sel(['Cash', 'UPI', 'Cheque']))}</div>`,
+      'Record and send receipt', 'জমা ও রসিদ', 'Sponsorship entered in the Club book.', 'স্পনসরশিপ ক্লাব খাতায় উঠেছে।',
+      { onDone: () => { s.status = 'paid'; rerender(); } });
+  },
+  budget() {
+    formDrawer(`Budget · ${chanda.event}`, `বাজেট · ${chanda.eventBn}`, chanda.budget.map((x) => fld(x.head, x.headBn, inp(`class="field num" value="${x.amount}"`))).join('')
+      + `<p class="text-sm text-ink-2">${t('Budget changes after the meeting approval are logged.', 'সভায় অনুমোদনের পর বাজেট বদল লেখা থাকে।')}</p>`,
+      'Save budget', 'সেভ করুন', 'Budget saved.', 'বাজেট সেভ হয়েছে।');
+  },
+
+  /* Nursery */
+  plant(b) {
+    const p = plants.find((x) => x.id === b.dataset.plant);
+    formDrawer(p ? `Edit · ${p.name}` : 'Add a plant', p ? `সম্পাদনা · ${p.nameBn}` : 'গাছ যোগ', `
+      <div class="grid grid-cols-2 gap-3">${fld('Name (English)', 'নাম (ইংরেজি)', inp(`required value="${p ? p.name : ''}"`))}${fld('Name (Bengali)', 'নাম (বাংলা)', inp(`value="${p ? p.nameBn : ''}" lang="bn"`))}</div>
+      <div class="grid grid-cols-2 gap-3">${fld('Category', 'ধরন', sel(['Flowering', 'Fruit', 'Indoor', 'Seasonal', 'Seeds & bulbs']))}${fld('Pot size', 'টব', inp(`value="${p ? p.pot : '8&quot;'}"`))}</div>
+      <div class="grid grid-cols-2 gap-3">${fld('Price', 'দাম', inp(`class="field num" value="${p ? p.price : ''}" required`))}${fld('Opening stock', 'শুরুর স্টক', inp(`class="field num" value="${p ? p.stock : ''}"`))}</div>
+      <label class="w-full h-20 rounded-lg border-2 border-dashed border-rule bg-paper-2 text-ink-2 flex items-center justify-center gap-2 cursor-pointer"><i data-lucide="camera" class="w-5 h-5"></i><span class="text-sm font-semibold">${t('Photo for the website', 'ওয়েবসাইটের ছবি')}</span><input type="file" accept="image/*" class="sr-only" /></label>
+      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Show on the website catalogue', 'ওয়েবসাইটের ক্যাটালগে দেখান')}</label>`,
+      p ? 'Save' : 'Add plant', p ? 'সেভ করুন' : 'যোগ করুন', p ? 'Plant updated.' : 'Plant added to the catalogue.', p ? 'আপডেট হয়েছে।' : 'ক্যাটালগে যোগ হয়েছে।');
+  },
+  'wa-orders'() {
+    const orders = [['Ruma Basak', 'Tulsi ×2, Aloe vera ×1', 170, 'Pickup today'], ['Amit Saha (MC-0119)', 'Hibiscus ×3, Marigold tray ×2', 432, 'Pickup Sat']];
+    openDrawer(`
+      <div class="p-6">
+        <div class="flex items-center"><h2 class="font-display text-[1.7rem]">${t('WhatsApp orders', 'হোয়াটসঅ্যাপ অর্ডার')}</h2>${closeBtn}</div>
+        <p class="text-[15px] text-ink-2 mt-1">${t('From “Order on WhatsApp” on the website. Set the plants aside, then take payment at pickup.', 'ওয়েবসাইটের “হোয়াটসঅ্যাপে অর্ডার” থেকে। গাছ সরিয়ে রাখুন, নেওয়ার সময় টাকা নিন।')}</p>
+        <ul class="mt-4 space-y-3">${orders.map(([who, what, amt, when]) => `<li class="paper-card p-4">
+          <div class="flex"><p class="font-semibold">${who}</p><p class="ml-auto font-semibold">${inr(amt)}</p></div>
+          <p class="text-sm text-ink-2">${what}</p><p class="text-sm text-ink-3">${when}</p>
+          <div class="grid grid-cols-2 gap-2 mt-3"><button class="btn btn-line btn-sm" data-act="wa-ready"><i data-lucide="package-check"></i>${t('Ready, tell them', 'তৈরি, জানান')}</button><button class="btn btn-ink btn-sm" data-act="wa-sold"><i data-lucide="banknote"></i>${t('Picked up & paid', 'নিয়েছেন ও দিয়েছেন')}</button></div></li>`).join('')}</ul>
+      </div>`);
+  },
+  'wa-ready'(b) { b.closest('li').querySelector('[data-act="wa-ready"]').outerHTML = `<span class="chip bg-paper-2 text-ink-2 justify-center"><i data-lucide="check"></i>${t('Told', 'জানানো হয়েছে')}</span>`; refreshIcons(); applyLang($('#drawer-body')); },
+  'wa-sold'(b) { b.closest('li').remove(); toast(`<i data-lucide="check-circle-2"></i>${t('Sale saved in the Nursery book. Stock updated.', 'বিক্রি নার্সারি খাতায় উঠেছে। স্টক আপডেট।')}`); },
+
+  /* Meetings & polls */
+  meeting() {
+    formDrawer('Call a meeting', 'সভা ডাকুন', `
+      <div><p class="label">${t('Kind', 'ধরন')}</p>${radioRow('mk', [['Committee', 'কমিটি'], ['General (AGM)', 'সাধারণ সভা']])}</div>
+      <div class="grid grid-cols-2 gap-3">${fld('Date', 'তারিখ', inp('type="date" value="2026-11-30"'))}${fld('Time', 'সময়', inp('value="6:00 pm"'))}</div>
+      ${fld('Place', 'জায়গা', inp('value="Club room"'))}
+      ${fld('Agenda (one item per line)', 'আলোচ্য (প্রতি লাইনে একটি)', '<textarea class="field" rows="4"></textarea>')}
+      <p class="text-sm text-ink-2">${t('Members get the notice in the app. An AGM needs 14 days’ notice under the club rules.', 'সদস্যরা অ্যাপে নোটিস পাবেন। নিয়ম অনুযায়ী এজিএম-এর ১৪ দিন আগে নোটিস লাগে।')}</p>`,
+      'Send notice', 'নোটিস পাঠান', 'Meeting notice sent.', 'সভার নোটিস গেছে।');
+  },
+  poll() {
+    formDrawer('New poll', 'নতুন ভোট', `
+      ${fld('Question', 'প্রশ্ন', inp('required placeholder="e.g. Which date for the blood donation camp?"'))}
+      ${fld('Options (one per line)', 'বিকল্প (প্রতি লাইনে একটি)', '<textarea class="field" rows="3" required></textarea>')}
+      <div class="grid grid-cols-2 gap-3">${fld('Closes', 'শেষ', inp('type="date" value="2026-11-27"'))}${fld('Who votes', 'কারা ভোট দেবেন', sel(['One vote per family', 'Committee only']))}</div>
+      <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" />${t('Formal AGM resolution (only paid-up families can vote)', 'এজিএম প্রস্তাব (শুধু বকেয়াহীন পরিবার ভোট দেবে)')}</label>`,
+      'Open poll', 'ভোট শুরু', 'Poll opened. Members get a notification.', 'ভোট শুরু। সদস্যরা নোটিফিকেশন পাবেন।');
+  },
+  'poll-close'(b) { polls[b.dataset.i].open = false; rerender(); toast(`<i data-lucide="check-circle-2"></i>${t('Poll closed. The result is posted as a notice.', 'ভোট বন্ধ। ফল নোটিস হিসেবে দেওয়া হয়েছে।')}`); },
 };
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]');
@@ -1178,7 +1592,14 @@ document.addEventListener('click', (e) => {
 }
 
 /* ---------------- Router ---------------- */
-const SCREENS = { dashboard, members, collect, dues, khata, chanda: chandaScreen, catering, nursery, meetings, events: eventsScreen, reports, settings, profile, cards: cardsScreen };
+document.addEventListener('change', (e) => {
+  const r = e.target.closest('[data-role-for]');
+  if (r) toast(`<i data-lucide="shield-check"></i>${t(`${r.dataset.roleFor} is now ${r.value}. They see the new menus at their next sign-in.`, `${r.dataset.roleFor} এখন ${r.value}। পরের লগইনে নতুন মেনু দেখবেন।`)}`);
+  const ph = e.target.closest('[data-photo-input]');
+  if (ph && ph.files[0]) ph.parentElement.querySelector('[data-photo-name]').textContent = ph.files[0].name;
+});
+
+const SCREENS = { dashboard, applications: applicationsScreen, members, collect, dues, khata, chanda: chandaScreen, catering, nursery, meetings, events: eventsScreen, reports, settings, profile, cards: cardsScreen };
 let current = 'dashboard', currentParam;
 router('dashboard', (name, param) => { current = name; currentParam = param; SCREENS[name]?.(param); });
 document.addEventListener('langchange', () => SCREENS[current]?.(currentParam));

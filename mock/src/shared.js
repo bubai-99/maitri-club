@@ -65,16 +65,16 @@ export const refreshIcons = () => createIcons({ icons, attrs: { 'stroke-width': 
 let sealId = 0;
 export function seal({ size = 96, color = 'var(--color-sindoor)', rotate = -8, className = '', estd = true } = {}) {
   const id = `seal-${++sealId}`;
-  const ring = estd ? 'MAITRI CLUB  •  NETAJI PARA  •  ESTD 1972  •  ' : 'MAITRI CLUB  •  MAITRI CLUB  •  ';
-  return `<svg class="${className}" width="${size}" height="${size}" viewBox="0 0 200 200" role="img" aria-label="Maitri Club seal" style="transform:rotate(${rotate}deg);color:${color}">
+  const ring = estd ? 'GEDE MAITREE CLUB  •  NETAJI PARA  •  ESTD 1972  •  ' : 'GEDE MAITREE CLUB  •  NETAJI PARA  •  ';
+  return `<svg class="${className}" width="${size}" height="${size}" viewBox="0 0 200 200" role="img" aria-label="Gede Maitree Club seal" style="transform:rotate(${rotate}deg);color:${color}">
     <defs><path id="${id}" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
     <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="5"/>
     <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="1.6"/>
     <circle cx="100" cy="100" r="58" fill="none" stroke="currentColor" stroke-width="1.6"/>
-    <text font-family="Anek Bangla Variable, sans-serif" font-weight="700" font-size="15.5" letter-spacing="2.2" fill="currentColor">
+    <text font-family="Anek Bangla Variable, sans-serif" font-weight="700" font-size="13.5" letter-spacing="1.2" fill="currentColor">
       <textPath href="#${id}" textLength="462" lengthAdjust="spacing">${ring}</textPath>
     </text>
-    <text x="100" y="110" text-anchor="middle" font-family="DM Serif Display, Tiro Bangla, serif" font-size="${lang === 'bn' ? 40 : 33}" fill="currentColor" data-bn="মৈত্রী">Maitri</text>
+    <text x="100" y="110" text-anchor="middle" font-family="DM Serif Display, Tiro Bangla, serif" font-size="${lang === 'bn' ? 40 : 29}" fill="currentColor" data-bn="মৈত্রী">Maitree</text>
     <text x="100" y="134" text-anchor="middle" font-family="Anek Bangla Variable, sans-serif" font-weight="600" font-size="11" letter-spacing="3" fill="currentColor" data-bn="ক্লাব">CLUB</text>
   </svg>`;
 }

@@ -1,6 +1,6 @@
-# Maitri Club (মৈত্রী ক্লাব)
+# Gede Maitree Club (গেদে মৈত্রী ক্লাব)
 
-Website, member app and committee console for Maitri Club, a neighbourhood club in Netaji Para, Kolkata. It covers membership and fees, puja chanda, catering, the club nursery, member ID cards and the club's accounts (khata).
+Website, member app and committee console for Gede Maitree Club, a neighbourhood club in Netaji Para, Kolkata. It covers membership and fees, puja chanda, catering, the club nursery, member ID cards and the club's accounts (khata).
 
 This repository currently holds the **design brief, project plan and a clickable HTML prototype**. Club details in the prototype are placeholders.
 

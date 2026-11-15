@@ -1,4 +1,4 @@
-# Maitri Club: HTML prototype
+# Gede Maitree Club: HTML prototype
 
 A clickable prototype covering all four surfaces from [docs/01-design-brief.md](../docs/01-design-brief.md). It is built with Vite and Tailwind CSS v4, and uses sample data only.
 
