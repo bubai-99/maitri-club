@@ -2,6 +2,7 @@ import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, s
 import { PHOTOS, ALBUMS, GALLERY, photo, credit } from './photos.js';
 import { serversFor, memberRate, events, pastEvents, cateringPackages, plants, plantCats, committee, club } from './data.js';
 import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, pujaSpend } from './site-data.js';
+import { mountReviews } from './site-reviews.js';
 import { validate, enhanceForm, confirmPanel, ref, bnNum, initials, daysUntil } from './site-ui.js';
 import {
   kindLabel, ics, eventTime, renderNotices, renderNoticeDetail, renderEventDetail, renderPujaBreakdown,
@@ -447,6 +448,7 @@ document.addEventListener('click', (e) => {
 $('#packages').innerHTML = cateringPackages.map((p) => `
   <article class="relative card card-hover p-6 flex flex-col ${p.popular ? '!border-sindoor ring-1 ring-sindoor' : ''}">
     ${p.popular ? `<span class="absolute -top-3.5 left-6 chip bg-sindoor text-white">${t('Most booked', 'সবচেয়ে জনপ্রিয়')}</span>` : ''}
+    <div class="relative -mx-2 -mt-2 mb-5 aspect-[16/10] rounded-xl overflow-hidden bg-paper-2">${photo({ team: 'catPlating', tableware: 'catBanana', full: 'catBuffet' }[p.id] || 'feast', { w: 700, cls: 'absolute inset-0 w-full h-full object-cover', sizes: '(min-width: 768px) 360px, 100vw' })}</div>
     <h3 class="font-display text-[1.9rem] leading-tight">${t(p.name, p.nameBn)}</h3>
     <p class="text-[15px] text-ink-2 mt-1">${t(p.for, p.forBn)}</p>
     <p class="mt-4 flex items-baseline gap-1.5"><span class="font-display text-4xl text-turmeric">${inr(p.rate)}</span><span class="text-sm text-ink-3">${t('per guest', 'অতিথি প্রতি')}</span></p>
@@ -744,6 +746,8 @@ document.addEventListener('langchange', () => { renderPlants(); });
 
 renderCats();
 renderPlants();
+mountReviews('#cat-reviews', 'catering', { ask: 'Namaskar, I would like to leave a review for Maitree Serving:' });
+mountReviews('#nur-reviews', 'nursery', { ask: 'Namaskar, I would like to leave a review for Maitree Nursery:' });
 
 /* ---------- New screens ---------- */
 renderNotices();

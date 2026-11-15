@@ -21,7 +21,14 @@ export const PHOTOS = {
   blood: { src: u('1536856136534-bb679c52a9aa'), by: 'LuAnn Hunt', page: 'https://unsplash.com/photos/X20g2GQsVdA', alt: 'A volunteer donating blood at a blood drive', altBn: 'রক্তদান শিবিরে রক্ত দিচ্ছেন একজন' },
   garlands: { src: u('1789971649660-eefc756ee5dd'), by: 'Sangram Rakate', page: 'https://unsplash.com/photos/V15kJDxvqKk', alt: 'Garlands of marigold and jasmine', altBn: 'গাঁদা ও জুঁইয়ের মালা' },
   marigold: { src: u('1716747449890-d3f1cfa83d2f'), by: 'Aravind Reddy Tarugu', page: 'https://unsplash.com/photos/F0jsLyrEnQI', alt: 'A marigold in full bloom', altBn: 'পূর্ণ প্রস্ফুটিত গাঁদা ফুল' },
-/* Nursery: one photo per plant (key = plant id) */
+/* Maitree Serving */
+  catBuffet: { src: u('1555244162-803834f70033'), by: 'Saile Ilyas', page: 'https://unsplash.com/photos/SiwrpBnxDww', alt: 'A buffet table with silver chafing dishes', altBn: 'রুপোলি চাফিং ডিশে সাজানো বুফে টেবিল' },
+  catBanana: { src: u('1678781416302-d59ed9ed46d0'), by: 'Nidhin K S', page: 'https://unsplash.com/photos/m7ltD98UTHY', alt: 'A meal served on a banana leaf', altBn: 'কলাপাতায় পরিবেশন করা খাবার' },
+  catWaiter: { src: u('1719573019827-d06944a0c2be'), by: 'Roshan Chakkeeri', page: 'https://unsplash.com/photos/H9q_XcRpHNo', alt: 'A server in uniform carrying a tray', altBn: 'পোশাক পরা পরিবেশনকারী, হাতে ট্রে' },
+  catPlating: { src: u('1687369595840-e96a912586f1'), by: 'Gastro Editorial', page: 'https://unsplash.com/photos/Rp0KQRcQfDc', alt: 'Gloved hands setting out plates', altBn: 'দস্তানা পরা হাতে প্লেট সাজানো' },
+  catTable: { src: u('1562050344-f7ad946cee35'), by: 'Nadia Valko', page: 'https://unsplash.com/photos/0hAdietsUrE', alt: 'A long table laid with plates and glasses', altBn: 'প্লেট ও গ্লাসে সাজানো লম্বা টেবিল' },
+  catThali: { src: u('1589778655375-3e622a9fc91c'), by: 'Barun Ghosh', page: 'https://unsplash.com/photos/wClFKcjhNcI', alt: 'A full thali on a steel plate', altBn: 'স্টিলের থালায় পুরো থালি' },
+  /* Nursery: one photo per plant (key = plant id) */
   p1: { src: u('1567990989224-6441e1483ac8'), by: 'Robert Thiemann', page: 'https://unsplash.com/photos/TTaxId0Im2s', alt: 'A red hibiscus flower', altBn: 'লাল জবা ফুল' },
   p2: { src: u('1728046591877-95c5cce10910'), by: 'Anindita Barma', page: 'https://unsplash.com/photos/Pnj57CLXSec', alt: 'Shiuli flowers with orange stems on a white cloth', altBn: 'সাদা কাপড়ে কমলা বোঁটার শিউলি ফুল' },
   p3: { src: u('1728046726837-9798a510fe36'), by: 'Anindita Barma', page: 'https://unsplash.com/photos/BQ301L37Cm0', alt: 'White rajanigandha flowers in a wooden bowl', altBn: 'কাঠের বাটিতে রজনীগন্ধা' },

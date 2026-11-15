@@ -411,6 +411,21 @@
           <div class="py-6 md:pl-6"><dt class="text-sm text-ink-2" data-bn="পরিবেশনকারী">Servers</dt><dd class="font-display text-[1.9rem] leading-tight" data-bn="১৫ জনে ১ জন">1 per 15 guests</dd></div>
         </dl>
       </div>
+
+      <!-- See the team at work -->
+      <div class="mx-auto max-w-[1160px] px-5 pt-14">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+          <div><p class="eyebrow text-turmeric" data-bn="কাজের ছবি">At work</p><h2 class="mt-2 font-display leading-tight text-[clamp(1.9rem,4vw,2.6rem)]" data-bn="কাজে আমাদের দল">See the team at work</h2></div>
+          <p class="text-[16px] text-ink-2 max-w-[44ch]" data-bn="পোশাক পরা পরিবেশনকারী, সবসময় দস্তানা, আর প্রতিটি ব্যাচের পর টেবিল পরিষ্কার।">Uniformed servers, gloves on at all times, and tables cleared between every batch.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[150px] sm:auto-rows-[190px] md:auto-rows-[210px] gap-2.5 sm:gap-3">
+          <figure class="relative overflow-hidden rounded-2xl bg-paper-2 group col-span-2 row-span-2"><div class="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]" data-photo="catBuffet"></div><figcaption class="absolute left-3 bottom-3 chip h-7 px-2.5 bg-black/65 text-white text-[12.5px]" data-bn="বুফে কাউন্টার, সম্পূর্ণ ব্যবস্থা">Buffet counters, Full setup</figcaption></figure>
+          <figure class="relative overflow-hidden rounded-2xl bg-paper-2 group "><div class="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]" data-photo="catPlating"></div><figcaption class="absolute left-3 bottom-3 chip h-7 px-2.5 bg-black/65 text-white text-[12.5px]" data-bn="সবসময় দস্তানা">Gloves on, always</figcaption></figure>
+          <figure class="relative overflow-hidden rounded-2xl bg-paper-2 group "><div class="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]" data-photo="catWaiter"></div><figcaption class="absolute left-3 bottom-3 chip h-7 px-2.5 bg-black/65 text-white text-[12.5px]" data-bn="পোশাক পরা পরিবেশনকারী">Uniformed servers</figcaption></figure>
+          <figure class="relative overflow-hidden rounded-2xl bg-paper-2 group col-span-2"><div class="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]" data-photo="catTable"></div><figcaption class="absolute left-3 bottom-3 chip h-7 px-2.5 bg-black/65 text-white text-[12.5px]" data-bn="অতিথি আসার আগে টেবিল সাজানো">Tables laid before guests arrive</figcaption></figure>
+        </div>
+        <p class="mt-3 text-[12px] text-ink-3"><span data-bn="ছবি">Photos</span>: <span data-credit="catBuffet"></span>, <span data-credit="catPlating"></span>, <span data-credit="catWaiter"></span>, <span data-credit="catTable"></span>. <span data-bn="ক্লাবের নিজের ছবি এলে বদলানো হবে।">To be replaced with the club’s own photos.</span></p>
+      </div>
       <div class="mx-auto max-w-[1160px] px-5 py-14">
         <h2 class="font-display leading-tight text-[clamp(1.9rem,4vw,2.6rem)]" data-bn="প্যাকেজ">Packages, per guest</h2>
         <div class="mt-6 grid md:grid-cols-3 gap-5" id="packages"></div>
@@ -437,6 +452,9 @@
           <p class="mt-4 text-[15px] text-ink-2" data-bn="নিরামিষ ও শ্রাদ্ধের পরিবেশনে আলাদা বাসন ও আলাদা দল।">Vegetarian and shraddha meals are served with separate utensils and a separate team.</p>
         </div>
 
+
+        <!-- Reviews (sample data in site-data.js reviewSets) -->
+        <div class="mt-16" id="cat-reviews"></div>
         <div class="mt-16 grid lg:grid-cols-12 gap-10 scroll-mt-24" id="catering-quote">
           <div class="lg:col-span-5">
             <h2 class="font-display leading-tight text-[clamp(1.9rem,4vw,2.6rem)]" data-bn="দাম জানুন">Ask for a quote</h2>
@@ -491,6 +509,9 @@
           <label class="relative sm:w-64 shrink-0"><span class="sr-only">Search plants</span><i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-3"></i><input id="plant-q" class="field h-10 pl-9" data-bn-ph="গাছ খুঁজুন" placeholder="Search plants" /></label>
         </div>
         <ul class="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-8" id="plant-list"></ul>
+
+        <!-- Reviews (sample data in site-data.js reviewSets) -->
+        <div class="mt-16" id="nur-reviews"></div>
         <div class="mt-14 grid md:grid-cols-3 gap-5 text-[15px]">
           <div class="rounded-2xl bg-tulsi-wash/60 p-6"><p class="font-semibold flex items-center gap-2"><i data-lucide="snowflake" class="w-4 h-4 text-tulsi"></i><span data-bn="এই শীতে">This winter</span></p><p class="mt-1.5 text-ink-2" data-bn="ডালিয়া, চন্দ্রমল্লিকা ও গাঁদার চারা ফেব্রুয়ারি পর্যন্ত।">Dahlia, chrysanthemum and marigold seedlings until February.</p></div>
           <div class="rounded-2xl bg-tulsi-wash/60 p-6"><p class="font-semibold flex items-center gap-2"><i data-lucide="droplets" class="w-4 h-4 text-tulsi"></i><span data-bn="যত্নের পরামর্শ">Care advice, free</span></p><p class="mt-1.5 text-ink-2" data-bn="কোন গাছ কোথায় রাখবেন, কতটা জল: গেটে জিজ্ঞেস করুন।">Where to keep it, how much water: just ask at the gate.</p></div>
