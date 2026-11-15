@@ -337,28 +337,62 @@
     </section>
   </main>
 
-  <!-- Closing: charcoal printed band + monumental name -->
-  <footer class="bg-ink text-white">
-    <div class="halftone">
-      <div class="mx-auto max-w-[768px] px-5 pt-28 pb-20 text-center">
-        <h2 class="poster text-[clamp(2.4rem,6vw,4rem)]" data-bn="ক্লাবের খবর হোয়াটসঅ্যাপে">Club news on WhatsApp</h2>
-        <p class="mt-6 text-[18px] text-white/80" data-bn="পূজা, খেলা আর সভার নোটিস। মাসে দু-তিনটে বার্তা, তার বেশি নয়।">Puja, sports and meeting notices. Two or three messages a month, never more.</p>
-        <form class="mt-10 flex flex-col sm:flex-row gap-2.5" id="wa-form">
+  <!-- Footer: newsletter strip + link columns + legal bar -->
+  <footer class="bg-ink text-white/75 text-[15px]">
+    <div class="mx-auto max-w-[1160px] px-5">
+      <!-- WhatsApp sign-up strip -->
+      <div class="py-10 border-b border-white/10 grid lg:grid-cols-12 gap-6 lg:items-center">
+        <div class="lg:col-span-6">
+          <h2 class="flex items-center gap-2.5 text-[20px] font-semibold text-white"><i data-lucide="message-circle" class="size-5 text-marigold"></i><span data-bn="ক্লাবের খবর হোয়াটসঅ্যাপে">Club news on WhatsApp</span></h2>
+          <p class="mt-1.5 text-white/65" data-bn="পূজা, খেলা আর সভার নোটিস। মাসে দু-তিনটে বার্তা, তার বেশি নয়।">Puja, sports and meeting notices. Two or three messages a month, never more.</p>
+        </div>
+        <form class="lg:col-span-6 flex flex-col sm:flex-row gap-2" id="wa-form">
           <label class="sr-only" for="wa-phone">Mobile number</label>
-          <input id="wa-phone" type="tel" inputmode="tel" required placeholder="98300 00000" class="flex-1 h-16 px-5 bg-white text-ink text-[20px] num rounded-[4px] placeholder:text-ink-3 focus:outline-none focus:ring-4 focus:ring-marigold/60" />
-          <button class="btn btn-poster btn-primary"><span data-bn="যোগ দিন">Sign me up</span></button>
+          <input id="wa-phone" type="tel" inputmode="tel" required placeholder="98300 00000" class="flex-1 h-11 px-4 bg-white/5 border border-white/15 text-white num rounded-md placeholder:text-white/40 focus:outline-none focus:border-marigold focus:ring-2 focus:ring-marigold/40" />
+          <button class="btn btn-primary h-11 px-5"><span data-bn="যোগ দিন">Subscribe</span></button>
         </form>
       </div>
-    </div>
-    <div class="mx-auto max-w-[1400px] px-5 pb-10">
-      <p class="font-display text-center leading-none tracking-[-0.02em] text-[clamp(4rem,14vw,13rem)] text-white" aria-hidden="true" data-bn="মৈত্রী ক্লাব">Maitri Club</p>
-      <div class="mt-10 pt-6 border-t border-white/20 grid sm:grid-cols-3 gap-6 text-[14px] uppercase tracking-wide text-white/75">
-        <div class="flex items-center gap-3"><span id="foot-seal"></span><span data-bn="নেতাজি পাড়া, ১৯৭২ থেকে">Netaji Para, since 1972</span></div>
-        <div class="sm:text-center" data-bn="১৪/২ নেতাজি সুভাষ রোড · সন্ধ্যা ৬–৯টা">14/2 Netaji Subhas Road · open 6–9 pm</div>
-        <div class="flex gap-5 sm:justify-end">
-          <a href="login.html" class="hover:text-white" data-bn="সদস্য লগইন">Member login</a>
+
+      <!-- Link columns -->
+      <div class="py-12 grid grid-cols-2 md:grid-cols-12 gap-x-6 gap-y-10">
+        <div class="col-span-2 md:col-span-4">
+          <a href="#home" class="inline-flex items-center gap-3 text-white"><span id="foot-seal"></span><span><span class="block font-display text-[22px] leading-none" data-bn="মৈত্রী ক্লাব">Maitri Club</span><span class="block mt-1 text-[12px] uppercase tracking-[0.12em] text-white/55" data-bn="নেতাজি পাড়া · ১৯৭২ থেকে">Netaji Para · since 1972</span></span></a>
+          <p class="mt-5 max-w-[36ch] text-white/65" data-bn="প্রতিবেশীদের দ্বারা, প্রতিবেশীদের জন্য। পূজা, খেলা, ক্যাটারিং আর পাড়ার নার্সারি।">Run by neighbours, for neighbours. Pujas, sports, catering and the para’s own nursery.</p>
+        </div>
+        <nav class="md:col-span-2" aria-label="Footer: club">
+          <h3 class="text-[13px] font-semibold uppercase tracking-[0.1em] text-white" data-bn="ক্লাব">Club</h3>
+          <ul class="mt-4 space-y-2.5">
+            <li><a href="#events" class="hover:text-white" data-bn="অনুষ্ঠান">Events</a></li>
+            <li><a href="#catering" class="hover:text-white" data-bn="ক্যাটারিং">Catering</a></li>
+            <li><a href="#nursery" class="hover:text-white" data-bn="নার্সারি">Nursery</a></li>
+            <li><a href="#gallery" class="hover:text-white" data-bn="ছবি">Gallery</a></li>
+            <li><a href="#committee" class="hover:text-white" data-bn="কমিটি">Committee</a></li>
+          </ul>
+        </nav>
+        <nav class="md:col-span-2" aria-label="Footer: members">
+          <h3 class="text-[13px] font-semibold uppercase tracking-[0.1em] text-white" data-bn="সদস্য">Members</h3>
+          <ul class="mt-4 space-y-2.5">
+            <li><a href="#join" class="hover:text-white" data-bn="সদস্য হোন">Become a member</a></li>
+            <li><a href="login.html" class="hover:text-white" data-bn="সদস্য লগইন">Member login</a></li>
+            <li><a href="admin-login.html" class="hover:text-white" data-bn="কমিটি লগইন">Committee login</a></li>
+          </ul>
+        </nav>
+        <div class="col-span-2 md:col-span-4">
+          <h3 class="text-[13px] font-semibold uppercase tracking-[0.1em] text-white" data-bn="যোগাযোগ">Visit us</h3>
+          <ul class="mt-4 space-y-3">
+            <li class="flex gap-3"><i data-lucide="map-pin" class="size-[18px] mt-0.5 shrink-0 text-white/50"></i><span data-bn="১৪/২ নেতাজি সুভাষ রোড, নেতাজি পাড়া, কলকাতা">14/2 Netaji Subhas Road, Netaji Para, Kolkata</span></li>
+            <li class="flex gap-3"><i data-lucide="clock" class="size-[18px] mt-0.5 shrink-0 text-white/50"></i><span data-bn="প্রতিদিন সন্ধ্যা ৬টা – ৯টা">Open daily, 6 – 9 pm</span></li>
+            <li class="flex gap-3"><i data-lucide="phone" class="size-[18px] mt-0.5 shrink-0 text-white/50"></i><a href="tel:+919830012345" class="num hover:text-white">+91 98300 12345</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Legal bar -->
+      <div class="py-6 border-t border-white/10 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-[13px] text-white/50">
+        <p>© <span class="num">2026</span> <span data-bn="মৈত্রী ক্লাব, নেতাজি পাড়া">Maitri Club, Netaji Para</span></p>
+        <div class="flex gap-5">
           <a href="#privacy" class="hover:text-white" data-bn="গোপনীয়তা">Privacy</a>
-          <a href="admin-login.html" class="hover:text-white" data-bn="কমিটি">Committee</a>
+          <a href="#privacy" class="hover:text-white" data-bn="শর্তাবলী">Terms</a>
         </div>
       </div>
     </div>
