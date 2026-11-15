@@ -16,7 +16,7 @@ const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matche
 /* Seals */
 $('#logo-seal').innerHTML = seal({ size: innerWidth < 640 ? 38 : 44, rotate: -6 });
 $('#join-seal').innerHTML = seal({ size: 320, color: '#fff', rotate: 12 });
-$('#hero-seal').innerHTML = seal({ size: innerWidth < 640 ? 104 : 138, rotate: -12, className: 'stamp-in' });
+document.getElementById('hero-seal') && ($('#hero-seal').innerHTML = seal({ size: innerWidth < 640 ? 104 : 138, rotate: -12, className: 'stamp-in' }));
 $('#foot-seal').innerHTML = seal({ size: 40, color: '#fff', rotate: -4 });
 
 /* ---------- Header: language, mobile menu, scroll state, back to top ---------- */
@@ -84,7 +84,21 @@ document.addEventListener('click', (e) => {
 
 /* Photos */
 document.getElementById('hero-photo').innerHTML = photo('pujaNight', { cls: 'w-full h-full object-cover', eager: true, w: 1800 });
-document.getElementById('hero-credit').innerHTML = `${t('Photo', 'ছবি')}: ${credit('pujaNight')}`;
+document.getElementById('hero-credit').innerHTML = `${t('Video', 'ভিডিও')}: <a href="https://www.pexels.com/@piyush-prabhakar-2157425222/" target="_blank" rel="noopener" class="hover:underline">Piyush Prabhakar / Pexels</a>`;
+/* Home banner video: plays muted on loop; still photo for reduced motion or data saver; pause button */
+{
+  const v = document.getElementById('hero-video');
+  const btn = document.getElementById('hero-play');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData;
+  const show = (on) => { btn.innerHTML = `<i data-lucide="${on ? 'pause' : 'play'}" class="w-4 h-4"></i>`; btn.setAttribute('aria-label', on ? (lang === 'bn' ? 'ভিডিও থামান' : 'Pause the video') : (lang === 'bn' ? 'ভিডিও চালান' : 'Play the video')); refreshIcons(); };
+  const play = () => v.play().then(() => show(true)).catch(() => show(false));
+  if (calm) { v.preload = 'none'; show(false); } else play();
+  btn.addEventListener('click', () => { if (v.paused) play(); else { v.pause(); show(false); } });
+  // Pause when the home page is not showing or the tab is hidden
+  const sync = () => { const onHome = document.querySelector('[data-screen="home"]').classList.contains('is-active'); if (!onHome || document.hidden) v.pause(); else if (!calm && btn.getAttribute('aria-label')?.match(/Pause|থামান/)) v.play().catch(() => {}); };
+  addEventListener('hashchange', () => setTimeout(sync, 0));
+  document.addEventListener('visibilitychange', sync);
+}
 document.querySelectorAll('[data-photo]').forEach((el) => { el.innerHTML = photo(el.dataset.photo, { cls: 'w-full h-full object-cover', sizes: '(min-width: 768px) 570px, 100vw' }); });
 document.querySelectorAll('[data-credit]').forEach((el) => { el.innerHTML = credit(el.dataset.credit); });
 
@@ -226,15 +240,7 @@ function galleryIndex() {
   }
   const { p: np, v: nv } = counts(all);
   return { flat, html: `
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div>
-        <p class="eyebrow text-sindoor">${t('The para in pictures', 'ছবিতে পাড়া')}</p>
-        <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.2rem,5.5vw,3.4rem)]">${t('Gallery', 'ছবির খাতা')}</h1>
-        <p class="mt-3 text-[17px] text-ink-2 max-w-[56ch]">${t('Every puja, match and camp, kept by date. Open an album to see all its photos and videos.', 'প্রতিটি পূজা, খেলা ও শিবির, তারিখ ধরে রাখা। অ্যালবাম খুললে সব ছবি ও ভিডিও।')}</p>
-      </div>
-      <a href="https://wa.me/919830012345?text=I%20have%20photos%20or%20videos%20for%20the%20club%20gallery" target="_blank" rel="noopener" class="btn btn-line"><i data-lucide="image-plus"></i>${t('Send photos or videos', 'ছবি বা ভিডিও পাঠান')}</a>
-    </div>
-    <div class="mt-8 flex flex-col md:flex-row md:items-center gap-3 py-3 border-y border-rule">
+    <div class="flex flex-col md:flex-row md:items-center gap-3 py-3 border-y border-rule">
       <div class="flex gap-1.5 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 md:flex-1 md:min-w-0" role="group" aria-label="${lang === 'bn' ? 'অ্যালবাম' : 'Albums'}">
         ${tabs.map((a) => `<button type="button" data-album="${a.key}" aria-pressed="${album === a.key}" class="shrink-0 h-9 px-3.5 rounded-full text-[14.5px] font-medium whitespace-nowrap text-ink-2 hover:bg-paper-2 hover:text-ink aria-pressed:bg-ink aria-pressed:text-white">${t(a.en, a.bn)}</button>`).join('')}
       </div>
