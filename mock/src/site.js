@@ -70,11 +70,44 @@ $('#skip-link').addEventListener('click', (e) => {
 /* WhatsApp news form (footer) */
 const waForm = $('#wa-form');
 enhanceForm(waForm);
+let newsVia = 'wa';
+const newsTabs = [...waForm.querySelectorAll('[data-news-via]')];
+const setNewsVia = (via) => {
+  newsVia = via;
+  const wa = via === 'wa';
+  const inp = $('#wa-phone');
+  newsTabs.forEach((x) => { const on = x.dataset.newsVia === via; x.setAttribute('aria-checked', String(on)); x.tabIndex = on ? 0 : -1; });
+  inp.value = ''; inp.removeAttribute('aria-invalid'); inp.removeAttribute('aria-describedby'); delete inp.dataset.errId;
+  waForm.querySelectorAll('.field-error').forEach((p) => p.remove());
+  inp.type = wa ? 'tel' : 'email';
+  inp.inputMode = wa ? 'tel' : 'email';
+  inp.autocomplete = wa ? 'tel' : 'email';
+  inp.placeholder = wa ? '98300 00000' : 'name@example.com';
+  inp.classList.toggle('num', wa);
+  inp.classList.toggle('pl-5', !wa);
+  if (wa) inp.dataset.phone = ''; else delete inp.dataset.phone;
+  $('#news-prefix').hidden = !wa;
+  // These elements carry their own data-bn, so set both languages on them (applyLang picks one)
+  const say = (el, en, bn) => { el.dataset.en = en; el.dataset.bn = bn; };
+  if (wa) { say($('#news-label'), 'Mobile number', 'মোবাইল নম্বর'); say($('#news-note'), 'Reply STOP any time to leave.', 'যেকোনো সময় STOP লিখে বন্ধ করুন।'); }
+  else { say($('#news-label'), 'Email address', 'ইমেল ঠিকানা'); say($('#news-note'), 'Every email has a one-click unsubscribe link.', 'প্রতিটি ইমেলে এক ক্লিকে বন্ধ করার লিঙ্ক থাকে।'); }
+  applyLang(waForm);
+};
+newsTabs.forEach((x) => x.addEventListener('click', () => { setNewsVia(x.dataset.newsVia); x.focus(); }));
+waForm.querySelector('[role="radiogroup"]').addEventListener('keydown', (e) => {
+  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+  e.preventDefault();
+  const next = newsVia === 'wa' ? 'email' : 'wa';
+  setNewsVia(next);
+  waForm.querySelector(`[data-news-via="${next}"]`).focus();
+});
 waForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (!validate(waForm)) return;
   waForm.reset();
-  toast(`<i data-lucide="check-circle-2"></i>${t('Done. You’ll get club notices on WhatsApp. Reply STOP to leave.', 'হয়ে গেছে। ক্লাবের নোটিস হোয়াটসঅ্যাপে পাবেন। বন্ধ করতে STOP লিখুন।')}`);
+  toast(newsVia === 'wa'
+    ? `<i data-lucide="check-circle-2"></i>${t('Done. You’ll get club notices on WhatsApp. Reply STOP to leave.', 'হয়ে গেছে। ক্লাবের নোটিস হোয়াটসঅ্যাপে পাবেন। বন্ধ করতে STOP লিখুন।')}`
+    : `<i data-lucide="check-circle-2"></i>${t('Done. Club news will come to your inbox. Unsubscribe any time.', 'হয়ে গেছে। ক্লাবের খবর ইমেলে পাবেন। যেকোনো সময় বন্ধ করতে পারেন।')}`);
 });
 document.addEventListener('click', (e) => {
   if (!e.target.closest('[data-focus-wa]')) return;

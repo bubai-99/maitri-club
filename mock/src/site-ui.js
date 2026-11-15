@@ -71,7 +71,7 @@ function showError(el) {
   const p = document.createElement('p');
   p.className = 'field-error'; p.id = id;
   p.innerHTML = `<i data-lucide="circle-alert"></i><span>${messageFor(el)}</span>`;
-  const anchor = el.closest('label') || el.parentElement;
+  const anchor = el.closest('[data-err-anchor]') || el.closest('label') || el.parentElement;
   anchor.after(p);
   el.setAttribute('aria-invalid', 'true');
   el.setAttribute('aria-describedby', id);
