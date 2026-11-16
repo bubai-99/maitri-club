@@ -35,6 +35,28 @@ if (c.notices) publicNotices.splice(0, publicNotices.length, ...noticesWithEdits
 if (Array.isArray(c.committee) && c.committee.length) committee.splice(0, committee.length, ...c.committee);
 if (c.photos?.group) { const url = c.photos.group; PHOTOS.group = { ...PHOTOS.group, src: () => url, by: 'Gede Maitree Club', page: '#committee' }; }
 
+/* Menus: the committee can reorder, rename, hide and add items (Website › Menus).
+   Item: { label: {en, bn}, href, show: 'all' | 'phone' | 'hidden' }. */
+const navId = (href) => (String(href || '').startsWith('#') ? href.slice(1) : '');
+const safeHref = (h) => (/^(https:\/\/|#|tel:|mailto:|[a-z-]+\.html)/i.test(String(h || '').trim()) ? String(h).trim() : '#home');
+function renderMenus(menu) {
+  if (!menu) return;
+  // A link to the committee's own page shows only while that page is published
+  const live = new Set((c.pages || []).filter((p) => !p.hidden).map((p) => `#page/${p.slug}`));
+  const ok = (i) => !String(i.href).startsWith('#page/') || live.has(i.href);
+  menu = Object.fromEntries(Object.entries(menu).map(([k, list]) => [k, (list || []).filter(ok)]));
+  const ext = (h) => (/^https:/.test(h) ? ' target="_blank" rel="noopener"' : '');
+  const desk = document.querySelector('nav[aria-label="Main"]');
+  if (desk && menu.main) desk.innerHTML = menu.main.filter((i) => i.show === 'all').map((i) => { const h = safeHref(i.href); const id = navId(h); return `<a href="${esc(h)}"${ext(h)} data-nav="${esc(id)}" class="nav-link nav-${esc(id.split('/')[0])}" title="${esc(i.label.en)}"><span data-bn="${esc(i.label.bn || i.label.en)}">${esc(i.label.en)}</span></a>`; }).join('');
+  const mob = document.querySelector('#mobile-nav ul');
+  if (mob && menu.main) mob.innerHTML = menu.main.filter((i) => i.show !== 'hidden').map((i) => { const h = safeHref(i.href); return `<li><a href="${esc(h)}"${ext(h)} data-nav="${esc(navId(h))}" class="mnav-link" data-bn="${esc(i.label.bn || i.label.en)}">${esc(i.label.en)}</a></li>`; }).join('');
+  [['footer1', 'Footer: club'], ['footer2', 'Footer: services and members']].forEach(([k, label]) => {
+    const ul = document.querySelector(`nav[aria-label="${label}"] ul`);
+    if (ul && menu[k]) ul.innerHTML = menu[k].filter((i) => i.show !== 'hidden').map((i) => { const h = safeHref(i.href); return `<li><a href="${esc(h)}"${ext(h)} class="hover:text-white" data-bn="${esc(i.label.bn || i.label.en)}">${esc(i.label.en)}</a></li>`; }).join('');
+  });
+}
+renderMenus(c.menu);
+
 function renderValues(list, root) {
   const ul = root.querySelector('#about-values');
   if (!ul || !Array.isArray(list) || !list.length) return;

@@ -557,3 +557,6 @@ button.pj-cell:hover { border-color: rgba(43,47,54,.35); }
 @media (prefers-reduced-motion: reduce) {
   .pj-nebula, .pj-s1, .pj-s2, .pj-ring, .pj-shoot { animation: none !important; }
 }
+
+/* Menu links the committee adds in the console: long names are cut short in the top bar (full name on hover and in the phone menu) */
+.nav-link > span { max-width: 16ch; overflow: hidden; text-overflow: ellipsis; }

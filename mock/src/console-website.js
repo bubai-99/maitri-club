@@ -5,7 +5,8 @@
 // Prototype: published content is kept in this browser (shared.js siteContent) and the website applies it (site-cms.js);
 // drafts and history are kept in a console-only store.
 import { t, lang, toast, refreshIcons, siteContent } from './shared.js';
-import { committee as baseCommittee } from './data.js';
+import { committee as baseCommittee, rolePerms } from './data.js';
+import { viewAs } from './console-admin.js';
 import { publicNotices, SEO_PAGES } from './site-data.js';
 import { PHOTOS } from './photos.js';
 
@@ -58,6 +59,7 @@ const PAGES = {
 };
 const TYPES = [
   ['pages', 'files', 'Pages', 'পাতা'],
+  ['menu', 'menu', 'Menus', 'মেনু'],
   ['notices', 'megaphone', 'Notices', 'নোটিস'],
   ['committee', 'users', 'Committee', 'কমিটি'],
   ['media', 'image', 'Media', 'ছবি'],
@@ -83,6 +85,14 @@ async function loadDefaults() {
       const h = li.querySelector('h3'); const p = li.querySelector('p');
       return { icon: li.querySelector('[data-lucide]')?.dataset.lucide || 'sparkles', title: { en: plain(h.innerHTML), bn: plain(h.dataset.bn || '') }, text: { en: plain(p.innerHTML), bn: plain(p.dataset.bn || '') } };
     });
+    // Menus as they are on the website: the phone menu has every item, the desktop bar a few less
+    const item = (a, show) => { const s = a.querySelector('span') || a; return { label: { en: plain(s.innerHTML), bn: plain(s.dataset.bn || '') }, href: a.getAttribute('href'), show }; };
+    const desk = new Set([...doc.querySelectorAll('nav[aria-label="Main"] a')].map((a) => a.getAttribute('href')));
+    defaults.menu = {
+      main: [...doc.querySelectorAll('#mobile-nav ul a')].map((a) => item(a, desk.has(a.getAttribute('href')) ? 'all' : 'phone')),
+      footer1: [...doc.querySelectorAll('nav[aria-label="Footer: club"] a')].map((a) => item(a, 'all')),
+      footer2: [...doc.querySelectorAll('nav[aria-label="Footer: services and members"] a')].map((a) => item(a, 'all')),
+    };
   } catch { /* offline: fields start empty */ }
   return defaults;
 }
@@ -101,9 +111,42 @@ function noticeEntries() {
     .sort((a, b) => (a.status === 'draft' ? -1 : 0) - (b.status === 'draft' ? -1 : 0) || (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || String(b.iso).localeCompare(String(a.iso)));
 }
 
+/* Custom pages: written here, shown on the website at #page/<slug> */
+const slugify = (s) => String(s || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+const menuOf = (c) => clone(c.menu || defaults.menu);
+function customEntries() {
+  const c = siteContent.get(); const w = ws.get();
+  const live = (c.pages || []).map((p) => ({ ...p, status: p.hidden ? 'hidden' : 'published' }));
+  const fresh = Object.entries(w.drafts).filter(([k, d]) => k.startsWith('cpage:') && d.data?.isNew && !live.some((p) => `cpage:${p.id}` === k))
+    .map(([, d]) => ({ ...d.data, status: 'draft' }));
+  const inMenu = new Set(Object.values(menuOf(c)).flat().map((i) => i.href));
+  return [...fresh, ...live].map((p) => ({ ...p, hasDraft: !!w.drafts[`cpage:${p.id}`], menu: inMenu.has(`#page/${p.slug}`) }));
+}
+const blankBlock = (type) => ({
+  text: { type, heading: { en: '', bn: '' }, body: { en: '', bn: '' } },
+  image: { type, url: '', caption: { en: '', bn: '' } },
+  button: { type, label: { en: '', bn: '' }, href: '#join' },
+  faq: { type, q: { en: '', bn: '' }, a: { en: '', bn: '' } },
+  note: { type, text: { en: '', bn: '' } },
+}[type]);
+const BLOCKS = [['text', 'text', 'Text', 'লেখা'], ['image', 'image', 'Photo', 'ছবি'], ['button', 'mouse-pointer-click', 'Button', 'বোতাম'], ['faq', 'circle-help', 'Question & answer', 'প্রশ্ন ও উত্তর'], ['note', 'info', 'Highlight', 'জরুরি কথা']];
+/** Where a menu item or button can point: the website's pages, the committee's own pages, and the logins. */
+function linkTargets() {
+  return [...SEO_PAGES.map(([id, en, bn]) => [id === 'home' ? '#home' : `#${id}`, L(en, bn)]), ['#panjika', L('Panjika', 'পঞ্জিকা')], ['#privacy', L('Privacy & terms', 'গোপনীয়তা ও শর্ত')],
+    ...customEntries().filter((p) => p.status === 'published').map((p) => [`#page/${p.slug}`, L(p.title.en, p.title.bn || p.title.en)]),
+    ['login.html', L('Member login', 'সদস্য লগইন')], ['admin-login.html', L('Committee login', 'কমিটি লগইন')]];
+}
+
 /** The published version of an entry, in the editor's shape. */
 function published(key) {
   const c = siteContent.get();
+  if (key === 'menu') return menuOf(c);
+  if (key.startsWith('cpage:')) {
+    const p = (c.pages || []).find((x) => `cpage:${x.id}` === key);
+    if (!p) return null;
+    const { hidden, ...rest } = p;
+    return { ...clone(rest), inMenu: menuOf(c).main.some((i) => i.href === `#page/${p.slug}`), slugAuto: false, isNew: false };
+  }
   if (key.startsWith('page:')) {
     const p = PAGES[key.slice(5)];
     const text = {};
@@ -126,7 +169,20 @@ function published(key) {
 /** Content with one entry's data applied: used to publish, and to build the live preview. */
 function withEntry(content, key, data) {
   const c = clone(content) || {};
-  if (key.startsWith('page:')) {
+  if (key === 'menu') {
+    c.menu = same(data, defaults.menu) ? null : data;
+  } else if (key.startsWith('cpage:')) {
+    const { inMenu, slugAuto, isNew, ...page } = data;
+    const old = (c.pages || []).find((p) => p.id === page.id);
+    c.pages = old ? c.pages.map((p) => (p.id === page.id ? { ...page, hidden: false } : p)) : [...(c.pages || []), { ...page, hidden: false }];
+    const href = `#page/${page.slug}`; const oldHref = old && `#page/${old.slug}`;
+    const menu = menuOf(c);
+    if (oldHref && oldHref !== href) Object.values(menu).forEach((list) => list.forEach((i) => { if (i.href === oldHref) i.href = href; }));
+    const has = menu.main.some((i) => i.href === href);
+    if (inMenu && !has) menu.main.push({ label: clone(page.title), href, show: 'all' });
+    if (!inMenu && has) menu.main = menu.main.filter((i) => i.href !== href);
+    c.menu = same(menu, defaults.menu) ? null : menu;
+  } else if (key.startsWith('page:')) {
     c.text = { ...(c.text || {}) };
     Object.entries(data.text).forEach(([k, v]) => { const d = defaults[k] || {}; if (v.en === (d.en || '') && v.bn === (d.bn || '')) delete c.text[k]; else c.text[k] = { en: v.en || d.en, bn: v.bn || d.bn }; });
     if ('values' in data) c.values = same(data.values, defaults.values) ? null : data.values;
@@ -190,8 +246,8 @@ function confirmBox(titleEn, titleBn, textEn, textBn, goEn, goBn, onGo, { danger
 /* ---------- Lists ---------- */
 function sideNav() {
   const w = ws.get(); const drafts = Object.keys(w.drafts);
-  const count = { pages: Object.keys(PAGES).length, notices: noticeEntries().length, committee: (siteContent.get().committee || BASE_COMMITTEE).length, media: mediaItems().length, seo: SEO_PAGES.length };
-  const dot = { pages: drafts.some((k) => k.startsWith('page:')), notices: drafts.some((k) => k.startsWith('notice:')), committee: drafts.includes('committee'), seo: drafts.includes('seo') };
+  const count = { pages: Object.keys(PAGES).length + customEntries().length, menu: menuOf(siteContent.get()).main.length, notices: noticeEntries().length, committee: (siteContent.get().committee || BASE_COMMITTEE).length, media: mediaItems().length, seo: SEO_PAGES.length };
+  const dot = { pages: drafts.some((k) => k.startsWith('page:') || k.startsWith('cpage:')), menu: drafts.includes('menu'), notices: drafts.some((k) => k.startsWith('notice:')), committee: drafts.includes('committee'), seo: drafts.includes('seo') };
   return `<nav class="paper-card p-2 lg:sticky lg:top-20" aria-label="${L('Content types', 'কনটেন্টের ধরন')}">
     <p class="px-3 pt-2 pb-1.5 text-[11.5px] font-bold uppercase tracking-[0.12em] text-ink-3">${t('Content', 'কনটেন্ট')}</p>
     <ul class="flex lg:block gap-1 overflow-x-auto">${TYPES.map(([k, icon, en, bn]) => `<li><button type="button" data-cms-type="${k}" ${view.type === k ? 'aria-current="page"' : ''}
@@ -218,7 +274,25 @@ function pagesList() {
       <td class="px-5 py-3.5"><span class="flex items-center gap-2.5 font-semibold"><i data-lucide="${p.icon}" class="w-4 h-4 text-ink-3"></i>${t(p.en, p.bn)}</span></td>
       <td class="px-3 py-3.5 text-ink-2 hidden sm:table-cell">${p.sections.map((s) => L(s.en, s.bn)).join(' · ')}</td>
       <td class="px-3 py-3.5">${w.drafts[`page:${id}`] ? STATUS.changes() : STATUS.published()}</td>
-      <td class="px-5 py-3.5 text-ink-3 text-[13.5px] hidden md:table-cell">${metaLine(`page:${id}`)}</td></tr>`).join('')}</tbody></table></div>`;
+      <td class="px-5 py-3.5 text-ink-3 text-[13.5px] hidden md:table-cell">${metaLine(`page:${id}`)}</td></tr>`).join('')}</tbody></table></div>
+  ${customList()}`;
+}
+
+function customList() {
+  const rows = customEntries();
+  return `<div class="paper-card overflow-hidden mt-5">${listHead('Your pages', 'আপনার পাতা', 'Pages the committee writes: a camp, a scholarship, puja rules. Each one gets its own link and can go in the menu.', 'কমিটির লেখা পাতা: শিবির, বৃত্তি, পূজার নিয়ম। প্রতিটির নিজের লিঙ্ক, মেনুতেও রাখা যায়।',
+    `<button class="btn btn-primary btn-sm" data-new-page><i data-lucide="file-plus"></i>${t('New page', 'নতুন পাতা')}</button>`)}
+    ${rows.length ? `<table class="w-full text-left text-[14.5px]"><thead class="text-[12px] uppercase tracking-wide text-ink-3 bg-paper-2"><tr>
+      <th class="px-5 py-2 font-semibold">${t('Page', 'পাতা')}</th><th class="px-3 py-2 font-semibold hidden sm:table-cell">${t('Link', 'লিঙ্ক')}</th><th class="px-3 py-2 font-semibold">${t('Status', 'অবস্থা')}</th><th class="px-5 py-2 font-semibold hidden md:table-cell">${t('Last published', 'শেষ প্রকাশ')}</th></tr></thead>
+    <tbody class="divide-y divide-rule">${rows.map((p) => `<tr class="hover:bg-paper-2 cursor-pointer" data-open="cpage:${esc(p.id)}" tabindex="0">
+      <td class="px-5 py-3.5"><span class="flex items-center gap-2.5 font-semibold"><i data-lucide="file-text" class="w-4 h-4 text-ink-3"></i>${t(esc(p.title.en) || 'Untitled page', esc(p.title.bn || p.title.en) || 'শিরোনাম নেই')}</span>
+        ${p.menu ? `<span class="mt-1 inline-flex">${chip('bg-paper-2 text-ink-2', 'In the menu', 'মেনুতে আছে', 'menu')}</span>` : ''}</td>
+      <td class="px-3 py-3.5 text-ink-3 text-[13.5px] num hidden sm:table-cell">${p.slug ? `#page/${esc(p.slug)}` : '—'}</td>
+      <td class="px-3 py-3.5"><div class="flex flex-wrap gap-1">${STATUS[p.status]()}${p.hasDraft && p.status !== 'draft' ? STATUS.changes() : ''}</div></td>
+      <td class="px-5 py-3.5 text-ink-3 text-[13.5px] hidden md:table-cell">${p.status === 'draft' ? t('Not yet', 'এখনও নয়') : metaLine(`cpage:${p.id}`)}</td></tr>`).join('')}</tbody></table>`
+    : `<div class="px-5 py-10 text-center"><i data-lucide="file-plus" class="w-8 h-8 mx-auto text-ink-3"></i><p class="mt-2 font-semibold">${t('No pages of your own yet', 'এখনও নিজের কোনো পাতা নেই')}</p>
+      <p class="text-[14px] text-ink-3 max-w-[46ch] mx-auto">${t('Make one for anything that needs more than a notice: the blood camp, a scholarship, the rules for the puja.', 'নোটিসের চেয়ে বেশি কিছু লাগলে পাতা বানান: রক্তদান শিবির, বৃত্তি, পূজার নিয়ম।')}</p></div>`}
+  </div>`;
 }
 
 function noticesList() {
@@ -330,6 +404,57 @@ function editorFields() {
       <div class="min-w-0"><p class="font-semibold">${t('Search & sharing', 'সার্চ ও শেয়ার')}</p><p class="text-[13px] text-ink-3">${t('The title and description Google and WhatsApp show for this page.', 'এই পাতার জন্য গুগল ও হোয়াটসঅ্যাপে যে শিরোনাম ও বিবরণ দেখায়।')}</p></div>
       <button type="button" class="btn btn-line btn-sm ml-auto" data-open-seo><i data-lucide="arrow-right"></i>${t('Edit in SEO', 'এসইও-তে বদলান')}</button></div>`;
   }
+  const links = `<datalist id="cms-links">${linkTargets().map(([h, label]) => `<option value="${esc(h)}">${esc(label)}</option>`).join('')}</datalist>`;
+  const linkField = (name, val, hintEn = 'Pick a page, or paste a web link that starts with https://', hintBn = 'একটি পাতা বাছুন, বা https:// দিয়ে শুরু লিঙ্ক দিন') => `<label class="block"><span class="text-[13.5px] font-semibold">${t('Goes to', 'কোথায় যাবে')}</span>
+    <input class="field num" name="${name}" list="cms-links" value="${esc(val)}" placeholder="#events" /><span class="block text-[12.5px] text-ink-3 mt-1">${t(hintEn, hintBn)}</span></label>`;
+  if (key === 'menu') {
+    const SHOW = { main: [['all', 'Everywhere', 'সব জায়গায়'], ['phone', 'Phone menu only', 'শুধু ফোনের মেনুতে'], ['hidden', 'Hidden', 'লুকোনো']], footer: [['all', 'Shown', 'দেখানো'], ['hidden', 'Hidden', 'লুকোনো']] };
+    const lists = [['main', 'Main menu', 'মূল মেনু', 'The bar at the top of every page; on a phone it opens from ☰. Keep names short: the bar cuts them after 16 letters, and 8 or fewer links fit best.', 'প্রতিটি পাতার উপরের বার; ফোনে ☰ থেকে খোলে। নাম ছোট রাখুন: ১৬ অক্ষরের পরে কেটে যায়, ৮টির কম লিঙ্ক সবচেয়ে ভালো।'],
+      ['footer1', 'Footer: Club', 'ফুটার: ক্লাব', 'First list of links at the bottom of every page.', 'প্রতিটি পাতার নিচের প্রথম লিঙ্কের তালিকা।'],
+      ['footer2', 'Footer: Services', 'ফুটার: পরিষেবা', 'Second list of links at the bottom.', 'নিচের দ্বিতীয় লিঙ্কের তালিকা।']];
+    return links + lists.map(([k, en, bn, hEn, hBn], i) => sectionCard({ id: k, en, bn, hintEn: hEn, hintBn: hBn }, `
+      <ol class="space-y-3" data-rep="${k}">${data[k].map((it, j) => rowCard(k, j, data[k].length,
+        `${t(esc(it.label.en) || 'New item', esc(it.label.bn || it.label.en) || 'নতুন')} <span class="font-normal text-ink-3 num">· ${esc(it.href)}</span>${it.show === 'hidden' ? ` ${chip('bg-paper-2 text-ink-2', 'Hidden', 'লুকোনো', 'eye-off')}` : it.show === 'phone' ? ` ${chip('bg-paper-2 text-ink-2', 'Phone only', 'শুধু ফোন', 'smartphone')}` : ''}`, `
+        ${biField(`${k}${j}:label`, t('Label', 'নাম'), it.label)}
+        <div class="grid sm:grid-cols-[1fr_200px] gap-3 items-start">${linkField(`${k}${j}:href`, it.href)}
+          <label class="block"><span class="text-[13.5px] font-semibold">${t('Show', 'দেখাবে')}</span><select class="field" name="${k}${j}:show">${SHOW[k === 'main' ? 'main' : 'footer'].map(([v, e, b]) => `<option value="${v}" ${it.show === v ? 'selected' : ''}>${L(e, b)}</option>`).join('')}</select></label></div>`)).join('')}</ol>
+      <button type="button" class="btn btn-line btn-sm" data-row-add="${k}"><i data-lucide="plus"></i>${t('Add a link', 'লিঙ্ক যোগ')}</button>`, i)).join('')
+      + `<p class="text-[13px] text-ink-3 px-1">${t('Removing a link only takes it out of the menu. The page itself stays.', 'লিঙ্ক সরালে শুধু মেনু থেকে সরে, পাতাটি থাকে।')}</p>`;
+  }
+  if (key.startsWith('cpage:')) {
+    const blockBody = (b, j) => {
+      if (b.type === 'text') return biField(`b${j}:heading`, t('Heading (optional)', 'শিরোনাম (ঐচ্ছিক)'), b.heading) + biField(`b${j}:body`, t('Text · leave an empty line for a new paragraph', 'লেখা · নতুন অনুচ্ছেদের জন্য একটি ফাঁকা লাইন'), b.body, true);
+      if (b.type === 'image') return `<div class="grid sm:grid-cols-[200px_1fr] gap-3 items-start">
+          <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-paper-2 grid place-items-center">${b.url ? `<img src="${esc(b.url)}" alt="" class="absolute inset-0 w-full h-full object-cover" />` : '<i data-lucide="image" class="w-7 h-7 text-ink-3"></i>'}</div>
+          <div><button type="button" class="btn btn-line btn-sm" data-pick-photo="block:${j}"><i data-lucide="images"></i>${t(b.url ? 'Change photo' : 'Choose a photo', b.url ? 'ছবি বদলান' : 'ছবি বাছুন')}</button></div></div>`
+        + biField(`b${j}:caption`, t('Caption (optional)', 'ক্যাপশন (ঐচ্ছিক)'), b.caption);
+      if (b.type === 'button') return biField(`b${j}:label`, t('Button text', 'বোতামের লেখা'), b.label) + linkField(`b${j}:href`, b.href);
+      if (b.type === 'faq') return biField(`b${j}:q`, t('Question', 'প্রশ্ন'), b.q) + biField(`b${j}:a`, t('Answer', 'উত্তর'), b.a, true);
+      return biField(`b${j}:text`, t('Text', 'লেখা'), b.text, true);
+    };
+    const bt = (type) => BLOCKS.find((x) => x[0] === type) || BLOCKS[0];
+    return links + [
+      sectionCard({ id: 'top', en: 'Page', bn: 'পাতা', hintEn: 'The title and photo at the top of the page.', hintBn: 'পাতার উপরের শিরোনাম ও ছবি।' }, `
+        ${biField('cp:title', t('Title', 'শিরোনাম'), data.title)}
+        ${biField('cp:intro', t('Short intro under the title (optional)', 'শিরোনামের নিচে ছোট ভূমিকা (ঐচ্ছিক)'), data.intro, true)}
+        <label class="block"><span class="text-[13.5px] font-semibold">${t('Link', 'লিঙ্ক')}</span>
+          <span class="flex items-stretch"><span class="px-3 grid place-items-center rounded-l-lg border border-r-0 border-rule bg-paper-2 text-[13.5px] text-ink-3 num">gedemaitreeclub.org/#page/</span>
+          <input class="field rounded-l-none num" name="cp:slug" value="${esc(data.slug)}" placeholder="blood-camp-2026" pattern="[a-z0-9-]+" /></span>
+          <span class="block text-[12.5px] text-ink-3 mt-1">${t('Small English letters, numbers and dashes. Made from the title; changing it later updates the menu.', 'ছোট ইংরেজি অক্ষর, সংখ্যা আর ড্যাশ। শিরোনাম থেকে তৈরি; পরে বদলালে মেনুও বদলাবে।')}</span></label>
+        <div class="grid sm:grid-cols-[200px_1fr] gap-3 items-start">
+          <div class="relative aspect-[16/9] rounded-lg overflow-hidden bg-ink grid place-items-center">${data.image ? `<img src="${esc(data.image)}" alt="" class="absolute inset-0 w-full h-full object-cover" />` : `<span class="text-[12px] text-white/70">${t('Plain dark banner', 'সাধারণ গাঢ় ব্যানার')}</span>`}</div>
+          <div><p class="text-[13.5px] font-semibold">${t('Banner photo (optional)', 'ব্যানারের ছবি (ঐচ্ছিক)')}</p>
+            <div class="mt-2 flex flex-wrap gap-2"><button type="button" class="btn btn-line btn-sm" data-pick-photo="image"><i data-lucide="images"></i>${t('Choose from Media', 'ছবি থেকে বাছুন')}</button>
+            ${data.image ? `<button type="button" class="btn btn-ghost btn-sm" data-clear-photo="image"><i data-lucide="x"></i>${t('No photo', 'ছবি ছাড়া')}</button>` : ''}</div></div></div>`, 0),
+      sectionCard({ id: 'blocks', en: 'Content', bn: 'লেখা ও অংশ', hintEn: 'Build the page from blocks. Move them up or down to change the order.', hintBn: 'অংশ জুড়ে পাতা বানান। উপরে-নিচে সরিয়ে ক্রম বদলান।' }, `
+        <ol class="space-y-3" data-rep="blocks">${data.blocks.map((b, j) => { const [, ic, en, bn] = bt(b.type); return rowCard('blocks', j, data.blocks.length, `<span class="inline-flex items-center gap-1.5"><i data-lucide="${ic}" class="w-4 h-4"></i>${t(en, bn)}</span>`, blockBody(b, j)); }).join('')}</ol>
+        <div><p class="text-[13px] font-semibold text-ink-3 mb-2">${t('Add a block', 'অংশ যোগ')}</p>
+          <div class="flex flex-wrap gap-2">${BLOCKS.map(([type, ic, en, bn]) => `<button type="button" class="btn btn-line btn-sm" data-row-add="blocks" data-block-type="${type}"><i data-lucide="${ic}"></i>${t(en, bn)}</button>`).join('')}</div></div>`, 1),
+      sectionCard({ id: 'seo', en: 'Search & sharing', bn: 'সার্চ ও শেয়ার', closed: true }, `
+        ${biField('cp:desc', t('Search description · about 150 letters', 'সার্চের বিবরণ · প্রায় ১৫০ অক্ষর'), data.desc, true)}
+        <p class="text-[12.5px] text-ink-3">${t('Shown by Google and when the link is shared. If empty, the intro is used.', 'গুগলে আর লিঙ্ক শেয়ারে দেখায়। ফাঁকা থাকলে ভূমিকা দেখাবে।')}</p>`, 2),
+    ].join('');
+  }
   if (key === 'seo') {
     const img = data.image || DEF_SHARE;
     const settings = sectionCard({ id: 'share', en: 'Sharing and search engines', bn: 'শেয়ার ও সার্চ ইঞ্জিন', hintEn: 'Used by Google, and by WhatsApp and Facebook when someone shares the website.', hintBn: 'গুগল, আর কেউ হোয়াটসঅ্যাপ বা ফেসবুকে ওয়েবসাইট শেয়ার করলে এটা দেখায়।' }, `
@@ -373,7 +498,8 @@ function sidebar() {
   const { key, data } = state;
   const w = ws.get();
   const isNotice = key.startsWith('notice:');
-  const n = isNotice ? noticeEntries().find((x) => `notice:${x.id}` === key) : null;
+  const isPage = key.startsWith('cpage:');
+  const n = isNotice ? noticeEntries().find((x) => `notice:${x.id}` === key) : isPage ? customEntries().find((x) => `cpage:${x.id}` === key) || { status: 'draft', mine: true } : null;
   const status = n ? n.status : 'published';
   const hist = w.history[key] || [];
   const details = isNotice ? `<section class="paper-card p-4 space-y-3">
@@ -381,7 +507,10 @@ function sidebar() {
       <label class="block"><span class="text-[13.5px] font-semibold">${t('Kind', 'ধরন')}</span>
         <select class="field" name="n:tag">${TAGS.map(([en, bn]) => `<option value="${esc(en)}" ${data.tag === en ? 'selected' : ''}>${L(en, bn)}</option>`).join('')}</select></label>
       <label class="flex items-center gap-3 text-[14.5px]"><input type="checkbox" class="switch" name="n:pinned" ${data.pinned ? 'checked' : ''} />${t('Pin to the top', 'উপরে আটকে রাখুন')}</label>
-      <p class="text-[13px] text-ink-3 num">${t(`Date: ${esc(data.date || todayParts().date)}`, `তারিখ: ${esc(data.dateBn || todayParts().dateBn)}`)}</p></section>` : '';
+      <p class="text-[13px] text-ink-3 num">${t(`Date: ${esc(data.date || todayParts().date)}`, `তারিখ: ${esc(data.dateBn || todayParts().dateBn)}`)}</p></section>`
+    : isPage ? `<section class="paper-card p-4 space-y-3">
+      <h3 class="text-[12px] font-bold uppercase tracking-[0.1em] text-ink-3">${t('Menu', 'মেনু')}</h3>
+      <label class="flex items-start gap-3 text-[14.5px]"><input type="checkbox" class="switch mt-0.5" name="cp:inMenu" ${data.inMenu ? 'checked' : ''} /><span>${t('Show in the main menu', 'মূল মেনুতে দেখান')}<span class="block text-[12.5px] text-ink-3">${t('Added at the end. Change its place in Menus.', 'শেষে যোগ হবে। জায়গা বদলান মেনু-তে।')}</span></span></label></section>` : '';
   return `<aside class="space-y-4 self-start ${view.preview ? 'grid sm:grid-cols-2 gap-4 space-y-0' : 'xl:sticky xl:top-36'}">
     <section class="paper-card p-4">
       <h3 class="text-[12px] font-bold uppercase tracking-[0.1em] text-ink-3">${t('Publishing', 'প্রকাশ')}</h3>
@@ -394,8 +523,8 @@ function sidebar() {
         <button type="submit" class="btn btn-primary" data-publish><i data-lucide="upload"></i>${t(status === 'hidden' ? 'Publish again' : 'Publish', status === 'hidden' ? 'আবার প্রকাশ' : 'প্রকাশ করুন')}</button>
         <button type="button" class="btn btn-line" data-save-draft><i data-lucide="save"></i>${t('Save draft', 'খসড়া সেভ')}</button>
         ${w.drafts[key] && status !== 'draft' ? `<button type="button" class="btn btn-ghost btn-sm" data-discard><i data-lucide="undo-2"></i>${t('Discard draft', 'খসড়া বাদ দিন')}</button>` : ''}
-        ${isNotice && status === 'published' ? `<button type="button" class="btn btn-ghost btn-sm" data-unpublish><i data-lucide="eye-off"></i>${t('Unpublish', 'প্রকাশ বন্ধ')}</button>` : ''}
-        ${isNotice && n?.mine ? `<button type="button" class="btn btn-ghost btn-sm text-sindoor-deep" data-delete><i data-lucide="trash-2"></i>${t('Delete notice', 'নোটিস মুছুন')}</button>` : ''}
+        ${(isNotice || isPage) && status === 'published' ? `<button type="button" class="btn btn-ghost btn-sm" data-unpublish><i data-lucide="eye-off"></i>${t('Unpublish', 'প্রকাশ বন্ধ')}</button>` : ''}
+        ${(isNotice || isPage) && n?.mine !== false && (isPage || n?.mine) ? `<button type="button" class="btn btn-ghost btn-sm text-sindoor-deep" data-delete><i data-lucide="trash-2"></i>${isPage ? t('Delete page', 'পাতা মুছুন') : t('Delete notice', 'নোটিস মুছুন')}</button>` : ''}
       </div></section>
     ${details}
     ${key === 'seo' ? '<section class="paper-card p-4" data-seo-health></section>' : ''}
@@ -411,6 +540,8 @@ function sidebar() {
 function entryTitle() {
   const { key, data } = state;
   if (key.startsWith('page:')) { const p = PAGES[key.slice(5)]; return [p.en, p.bn, 'pages', 'Pages', 'পাতা']; }
+  if (key === 'menu') return ['Menus', 'মেনু', 'menu', 'Menus', 'মেনু'];
+  if (key.startsWith('cpage:')) return [data.title.en || 'New page', data.title.bn || data.title.en || 'নতুন পাতা', 'pages', 'Pages', 'পাতা'];
   if (key === 'seo') return ['SEO & sharing', 'এসইও ও শেয়ার', 'seo', 'SEO', 'এসইও'];
   if (key === 'committee') return ['Committee list', 'কমিটির তালিকা', 'committee', 'Committee', 'কমিটি'];
   return [data.title || 'New notice', data.titleBn || data.title || 'নতুন নোটিস', 'notices', 'Notices', 'নোটিস'];
@@ -418,7 +549,7 @@ function entryTitle() {
 
 function editor() {
   const [en, bn, , listEn, listBn] = entryTitle();
-  const back = state.key === 'committee' || state.key === 'seo' ? '' : `<button type="button" class="btn btn-ghost btn-sm !px-2" data-back aria-label="${L(`Back to ${listEn}`, `${listBn}-এ ফিরুন`)}"><i data-lucide="arrow-left"></i></button>
+  const back = ['committee', 'seo', 'menu'].includes(state.key) ? '' : `<button type="button" class="btn btn-ghost btn-sm !px-2" data-back aria-label="${L(`Back to ${listEn}`, `${listBn}-এ ফিরুন`)}"><i data-lucide="arrow-left"></i></button>
     <span class="text-ink-3 text-[14px] hidden sm:inline">${t(listEn, listBn)} /</span>`;
   return `<form data-cms-form data-lmode="${view.lmode}" novalidate>
     <div class="sticky top-16 z-20 -mx-1 px-1 py-2.5 mb-4 bg-paper/95 backdrop-blur border-b border-rule flex flex-wrap items-center gap-2">
@@ -439,7 +570,7 @@ function editor() {
 }
 
 function previewPanel() {
-  const hash = state.key.startsWith('page:') ? PAGES[state.key.slice(5)].hash : state.key === 'committee' ? '#committee' : state.key === 'seo' ? '#home' : `#notice/${state.key.slice(7)}`;
+  const hash = state.key.startsWith('page:') ? PAGES[state.key.slice(5)].hash : state.key === 'committee' ? '#committee' : state.key === 'seo' || state.key === 'menu' ? '#home' : state.key.startsWith('cpage:') ? `#page/${state.data.slug || 'x'}` : `#notice/${state.key.slice(7)}`;
   return `<aside data-cms-preview class="fixed inset-0 xl:inset-y-0 xl:left-auto xl:right-0 xl:w-[min(48vw,760px)] z-[70] bg-paper-2 border-l border-rule flex flex-col shadow-2xl">
     <div class="h-14 px-4 flex items-center gap-2 bg-card border-b border-rule">
       <i data-lucide="monitor-smartphone" class="w-4 h-4 text-ink-3"></i><p class="font-semibold">${t('Live preview', 'লাইভ প্রিভিউ')}</p>
@@ -456,7 +587,7 @@ function previewPanel() {
 export async function websiteScreen(ctx) {
   C = ctx;
   await loadDefaults();
-  if ((view.type === 'committee' || view.type === 'seo') && !state) openEntry(view.type);
+  if (['committee', 'seo', 'menu'].includes(view.type) && !state) openEntry(view.type);
   const el = C.screen('website');
   const main = state ? editor() : view.type === 'notices' ? noticesList() : view.type === 'media' ? mediaList() : pagesList();
   const [at] = fmtWhen(siteContent.get().at); const [, atBn] = fmtWhen(siteContent.get().at);
@@ -475,7 +606,7 @@ export async function websiteScreen(ctx) {
       <a href="index.html" target="_blank" rel="noopener" class="btn btn-line btn-sm"><i data-lucide="globe"></i>${t('Open website', 'ওয়েবসাইট খুলুন')}</a>
       <button class="btn btn-ghost btn-sm" data-undo-all><i data-lucide="rotate-ccw"></i>${t('Reset website', 'ওয়েবসাইট আগের মতো')}</button>`)}
     <p class="-mt-3 mb-4 text-[13.5px] text-ink-3 flex items-center gap-1.5"><i data-lucide="clock" class="w-4 h-4"></i>${at ? t(`Last published ${at}`, `শেষ প্রকাশ ${atBn}`) : t('Nothing published yet: the website shows its original content.', 'এখনও কিছু প্রকাশ হয়নি: ওয়েবসাইটে আসল লেখাই আছে।')}</p>
-    <div class="grid ${state && view.preview ? '' : 'lg:grid-cols-[230px_minmax(0,1fr)]'} gap-5 items-start">
+    <div data-cms-body class="grid ${state && view.preview ? '' : 'lg:grid-cols-[230px_minmax(0,1fr)]'} gap-5 items-start">
       ${state && view.preview ? '' : sideNav()}
       <div class="min-w-0">${main}
         <p class="mt-5 text-[13px] text-ink-3">${t('Prototype: content is kept in this browser, so open the website in the same browser to see it. In the real system it is saved on the server for everyone.', 'প্রোটোটাইপ: লেখা এই ব্রাউজারে থাকে, তাই একই ব্রাউজারে ওয়েবসাইট খুলে দেখুন। আসল ব্যবস্থায় সার্ভারে সেভ হবে, সবাই দেখবেন।')}</p></div>
@@ -483,9 +614,25 @@ export async function websiteScreen(ctx) {
     ${state && view.preview ? previewPanel() : ''}`);
   el.classList.toggle('cms-preview-on', !!(state && view.preview));
   wire(el);
+  if (readOnly()) lockDown(el);
 }
 
 const rerender = () => websiteScreen(C);
+
+/* Roles with "view" for Website content (treasurer, puja in-charge) can look but not change anything */
+function readOnly() {
+  if (!viewAs) return false;
+  return rolePerms.modules.find((m) => m.id === 'website')?.p[viewAs] === 'view';
+}
+function lockDown(el) {
+  el.querySelectorAll('[data-cms-form] input, [data-cms-form] textarea, [data-cms-form] select').forEach((x) => { x.disabled = true; });
+  el.querySelectorAll('[data-publish], [data-save-draft], [data-cms-form] button[type="submit"], [data-cms-form] .btn-primary, [data-discard], [data-unpublish], [data-delete], [data-restore], [data-row-add], [data-row-move], [data-row-del], [data-pick-photo], [data-clear-photo], [data-new-notice], [data-new-page], [data-add-media], [data-del-media], [data-undo-all]').forEach((b) => b.remove());
+  const bar = document.createElement('p');
+  bar.className = 'mb-4 rounded-xl bg-paper-2 border border-rule px-4 py-3 text-[14.5px] flex items-center gap-2';
+  bar.innerHTML = `<i data-lucide="eye" class="w-4 h-4 text-ink-3"></i>${t('View only. Your role can see the website content but not change it. Ask the secretary to make a change.', 'শুধু দেখা যাবে। আপনার ভূমিকায় ওয়েবসাইটের লেখা দেখা যায়, বদলানো যায় না। বদলাতে সম্পাদককে বলুন।')}`;
+  el.querySelector('[data-cms-body]')?.before(bar);
+  C.paint(bar, bar.innerHTML);
+}
 
 /* Read the form back into the entry's data shape */
 function collect(form) {
@@ -493,6 +640,22 @@ function collect(form) {
   const v = (n) => form.elements[n]?.value?.trim() ?? '';
   const bi = (n) => ({ en: v(`${n}|en`), bn: v(`${n}|bn`) });
   const d = clone(state.data);
+  if (key === 'menu') {
+    ['main', 'footer1', 'footer2'].forEach((k) => { d[k] = d[k].map((it, j) => ({ label: bi(`${k}${j}:label`), href: v(`${k}${j}:href`) || '#home', show: v(`${k}${j}:show`) || it.show })); });
+    return d;
+  }
+  if (key.startsWith('cpage:')) {
+    Object.assign(d, { title: bi('cp:title'), intro: bi('cp:intro'), desc: bi('cp:desc'), inMenu: !!form.elements['cp:inMenu']?.checked });
+    d.slug = d.slugAuto ? slugify(d.title.en) : slugify(v('cp:slug'));
+    d.blocks = d.blocks.map((b, j) => {
+      if (b.type === 'text') return { ...b, heading: bi(`b${j}:heading`), body: bi(`b${j}:body`) };
+      if (b.type === 'image') return { ...b, caption: bi(`b${j}:caption`) };
+      if (b.type === 'button') return { ...b, label: bi(`b${j}:label`), href: v(`b${j}:href`) || '#home' };
+      if (b.type === 'faq') return { ...b, q: bi(`b${j}:q`), a: bi(`b${j}:a`) };
+      return { ...b, text: bi(`b${j}:text`) };
+    });
+    return d;
+  }
   if (key.startsWith('page:')) {
     Object.keys(d.text).forEach((k) => { d.text[k] = bi(`t:${k}`); });
     if (d.values) d.values = d.values.map((x, j) => ({ icon: form.querySelector(`[name="v${j}:icon"]:checked`)?.value || x.icon, title: bi(`v${j}:title`), text: bi(`v${j}:text`) }));
@@ -547,12 +710,19 @@ function checkTranslation(form) {
 function validEntry() {
   const d = state.data;
   if (state.key.startsWith('notice:') && !d.title) { toast(`<i data-lucide="info"></i>${t('Give the notice an English title first.', 'আগে নোটিসের ইংরেজি শিরোনাম দিন।')}`); return false; }
+  const say = (en, bn) => { toast(`<i data-lucide="info"></i>${t(en, bn)}`); return false; };
+  if (state.key.startsWith('cpage:')) {
+    if (!d.title.en) return say('Give the page an English title first.', 'আগে পাতার ইংরেজি শিরোনাম দিন।');
+    if (!d.slug) return say('Give the page a link: small English letters, numbers and dashes.', 'পাতার লিঙ্ক দিন: ছোট ইংরেজি অক্ষর, সংখ্যা আর ড্যাশ।');
+    if (customEntries().some((p) => p.slug === d.slug && p.id !== d.id)) return say('Another page already uses this link. Change it a little.', 'এই লিঙ্ক অন্য পাতায় আছে। একটু বদলান।');
+  }
+  if (state.key === 'menu' && ['main', 'footer1', 'footer2'].some((k) => d[k].some((i) => !i.label.en))) return say('Every menu link needs an English label.', 'প্রতিটি মেনু লিঙ্কের ইংরেজি নাম লাগবে।');
   if (state.key === 'committee' && d.list.some((p) => !p.name || !p.role)) { toast(`<i data-lucide="info"></i>${t('Every person needs a name and a role in English.', 'প্রত্যেকের ইংরেজিতে নাম ও পদ লাগবে।')}`); return false; }
   return true;
 }
 
 function saveDraft() {
-  if (state.key.startsWith('notice:') && !state.data.title && !state.data.titleBn) { toast(`<i data-lucide="info"></i>${t('Write a title first.', 'আগে শিরোনাম লিখুন।')}`); return; }
+  if ((state.key.startsWith('notice:') && !state.data.title && !state.data.titleBn) || (state.key.startsWith('cpage:') && !state.data.title.en && !state.data.title.bn)) { toast(`<i data-lucide="info"></i>${t('Write a title first.', 'আগে শিরোনাম লিখুন।')}`); return; }
   ws.edit((w) => { w.drafts[state.key] = { data: state.data, at: new Date().toISOString(), by: WHO }; });
   state.saved = JSON.stringify(state.data);
   ok('Draft saved. The website has not changed.', 'খসড়া সেভ হয়েছে। ওয়েবসাইট বদলায়নি।');
@@ -586,7 +756,7 @@ function wire(el) {
   el.querySelector('[data-undo-all]')?.addEventListener('click', () => confirmBox('Reset the whole website?', 'পুরো ওয়েবসাইট আগের মতো করবেন?',
     'All published text, notices, the committee list and photos go back to the original. Drafts and history are cleared too. This can’t be undone.',
     'প্রকাশ করা সব লেখা, নোটিস, কমিটি তালিকা ও ছবি আসল অবস্থায় ফিরবে। খসড়া ও ইতিহাসও মুছবে। এটা আর ফেরানো যাবে না।', 'Reset website', 'আগের মতো করুন', () => {
-      siteContent.clear(); ws.put({ drafts: {}, history: {}, meta: {} }); closeEntry(); if (view.type === 'committee' || view.type === 'seo') view.type = 'pages';
+      siteContent.clear(); ws.put({ drafts: {}, history: {}, meta: {} }); closeEntry(); if (['committee', 'seo', 'menu'].includes(view.type)) view.type = 'pages';
       C.logAudit('website', 'Website reset to original content', 'ওয়েবসাইট আসল অবস্থায় ফেরানো'); ok('The website is back to its original content.', 'ওয়েবসাইট আসল অবস্থায় ফিরেছে।'); rerender();
     }, { danger: true }));
 
@@ -599,6 +769,11 @@ function wire(el) {
   };
   search?.addEventListener('input', applyFilter);
   el.querySelectorAll('[data-cms-filter]').forEach((b) => b.addEventListener('click', () => { filter = b.dataset.cmsFilter; el.querySelectorAll('[data-cms-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); applyFilter(); }));
+  el.querySelector('[data-new-page]')?.addEventListener('click', () => {
+    const id = `p${Date.now()}`;
+    state = { key: `cpage:${id}`, data: { id, slug: '', slugAuto: true, title: { en: '', bn: '' }, intro: { en: '', bn: '' }, image: '', desc: { en: '', bn: '' }, inMenu: false, blocks: [blankBlock('text')], isNew: true }, saved: 'null', pub: null };
+    view.entry = state.key; rerender(); scrollTo({ top: 0 }); el.querySelector('[name="cp:title|en"]')?.focus();
+  });
   el.querySelector('[data-new-notice]')?.addEventListener('click', () => {
     const id = `w${Date.now()}`; const d = todayParts();
     state = { key: `notice:${id}`, data: { ...pick({}), tag: 'Club', tagBn: 'ক্লাব', ...d, isNew: true }, saved: 'null', pub: null };
@@ -621,7 +796,8 @@ function wire(el) {
   // Editor
   const sync = () => { state.data = collect(form); el.querySelector('[data-dirty]')?.classList.toggle('hidden', !dirty()); };
   let pv;
-  form.addEventListener('input', () => { sync(); checkTranslation(form); clearTimeout(pv); pv = setTimeout(writePreview, 450); });
+  form.elements['cp:slug']?.addEventListener('input', () => { state.data.slugAuto = false; });
+  form.addEventListener('input', () => { sync(); const sl = form.elements['cp:slug']; if (sl && state.data.slugAuto && document.activeElement !== sl) sl.value = state.data.slug; checkTranslation(form); clearTimeout(pv); pv = setTimeout(writePreview, 450); });
   form.addEventListener('change', () => { sync(); clearTimeout(pv); pv = setTimeout(writePreview, 200); });
   form.addEventListener('submit', (e) => { e.preventDefault(); sync(); publish(); rerender(); });
   form.querySelectorAll('[data-save-draft]').forEach((b) => b.addEventListener('click', () => { sync(); saveDraft(); rerender(); }));
@@ -636,31 +812,49 @@ function wire(el) {
   el.querySelectorAll('[data-device]').forEach((b) => b.addEventListener('click', () => { sync(); view.device = b.dataset.device; rerender(); }));
 
   // Repeatable rows (values, committee)
-  const listOf = (kind) => (kind === 'values' ? state.data.values : state.data.list);
+  const listOf = (kind) => (kind === 'values' ? state.data.values : kind === 'committee' ? state.data.list : state.data[kind]);
   form.querySelectorAll('[data-row-move]').forEach((b) => b.addEventListener('click', () => { sync(); const [k, i, d] = b.dataset.rowMove.split('|'); const a = listOf(k); const [x] = a.splice(Number(i), 1); a.splice(Number(i) + Number(d), 0, x); rerender(); }));
   form.querySelectorAll('[data-row-del]').forEach((b) => b.addEventListener('click', () => { sync(); const [k, i] = b.dataset.rowDel.split('|'); listOf(k).splice(Number(i), 1); rerender(); }));
   form.querySelectorAll('[data-row-add]').forEach((b) => b.addEventListener('click', () => {
     sync(); const k = b.dataset.rowAdd;
-    listOf(k).push(k === 'values' ? { icon: 'sparkles', title: { en: '', bn: '' }, text: { en: '', bn: '' } } : { name: '', nameBn: '', role: '', roleBn: '', since: new Date().getFullYear() });
+    listOf(k).push(k === 'values' ? { icon: 'sparkles', title: { en: '', bn: '' }, text: { en: '', bn: '' } }
+      : k === 'committee' ? { name: '', nameBn: '', role: '', roleBn: '', since: new Date().getFullYear() }
+      : k === 'blocks' ? blankBlock(b.dataset.blockType)
+      : { label: { en: '', bn: '' }, href: '#home', show: 'all' });
     rerender(); const rows = el.querySelectorAll(`[data-rep="${k}"] [data-row]`); rows[rows.length - 1]?.querySelector('.field')?.focus();
   }));
 
   // Photo
   form.querySelectorAll('[data-pick-photo]').forEach((b) => b.addEventListener('click', () => { sync(); pickPhoto(b.dataset.pickPhoto); }));
-  form.querySelectorAll('[data-clear-photo]').forEach((b) => b.addEventListener('click', () => { sync(); state.data[b.dataset.clearPhoto] = ''; rerender(); writePreview(); }));
+  form.querySelectorAll('[data-clear-photo]').forEach((b) => b.addEventListener('click', () => { sync(); setPhoto(b.dataset.clearPhoto, ''); rerender(); writePreview(); }));
   form.querySelectorAll('[data-open-seo]').forEach((b) => b.addEventListener('click', () => leave(() => { closeEntry(); view.type = 'seo'; rerender(); scrollTo({ top: 0 }); })));
 
   // Draft / publish actions
   form.querySelector('[data-discard]')?.addEventListener('click', () => confirmBox('Discard this draft?', 'খসড়া বাদ দেবেন?', 'The editor goes back to what is on the website now.', 'ওয়েবসাইটে এখন যা আছে সেখানে ফিরবে।', 'Discard', 'বাদ দিন', () => {
     ws.edit((w) => { delete w.drafts[state.key]; }); openEntry(state.key); rerender();
   }, { danger: true }));
-  form.querySelector('[data-unpublish]')?.addEventListener('click', () => confirmBox('Unpublish this notice?', 'নোটিসটির প্রকাশ বন্ধ করবেন?', 'It disappears from the website but stays here, so you can publish it again.', 'ওয়েবসাইট থেকে সরে যাবে, তবে এখানে থাকবে, আবার প্রকাশ করা যাবে।', 'Unpublish', 'প্রকাশ বন্ধ', () => {
+  const isPage = state.key.startsWith('cpage:');
+  const pageId = state.key.slice(6);
+  form.querySelector('[data-unpublish]')?.addEventListener('click', () => (isPage ? confirmBox('Unpublish this page?', 'পাতাটির প্রকাশ বন্ধ করবেন?', 'It disappears from the website and its menu link is hidden. It stays here, so you can publish it again.', 'ওয়েবসাইট থেকে সরে যাবে, মেনুর লিঙ্কও লুকোবে। এখানে থাকবে, আবার প্রকাশ করা যাবে।', 'Unpublish', 'প্রকাশ বন্ধ', () => {
+    const c = siteContent.get(); siteContent.set({ pages: (c.pages || []).map((p) => (p.id === pageId ? { ...p, hidden: true } : p)) });
+    C.logAudit('website', `Website page unpublished · ${state.data.title.en}`, `ওয়েবসাইটের পাতা প্রকাশ বন্ধ · ${state.data.title.bn || state.data.title.en}`);
+    ok('Unpublished. It is off the website.', 'প্রকাশ বন্ধ। ওয়েবসাইট থেকে সরেছে।'); openEntry(state.key); rerender();
+  }) : confirmBox('Unpublish this notice?', 'নোটিসটির প্রকাশ বন্ধ করবেন?', 'It disappears from the website but stays here, so you can publish it again.', 'ওয়েবসাইট থেকে সরে যাবে, তবে এখানে থাকবে, আবার প্রকাশ করা যাবে।', 'Unpublish', 'প্রকাশ বন্ধ', () => {
     const id = state.key.slice(7); const n = { hidden: [], added: [], edited: {}, ...(siteContent.get().notices || {}) };
     siteContent.set({ notices: { ...n, hidden: [...new Set([...n.hidden, id])] } });
     C.logAudit('website', `Website notice unpublished · ${state.data.title}`, `ওয়েবসাইটের নোটিস প্রকাশ বন্ধ · ${state.data.titleBn || state.data.title}`);
     ok('Unpublished. It is off the website.', 'প্রকাশ বন্ধ। ওয়েবসাইট থেকে সরেছে।'); openEntry(state.key); rerender();
-  }));
-  form.querySelector('[data-delete]')?.addEventListener('click', () => confirmBox('Delete this notice?', 'নোটিসটি মুছবেন?', 'It is removed from the website and from here. This can’t be undone.', 'ওয়েবসাইট ও এখান থেকে মুছে যাবে। এটা আর ফেরানো যাবে না।', 'Delete', 'মুছুন', () => {
+  })));
+  if (isPage) form.querySelector('[data-delete]')?.addEventListener('click', () => confirmBox('Delete this page?', 'পাতাটি মুছবেন?', 'It is removed from the website, the menus and from here. This can’t be undone.', 'ওয়েবসাইট, মেনু ও এখান থেকে মুছে যাবে। এটা আর ফেরানো যাবে না।', 'Delete', 'মুছুন', () => {
+    const c = siteContent.get(); const old = (c.pages || []).find((p) => p.id === pageId);
+    const patch = { pages: (c.pages || []).filter((p) => p.id !== pageId) };
+    if (old && c.menu) { const href = `#page/${old.slug}`; const m = clone(c.menu); Object.keys(m).forEach((k) => { m[k] = m[k].filter((i) => i.href !== href); }); patch.menu = same(m, defaults.menu) ? null : m; }
+    siteContent.set(patch);
+    ws.edit((w) => { delete w.drafts[state.key]; delete w.history[state.key]; delete w.meta[state.key]; });
+    C.logAudit('website', `Website page deleted · ${state.data.title.en}`, `ওয়েবসাইটের পাতা মোছা · ${state.data.title.bn || state.data.title.en}`);
+    ok('Page deleted.', 'পাতা মোছা হয়েছে।'); state.saved = JSON.stringify(state.data); closeEntry(); rerender();
+  }, { danger: true }));
+  else form.querySelector('[data-delete]')?.addEventListener('click', () => confirmBox('Delete this notice?', 'নোটিসটি মুছবেন?', 'It is removed from the website and from here. This can’t be undone.', 'ওয়েবসাইট ও এখান থেকে মুছে যাবে। এটা আর ফেরানো যাবে না।', 'Delete', 'মুছুন', () => {
     const id = state.key.slice(7); const n = { hidden: [], added: [], edited: {}, ...(siteContent.get().notices || {}) };
     if (n.added.some((a) => a.id === id)) siteContent.set({ notices: { ...n, added: n.added.filter((a) => a.id !== id) } });
     ws.edit((w) => { delete w.drafts[state.key]; delete w.history[state.key]; delete w.meta[state.key]; });
@@ -735,8 +929,10 @@ function addMedia(after) {
   } });
 }
 
+const getPhoto = (field) => (field.startsWith('block:') ? state.data.blocks[Number(field.slice(6))]?.url : state.data[field]);
+function setPhoto(field, url) { if (field.startsWith('block:')) state.data.blocks[Number(field.slice(6))].url = url; else state.data[field] = url; }
 function pickPhoto(field = 'photo') {
-  const items = mediaItems(); const cur = state.data[field] || (field === 'photo' ? PHOTOS.group.src(2000) : '');
+  const items = mediaItems(); const cur = getPhoto(field) || (field === 'photo' ? PHOTOS.group.src(2000) : '');
   C.formDrawer('Choose a photo', 'ছবি বাছুন', `
     <ul class="grid grid-cols-2 gap-3">${items.map((m, i) => `<li><label class="block cursor-pointer rounded-xl border-2 border-transparent has-[:checked]:border-sindoor overflow-hidden">
       <input type="radio" name="pick" value="${i}" class="sr-only" ${m.full === cur ? 'checked' : ''} />
@@ -745,9 +941,9 @@ function pickPhoto(field = 'photo') {
     <button type="button" class="btn btn-line btn-sm w-full" data-pick-add><i data-lucide="image-plus"></i>${t('Add a new photo', 'নতুন ছবি যোগ')}</button>`,
   'Use this photo', 'এই ছবি নিন', '', '', { onDone: (f) => {
     const m = items[Number(f.elements.pick.value)]; if (!m) return;
-    state.data[field] = field === 'photo' && m.id === 'group' ? '' : m.full; rerender(); writePreview();
+    setPhoto(field, field === 'photo' && m.id === 'group' ? '' : m.full); rerender(); writePreview();
   } });
-  document.querySelector('[data-pick-add]')?.addEventListener('click', () => addMedia((m) => { state.data[field] = m.url; rerender(); writePreview(); }));
+  document.querySelector('[data-pick-add]')?.addEventListener('click', () => addMedia((m) => { setPhoto(field, m.url); rerender(); writePreview(); }));
 }
 
 // Leaving the Website screen from the console menu with unsaved changes

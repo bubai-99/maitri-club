@@ -6,6 +6,7 @@ import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, p
 import { mountReviews } from './site-reviews.js';
 import { renderPanjika, renderTodayStrip } from './site-panjika.js';
 import { renderVolunteer, initVolunteerForm } from './site-volunteer.js';
+import { renderCustomPage, findPage } from './site-custom.js';
 import { validate, enhanceForm, confirmPanel, ref, bnNum, initials, daysUntil } from './site-ui.js';
 import {
   kindLabel, ics, eventTime, renderNotices, renderNoticeDetail, renderEventDetail, renderPujaBreakdown,
@@ -963,6 +964,7 @@ document.addEventListener('langchange', () => {
   renderNotices(); renderChanda(); renderContact(); renderVolunteer();
   if (current.screen === 'event') renderEventDetail(current.param);
   if (current.screen === 'notice') renderNoticeDetail(current.param);
+  if (current.screen === 'page') renderCustomPage(current.param);
   setTitle(current.screen, current.title());
 });
 
@@ -1005,14 +1007,15 @@ function setTitle(screen, extra) {
   const bn = lang === 'bn';
   let desc = null;
   if (screen === 'notice') { const n = publicNotices.find((x) => x.id === current.param); if (n) desc = bn ? n.bodyBn || n.body : n.body; }
+  if (screen === 'page') { const p = findPage(current.param); if (p) desc = bn ? p.desc?.bn || p.desc?.en || p.intro?.bn || p.intro?.en : p.desc?.en || p.intro?.en; }
   if (screen === 'event') { const i = eventInfo[current.param]; if (i) desc = bn ? i.aboutBn || i.about : i.about; }
   applySeo(screen, lang, { title: extra || null, desc, fallback: TITLES[screen] });
 }
 function activate(name) {
   $$('[data-screen]').forEach((s) => s.classList.toggle('is-active', s.dataset.screen === name));
 }
-function markNav(name) {
-  const n = { event: 'events', notice: 'notices' }[name] || name;
+function markNav(name, param) {
+  const n = name === 'page' ? `page/${param}` : { event: 'events', notice: 'notices' }[name] || name;
   $$('[data-nav]').forEach((a) => { if (a.dataset.nav === n) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
 }
 let firstRoute = true;
@@ -1045,8 +1048,13 @@ function onRoute(screen, param) {
   if (screen === 'event') { renderEventDetail(param); title = () => { const e = events.find((x) => x.id === param); return e ? (lang === 'bn' ? e.titleBn : e.title) : null; }; scrollTo({ top: 0 }); }
   if (screen === 'gallery') { const g = GALLERY.find((x) => x.id === param); gOpen = g ? g.id : null; gIdx = g ? (gPick ?? 0) : 0; gPick = null; renderGallery(); if (g) { title = () => (lang === 'bn' ? g.bn : g.en); } scrollTo({ top: 0 }); }
   if (screen === 'panjika') { renderPanjika(param); scrollTo({ top: 0 }); }
+  if (screen === 'page') {
+    if (!renderCustomPage(param)) { screen = 'notfound'; activate('notfound'); }
+    else title = () => { const p = findPage(param); return p ? (lang === 'bn' ? p.title.bn || p.title.en : p.title.en) : null; };
+    scrollTo({ top: 0 });
+  }
   if (screen === 'notice') { renderNoticeDetail(param); title = () => { const n = publicNotices.find((x) => x.id === param); return n ? (lang === 'bn' ? n.titleBn : n.title) : null; }; scrollTo({ top: 0 }); }
-  markNav(screen);
+  markNav(screen, param);
   Object.assign(current, { screen, param, title });
   setTitle(screen, title());
   if (!firstRoute) {
