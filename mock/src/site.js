@@ -16,7 +16,7 @@ const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matche
 /* Seals */
 $('#logo-seal').innerHTML = seal({ size: innerWidth < 640 ? 38 : 44, rotate: -6 });
 $('#join-seal').innerHTML = seal({ size: 320, color: '#fff', rotate: 12 });
-$('#hero-seal').innerHTML = seal({ size: innerWidth < 640 ? 104 : 138, rotate: -12, className: 'stamp-in' });
+document.getElementById('hero-seal') && ($('#hero-seal').innerHTML = seal({ size: innerWidth < 640 ? 104 : 138, rotate: -12, className: 'stamp-in' }));
 $('#foot-seal').innerHTML = seal({ size: 40, color: '#fff', rotate: -4 });
 
 /* ---------- Header: language, mobile menu, scroll state, back to top ---------- */
@@ -70,11 +70,44 @@ $('#skip-link').addEventListener('click', (e) => {
 /* WhatsApp news form (footer) */
 const waForm = $('#wa-form');
 enhanceForm(waForm);
+let newsVia = 'wa';
+const newsTabs = [...waForm.querySelectorAll('[data-news-via]')];
+const setNewsVia = (via) => {
+  newsVia = via;
+  const wa = via === 'wa';
+  const inp = $('#wa-phone');
+  newsTabs.forEach((x) => { const on = x.dataset.newsVia === via; x.setAttribute('aria-checked', String(on)); x.tabIndex = on ? 0 : -1; });
+  inp.value = ''; inp.removeAttribute('aria-invalid'); inp.removeAttribute('aria-describedby'); delete inp.dataset.errId;
+  waForm.querySelectorAll('.field-error').forEach((p) => p.remove());
+  inp.type = wa ? 'tel' : 'email';
+  inp.inputMode = wa ? 'tel' : 'email';
+  inp.autocomplete = wa ? 'tel' : 'email';
+  inp.placeholder = wa ? '98300 00000' : 'name@example.com';
+  inp.classList.toggle('num', wa);
+  inp.classList.toggle('pl-5', !wa);
+  if (wa) inp.dataset.phone = ''; else delete inp.dataset.phone;
+  $('#news-prefix').hidden = !wa;
+  // These elements carry their own data-bn, so set both languages on them (applyLang picks one)
+  const say = (el, en, bn) => { el.dataset.en = en; el.dataset.bn = bn; };
+  if (wa) { say($('#news-label'), 'Mobile number', 'মোবাইল নম্বর'); say($('#news-note'), 'Reply STOP any time to leave.', 'যেকোনো সময় STOP লিখে বন্ধ করুন।'); }
+  else { say($('#news-label'), 'Email address', 'ইমেল ঠিকানা'); say($('#news-note'), 'Every email has a one-click unsubscribe link.', 'প্রতিটি ইমেলে এক ক্লিকে বন্ধ করার লিঙ্ক থাকে।'); }
+  applyLang(waForm);
+};
+newsTabs.forEach((x) => x.addEventListener('click', () => { setNewsVia(x.dataset.newsVia); x.focus(); }));
+waForm.querySelector('[role="radiogroup"]').addEventListener('keydown', (e) => {
+  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+  e.preventDefault();
+  const next = newsVia === 'wa' ? 'email' : 'wa';
+  setNewsVia(next);
+  waForm.querySelector(`[data-news-via="${next}"]`).focus();
+});
 waForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (!validate(waForm)) return;
   waForm.reset();
-  toast(`<i data-lucide="check-circle-2"></i>${t('Done. You’ll get club notices on WhatsApp. Reply STOP to leave.', 'হয়ে গেছে। ক্লাবের নোটিস হোয়াটসঅ্যাপে পাবেন। বন্ধ করতে STOP লিখুন।')}`);
+  toast(newsVia === 'wa'
+    ? `<i data-lucide="check-circle-2"></i>${t('Done. You’ll get club notices on WhatsApp. Reply STOP to leave.', 'হয়ে গেছে। ক্লাবের নোটিস হোয়াটসঅ্যাপে পাবেন। বন্ধ করতে STOP লিখুন।')}`
+    : `<i data-lucide="check-circle-2"></i>${t('Done. Club news will come to your inbox. Unsubscribe any time.', 'হয়ে গেছে। ক্লাবের খবর ইমেলে পাবেন। যেকোনো সময় বন্ধ করতে পারেন।')}`);
 });
 document.addEventListener('click', (e) => {
   if (!e.target.closest('[data-focus-wa]')) return;
@@ -84,7 +117,22 @@ document.addEventListener('click', (e) => {
 
 /* Photos */
 document.getElementById('hero-photo').innerHTML = photo('pujaNight', { cls: 'w-full h-full object-cover', eager: true, w: 1800 });
-document.getElementById('hero-credit').innerHTML = `${t('Photo', 'ছবি')}: ${credit('pujaNight')}`;
+document.getElementById('hero-credit').innerHTML = `${t('Video', 'ভিডিও')}: <a href="https://www.pexels.com/@debasish-bose-1630780/" target="_blank" rel="noopener" class="hover:underline">Debasish Bose / Pexels</a>`;
+/* Home banner video: plays muted on loop; still photo for reduced motion or data saver; pause button */
+{
+  const v = document.getElementById('hero-video');
+  const btn = document.getElementById('hero-play');
+  // Still image for reduced motion, data saver and phones (the video is 12 MB); the play button still loads it
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData || matchMedia('(max-width: 767px)').matches;
+  const show = (on) => { btn.innerHTML = `<i data-lucide="${on ? 'pause' : 'play'}" class="w-4 h-4"></i>`; btn.setAttribute('aria-label', on ? (lang === 'bn' ? 'ভিডিও থামান' : 'Pause the video') : (lang === 'bn' ? 'ভিডিও চালান' : 'Play the video')); refreshIcons(); };
+  const play = () => v.play().then(() => show(true)).catch(() => show(false));
+  if (calm) { v.preload = 'none'; show(false); } else play();
+  btn.addEventListener('click', () => { if (v.paused) play(); else { v.pause(); show(false); } });
+  // Pause when the home page is not showing or the tab is hidden
+  const sync = () => { const onHome = document.querySelector('[data-screen="home"]').classList.contains('is-active'); if (!onHome || document.hidden) v.pause(); else if (!calm && btn.getAttribute('aria-label')?.match(/Pause|থামান/)) v.play().catch(() => {}); };
+  addEventListener('hashchange', () => setTimeout(sync, 0));
+  document.addEventListener('visibilitychange', sync);
+}
 document.querySelectorAll('[data-photo]').forEach((el) => { el.innerHTML = photo(el.dataset.photo, { cls: 'w-full h-full object-cover', sizes: '(min-width: 768px) 570px, 100vw' }); });
 document.querySelectorAll('[data-credit]').forEach((el) => { el.innerHTML = credit(el.dataset.credit); });
 
@@ -226,15 +274,7 @@ function galleryIndex() {
   }
   const { p: np, v: nv } = counts(all);
   return { flat, html: `
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div>
-        <p class="eyebrow text-sindoor">${t('The para in pictures', 'ছবিতে পাড়া')}</p>
-        <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.2rem,5.5vw,3.4rem)]">${t('Gallery', 'ছবির খাতা')}</h1>
-        <p class="mt-3 text-[17px] text-ink-2 max-w-[56ch]">${t('Every puja, match and camp, kept by date. Open an album to see all its photos and videos.', 'প্রতিটি পূজা, খেলা ও শিবির, তারিখ ধরে রাখা। অ্যালবাম খুললে সব ছবি ও ভিডিও।')}</p>
-      </div>
-      <a href="https://wa.me/919830012345?text=I%20have%20photos%20or%20videos%20for%20the%20club%20gallery" target="_blank" rel="noopener" class="btn btn-line"><i data-lucide="image-plus"></i>${t('Send photos or videos', 'ছবি বা ভিডিও পাঠান')}</a>
-    </div>
-    <div class="mt-8 flex flex-col md:flex-row md:items-center gap-3 py-3 border-y border-rule">
+    <div class="flex flex-col md:flex-row md:items-center gap-3 py-3 border-y border-rule">
       <div class="flex gap-1.5 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 md:flex-1 md:min-w-0" role="group" aria-label="${lang === 'bn' ? 'অ্যালবাম' : 'Albums'}">
         ${tabs.map((a) => `<button type="button" data-album="${a.key}" aria-pressed="${album === a.key}" class="shrink-0 h-9 px-3.5 rounded-full text-[14.5px] font-medium whitespace-nowrap text-ink-2 hover:bg-paper-2 hover:text-ink aria-pressed:bg-ink aria-pressed:text-white">${t(a.en, a.bn)}</button>`).join('')}
       </div>
@@ -530,7 +570,7 @@ function renderPlants() {
       </button>
       <div class="mt-3 flex-1">
         <button type="button" class="text-left font-semibold leading-snug hover:text-tulsi" data-plant="${p.id}">${t(p.name, p.nameBn)}</button>
-        <p class="text-[13.5px] text-ink-3 mt-0.5">${lang === 'bn' ? p.name : p.nameBn} · ${t(p.pot, p.potBn)}</p>
+        <p class="text-[13.5px] text-ink-3 mt-0.5">${t(p.pot, p.potBn)}</p>
       </div>
       <div class="mt-2.5 flex items-center justify-between gap-2">
         <span class="font-semibold text-[17px] num">${inr(p.price)}</span>
@@ -580,7 +620,6 @@ function openPlant(id) {
             <div class="min-w-0">
               <p class="eyebrow text-tulsi">${t(plantCats[p.cat]?.en || 'Plant', plantCats[p.cat]?.bn || 'গাছ')}</p>
               <h2 class="mt-2 font-display text-[1.9rem] leading-tight">${t(p.name, p.nameBn)}</h2>
-              <p class="text-[15px] text-ink-3">${lang === 'bn' ? p.name : p.nameBn}</p>
             </div>
             <button type="button" data-x class="ml-auto hidden sm:grid w-10 h-10 rounded-full hover:bg-paper-2 place-items-center shrink-0" aria-label="${lang === 'bn' ? 'বন্ধ' : 'Close'}"><i data-lucide="x" class="w-5 h-5"></i></button>
           </div>

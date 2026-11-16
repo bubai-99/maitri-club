@@ -94,33 +94,35 @@
     <!-- ================= HOME ================= -->
     <!-- The para's club: Bengali nameplate and a photo mosaic, the next event as a ticket, then what the club does, its story, what's on, the money, the people and how to join. -->
     <section data-screen="home">
-      <!-- Hero: nameplate left, photo mosaic right -->
-      <div class="gz border-b gz-hair">
-        <div class="mx-auto max-w-[1160px] px-5 pt-10 sm:pt-14 pb-12 sm:pb-16 grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          <div class="lg:col-span-6">
-            <p class="gz-kicker"><span data-bn="নেতাজি পাড়া · প্রতিষ্ঠা ২০১৪">Netaji Para · Est. 2014</span></p>
-            <h1 class="mt-4 gz-headline text-[clamp(2.4rem,5.6vw,4rem)] max-w-[16ch]" data-bn="বারো বছরের পূজা, খেলা আর পাশে থাকা">Twelve years of pujas, play and looking out for each other</h1>
-            <p class="mt-4 text-[17px] leading-relaxed text-ink-2 max-w-[48ch]" data-bn="প্রতিবেশীদের হাতে চলা ক্লাব। দুর্গা, কালী ও সরস্বতী পূজা, ক্রীড়া দিবস, রক্তদান, বিয়েবাড়িতে পরিবেশন আর গেটের পাশে একটা নার্সারি।">A club run by neighbours. Durga, Kali and Saraswati Puja, sports day, blood donation, a serving team for the para’s weddings and a nursery by the gate.</p>
-            <div class="mt-7 flex flex-wrap gap-2.5">
-              <a href="#join" class="btn btn-primary h-12 px-6 text-base"><span data-bn="সদস্য হোন">Become a member</span></a>
-              <a href="#events" class="btn btn-line h-12 px-6 text-base bg-paper"><span data-bn="কী হচ্ছে দেখুন">See what’s on</span><i data-lucide="arrow-right"></i></a>
-            </div>
-            <dl class="mt-9 pt-5 border-t gz-hair grid grid-cols-3 gap-4 max-w-[460px]">
-              <div><dt class="text-[12.5px] text-ink-2" data-bn="সদস্য পরিবার">Member families</dt><dd class="mt-1 font-display text-[1.9rem] leading-none num" data-bn="৩১২">312</dd></div>
-              <div><dt class="text-[12.5px] text-ink-2" data-bn="স্বেচ্ছাসেবক">Volunteers</dt><dd class="mt-1 font-display text-[1.9rem] leading-none num" data-bn="৬১">61</dd></div>
-              <div><dt class="text-[12.5px] text-ink-2" data-bn="পূজায় ভোগ">Bhog plates</dt><dd class="mt-1 font-display text-[1.9rem] leading-none num" data-bn="৪,২০০">4,200</dd></div>
-            </dl>
+      <!-- Hero: full-width video banner (Durga Puja aarti at a para pandal), with the poster as the still on phones -->
+      <div class="banner min-h-[80svh] lg:min-h-[86svh] flex items-end md:items-center">
+        <div class="banner-media" id="hero-photo" aria-hidden="true"></div>
+        <div class="banner-media" aria-hidden="true"><video id="hero-video" muted loop playsinline preload="metadata" poster="https://images.pexels.com/videos/5697994/goddess-maa-durga-aarti-5697994.jpeg?auto=compress&w=1600" disablepictureinpicture><source src="https://videos.pexels.com/video-files/5697994/5697994-hd_1280_720_30fps.mp4" type="video/mp4" /></video></div>
+        <div class="banner-shade"></div>
+        <div class="relative w-full mx-auto max-w-[1160px] px-5 pt-28 pb-20 md:pt-28 md:pb-24 grid lg:grid-cols-12 gap-10 lg:gap-8 items-end">
+          <div class="lg:col-span-8 min-w-0">
+          <p class="eyebrow text-marigold"><span data-bn="নেতাজি পাড়া · প্রতিষ্ঠা ২০১৪">Netaji Para · Est. 2014</span></p>
+          <h1 class="mt-4 font-display leading-[1.04] text-[clamp(2.6rem,6.4vw,4.8rem)] max-w-[15ch]" data-bn="বারো বছরের পূজা, খেলা আর পাশে থাকা">Twelve years of pujas, play and looking out for each other</h1>
+          <p class="mt-5 text-[17px] sm:text-[19px] leading-relaxed text-white/85 max-w-[50ch]" data-bn="প্রতিবেশীদের হাতে চলা ক্লাব। দুর্গা, কালী ও সরস্বতী পূজা, ক্রীড়া দিবস, রক্তদান, বিয়েবাড়িতে পরিবেশন আর গেটের পাশে একটা নার্সারি।">A club run by neighbours. Durga, Kali and Saraswati Puja, sports day, blood donation, a serving team for the para’s weddings and a nursery by the gate.</p>
+          <div class="mt-8 flex flex-wrap gap-2.5">
+            <a href="#join" class="btn btn-primary h-12 px-6 text-base"><span data-bn="সদস্য হোন">Become a member</span></a>
+            <a href="#events" class="btn btn-glass h-12 px-6 text-base"><span data-bn="কী হচ্ছে দেখুন">See what’s on</span><i data-lucide="arrow-right"></i></a>
           </div>
-          <div class="lg:col-span-6 relative">
-            <div class="grid grid-cols-5 grid-rows-6 gap-2 sm:gap-3 h-[300px] sm:h-[480px]">
-              <div class="col-span-3 row-span-6 relative overflow-hidden rounded-[18px] bg-paper-3" id="hero-photo" aria-hidden="true"></div>
-              <div class="col-span-2 row-span-3 relative overflow-hidden rounded-[18px] bg-paper-3" data-photo="sindoor"></div>
-              <div class="col-span-2 row-span-3 relative overflow-hidden rounded-[18px] bg-paper-3" data-photo="runners"></div>
+          </div>
+          <!-- The club in numbers: glass panel, bottom right -->
+          <div class="lg:col-span-4 lg:justify-self-end w-full lg:max-w-[360px]">
+            <div class="hero-glass rounded-[22px] p-5 sm:p-6">
+              <p class="flex items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white/75"><span data-bn="সংখ্যায় ক্লাব">The club in numbers</span><span class="num normal-case tracking-normal font-medium text-white/55" data-bn="২০২৫–২৬">2025–26</span></p>
+              <dl class="mt-4 grid grid-cols-3 lg:grid-cols-1 gap-3 lg:gap-0 lg:divide-y lg:divide-white/15">
+                <div class="lg:flex lg:items-baseline lg:justify-between lg:py-3 lg:first:pt-0"><dt class="text-[12.5px] text-white/70 lg:order-2" data-bn="সদস্য পরিবার">Member families</dt><dd class="mt-1 lg:mt-0 font-display text-[1.75rem] sm:text-[2rem] leading-none num" data-bn="৩১২">312</dd></div>
+                <div class="lg:flex lg:items-baseline lg:justify-between lg:py-3"><dt class="text-[12.5px] text-white/70 lg:order-2" data-bn="স্বেচ্ছাসেবক">Volunteers</dt><dd class="mt-1 lg:mt-0 font-display text-[1.75rem] sm:text-[2rem] leading-none num" data-bn="৬১">61</dd></div>
+                <div class="lg:flex lg:items-baseline lg:justify-between lg:py-3 lg:last:pb-0"><dt class="text-[12.5px] text-white/70 lg:order-2" data-bn="পূজায় ভোগ">Bhog plates</dt><dd class="mt-1 lg:mt-0 font-display text-[1.75rem] sm:text-[2rem] leading-none num" data-bn="৪,২০০">4,200</dd></div>
+              </dl>
             </div>
-            <div class="absolute -left-4 -bottom-6 sm:-left-8 sm:-bottom-8 ink-stamp pointer-events-none" id="hero-seal" aria-hidden="true"></div>
-            <p class="mt-3 text-right text-[12px] text-ink-3" id="hero-credit"></p>
           </div>
         </div>
+        <button type="button" class="banner-play" id="hero-play" aria-label="Pause the video"><i data-lucide="pause" class="w-4 h-4"></i></button>
+        <p class="banner-credit" id="hero-credit"></p>
       </div>
 
       <!-- Next event: a ticket -->
@@ -262,36 +264,54 @@
 
       <!-- What neighbours say. Sample quotes: replace with real ones, with permission, before launch. -->
       <div class="mx-auto max-w-[1160px] px-5 pt-20">
-        <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
-          <div><p class="gz-kicker" data-bn="পাড়ার কথা">In their words</p><h2 class="mt-2 gz-headline text-[clamp(2rem,4.5vw,3rem)]" data-bn="পাড়ার লোকে যা বলেন">What neighbours say</h2></div>
-          <p class="text-[13px] text-ink-3 max-w-[38ch]" data-bn="প্রোটোটাইপ: নমুনা লেখা। চালুর আগে সদস্যদের অনুমতি নিয়ে আসল কথা বসবে।">Prototype: sample quotes. Real ones, with the person’s permission, go here before launch.</p>
+        <div class="max-w-[640px]">
+          <p class="gz-kicker" data-bn="পাড়ার কথা">In their words</p>
+          <h2 class="mt-2 gz-headline text-[clamp(2rem,4.5vw,3rem)]" data-bn="পাড়ার লোকে যা বলেন">What neighbours say</h2>
         </div>
-        <div class="grid md:grid-cols-3 gap-5">
-          <figure class="book-catering relative gz rounded-[18px] border gz-hair p-6 sm:p-7 flex flex-col">
-            <span class="font-display text-[4.5rem] leading-[.6] text-turmeric" aria-hidden="true">“</span>
-            <blockquote class="mt-3 text-[17px] leading-relaxed text-ink flex-1" data-bn="মেয়ের বিয়েতে দুশো অতিথি, একটা পাতও দেরিতে যায়নি। দলনেতা নিজে বয়স্কদের খোঁজ নিয়েছেন।">Two hundred guests at our daughter’s wedding and not one plate was late. The team leader checked on the elders himself.</blockquote>
-            <figcaption class="mt-6 pt-4 border-t gz-hair flex items-center gap-3">
-              <span class="w-10 h-10 rounded-full bg-paper grid place-items-center shrink-0 text-turmeric"><i data-lucide="utensils" class="w-5 h-5"></i></span>
-              <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="স্কুল রোডের এক পরিবার">A family on School Road</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী পরিবেশন · বিয়ে, ২২০ জন">Maitree Serving · wedding, 220 guests</span></span>
+
+        <div class="mt-8 grid lg:grid-cols-12 gap-5">
+          <!-- Featured -->
+          <figure class="nb-feature lg:col-span-7 relative isolate overflow-hidden rounded-[26px] bg-ink text-white min-h-[400px] sm:min-h-[460px] flex flex-col justify-end p-6 sm:p-10">
+            <div class="absolute inset-0 -z-10" data-photo="pujaCrowd" aria-hidden="true"></div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/55 to-black/10" aria-hidden="true"></div>
+            <span class="absolute left-6 top-6 sm:left-10 sm:top-9 chip h-8 px-3 bg-white/15 text-white backdrop-blur-sm border border-white/20 text-[13px]"><i data-lucide="users" class="w-4 h-4"></i><span data-bn="ক্লাব সদস্য">Club member</span></span>
+            <svg viewBox="0 0 48 36" class="w-11 h-9 text-marigold" aria-hidden="true"><path fill="currentColor" d="M0 36V22C0 9.6 6.4 2.3 19.2 0l2 5.3C14.6 7 11.2 11 10.9 17H20v19H0zm28 0V22C28 9.6 34.4 2.3 47.2 0l.8 5.3C41.4 7 38 11 37.7 17H48v19H28z"/></svg>
+            <blockquote class="mt-5 font-display text-[clamp(1.55rem,3.2vw,2.35rem)] leading-[1.18] max-w-[24ch]" data-bn="গত বছর পাড়ায় এসেছি। ক্লাবের হাত ধরেই সবার সঙ্গে চেনা, শুরু দুর্গাপূজার ভোগ দিয়ে।">We moved to the para last year. The club is how we got to know everyone, starting with Durga Puja bhog.</blockquote>
+            <figcaption class="mt-7 pt-5 border-t border-white/20 flex flex-wrap items-center justify-between gap-3">
+              <span><span class="block font-semibold" data-bn="৩ নং গলির এক নতুন সদস্য">A new member, Lane 3</span><span class="block text-[13.5px] text-white/70" data-bn="২০২৫ থেকে সদস্য">Member since 2025</span></span>
+              <span class="text-[11.5px] text-white/55" data-credit="pujaCrowd"></span>
             </figcaption>
           </figure>
-          <figure class="book-club relative gz rounded-[18px] border gz-hair p-6 sm:p-7 flex flex-col">
-            <span class="font-display text-[4.5rem] leading-[.6] text-sindoor" aria-hidden="true">“</span>
-            <blockquote class="mt-3 text-[17px] leading-relaxed text-ink flex-1" data-bn="গত বছর পাড়ায় এসেছি। ক্লাবের হাত ধরেই সবার সঙ্গে চেনা, শুরু দুর্গাপূজার ভোগ দিয়ে।">We moved to the para last year. The club is how we got to know everyone, starting with Durga Puja bhog.</blockquote>
-            <figcaption class="mt-6 pt-4 border-t gz-hair flex items-center gap-3">
-              <span class="w-10 h-10 rounded-full bg-paper grid place-items-center shrink-0 text-sindoor"><i data-lucide="users" class="w-5 h-5"></i></span>
-              <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="৩ নং গলির এক নতুন সদস্য">A new member, Lane 3</span><span class="block text-[13.5px] text-ink-3" data-bn="২০২৫ থেকে সদস্য">Member since 2025</span></span>
-            </figcaption>
-          </figure>
-          <figure class="book-nursery relative gz rounded-[18px] border gz-hair p-6 sm:p-7 flex flex-col">
-            <span class="font-display text-[4.5rem] leading-[.6] text-tulsi" aria-hidden="true">“</span>
-            <blockquote class="mt-3 text-[17px] leading-relaxed text-ink flex-1" data-bn="তুলসী আর লেবু গাছ ভালো আছে। কতটা জল দিতে হবে ঠিক বলে দিয়েছিল, সদস্য মূল্যেও সুবিধা।">The tulsi and the lemon plant are doing well. They told me exactly how much to water, and the member price helps.</blockquote>
-            <figcaption class="mt-6 pt-4 border-t gz-hair flex items-center gap-3">
-              <span class="w-10 h-10 rounded-full bg-paper grid place-items-center shrink-0 text-tulsi"><i data-lucide="sprout" class="w-5 h-5"></i></span>
-              <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="পুকুর পাড়ের এক বাগানপ্রেমী">A gardener at Pukur Par</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী নার্সারি">Maitree Nursery</span></span>
-            </figcaption>
-          </figure>
+
+          <!-- Two more -->
+          <div class="lg:col-span-5 grid gap-5">
+            <figure class="nb-card book-catering relative flex flex-col rounded-[22px] bg-card border border-rule p-6 sm:p-7 overflow-hidden">
+              <span class="absolute left-0 inset-y-0 w-1 bg-turmeric" aria-hidden="true"></span>
+              <div class="flex items-center justify-between gap-3">
+                <span class="flex gap-0.5 text-marigold" aria-hidden="true"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></span>
+                <span class="w-9 h-9 rounded-full bg-paper grid place-items-center text-turmeric" aria-hidden="true"><i data-lucide="utensils" class="w-[18px] h-[18px]"></i></span>
+              </div>
+              <blockquote class="mt-4 font-display text-[1.28rem] leading-snug text-ink flex-1" data-bn="মেয়ের বিয়েতে দুশো অতিথি, একটা পাতও দেরিতে যায়নি।">Two hundred guests at our daughter’s wedding and not one plate was late.</blockquote>
+              <figcaption class="mt-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="স্কুল রোডের এক পরিবার">A family on School Road</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী পরিবেশন · বিয়ে">Maitree Serving · wedding</span></span>
+                <a href="#catering" class="inline-flex items-center gap-1 text-[14px] font-semibold text-turmeric hover:underline whitespace-nowrap"><span data-bn="পরিবেশনের রিভিউ">Serving reviews</span><i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+              </figcaption>
+            </figure>
+            <figure class="nb-card book-nursery relative flex flex-col rounded-[22px] bg-card border border-rule p-6 sm:p-7 overflow-hidden">
+              <span class="absolute left-0 inset-y-0 w-1 bg-tulsi" aria-hidden="true"></span>
+              <div class="flex items-center justify-between gap-3">
+                <span class="flex gap-0.5 text-marigold" aria-hidden="true"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></span>
+                <span class="w-9 h-9 rounded-full bg-paper grid place-items-center text-tulsi" aria-hidden="true"><i data-lucide="sprout" class="w-[18px] h-[18px]"></i></span>
+              </div>
+              <blockquote class="mt-4 font-display text-[1.28rem] leading-snug text-ink flex-1" data-bn="কতটা জল দিতে হবে ঠিক বলে দিয়েছিল। তুলসী আর লেবু গাছ ভালো আছে।">They told me exactly how much to water. The tulsi and lemon are doing well.</blockquote>
+              <figcaption class="mt-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                <span class="min-w-0"><span class="block font-semibold leading-snug" data-bn="পুকুর পাড়ের এক বাগানপ্রেমী">A gardener at Pukur Par</span><span class="block text-[13.5px] text-ink-3" data-bn="মৈত্রী নার্সারি">Maitree Nursery</span></span>
+                <a href="#nursery" class="inline-flex items-center gap-1 text-[14px] font-semibold text-tulsi hover:underline whitespace-nowrap"><span data-bn="নার্সারির রিভিউ">Nursery reviews</span><i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+              </figcaption>
+            </figure>
+          </div>
         </div>
+        <p class="mt-4 flex items-center gap-2 text-[13px] text-ink-3"><i data-lucide="info" class="w-4 h-4 shrink-0"></i><span data-bn="প্রোটোটাইপ: নমুনা লেখা। চালুর আগে সদস্যদের অনুমতি নিয়ে আসল কথা বসবে।">Prototype: sample quotes. Real ones, with the person’s permission, go here before launch.</span></p>
       </div>
 
       <!-- Questions -->
@@ -324,11 +344,11 @@
       </div>
 
       <!-- Join: red band with the seal -->
-      <div class="mt-20 relative overflow-hidden bg-sindoor text-white">
+      <div class="join-band mt-20 relative overflow-hidden bg-sindoor text-white">
         <div class="absolute -right-16 -top-16 opacity-15 pointer-events-none" id="join-seal" aria-hidden="true"></div>
         <div class="relative mx-auto max-w-[1160px] px-5 py-16 sm:py-20 grid lg:grid-cols-12 gap-10 items-center">
           <div class="lg:col-span-7">
-            <p class="gz-nameplate text-white/90 text-[clamp(2rem,5vw,3rem)]" lang="bn">সদস্য হোন</p>
+            <p class="gz-nameplate text-[clamp(1.5rem,3.2vw,2.1rem)]" data-bn="সদস্য হোন">Become a member</p>
             <h2 class="mt-2 gz-headline text-[clamp(2rem,4.5vw,3rem)]" data-bn="পুরো বাড়ির জন্য মাসে ₹১০০">₹100 a month for your whole household</h2>
             <p class="mt-4 text-[17px] text-white/90 leading-relaxed max-w-[48ch]" data-bn="ফর্ম পাঁচ মিনিটের, কমিটি পরের সভায় অনুমোদন করে। বার্ষিক প্ল্যান আর ভর্তি ফি পরের ধাপে বিস্তারিত।">The form takes five minutes and the committee approves it at the next meeting. The yearly plan and the admission fee are explained on the next step.</p>
             <a href="#join" class="btn bg-white text-ink hover:bg-paper-2 h-12 px-6 text-base mt-7"><span data-bn="আবেদন করুন">Apply to join</span><i data-lucide="arrow-right"></i></a>
@@ -344,20 +364,23 @@
     </section>
 
     <section data-screen="events">
-      <div class="page-hero bg-sindoor-wash/50">
-        <div class="mx-auto max-w-[1160px] px-5 py-12 lg:py-16 grid lg:grid-cols-12 gap-10 items-center">
-          <div class="lg:col-span-7">
-            <p class="eyebrow text-sindoor" data-bn="কী হচ্ছে">What’s on</p>
-            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.4rem,6vw,3.75rem)] text-sindoor" data-bn="অনুষ্ঠান">Events</h1>
-            <p class="mt-4 text-[18px] text-ink-2 max-w-[52ch] leading-relaxed" data-bn="পূজা, খেলা, সেবা আর সদস্যদের আড্ডা। সবাই আমন্ত্রিত। যেখানে পাস লাগে, সদস্যরা অ্যাপ থেকে নেবেন।">Pujas, sports, service days and members’ outings. Everyone is welcome; where a pass is needed, members get it from the app.</p>
-            <ul class="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-ink-2">
-              <li class="flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-sindoor"></i><span data-bn="ফেব্রুয়ারি পর্যন্ত ৪টি অনুষ্ঠান">4 events till February</span></li>
-              <li class="flex items-center gap-2"><i data-lucide="ticket" class="w-4 h-4 text-sindoor"></i><span data-bn="পাস সদস্য অ্যাপে">Passes in the member app</span></li>
-              <li class="flex items-center gap-2"><i data-lucide="hand-heart" class="w-4 h-4 text-sindoor"></i><span data-bn="স্বেচ্ছাসেবক চাই">Volunteers always wanted</span></li>
+      <div class="banner">
+        <div class="banner-media" data-photo="pujaCrowd" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="অনুষ্ঠান">Events</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-marigold" data-bn="কী হচ্ছে">What’s on</p>
+            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)] text-white" data-bn="অনুষ্ঠান">Events</h1>
+            <p class="mt-4 text-[18px] text-white/85 max-w-[52ch] leading-relaxed" data-bn="পূজা, খেলা, সেবা আর সদস্যদের আড্ডা। সবাই আমন্ত্রিত। যেখানে পাস লাগে, সদস্যরা অ্যাপ থেকে নেবেন।">Pujas, sports, service days and members’ outings. Everyone is welcome; where a pass is needed, members get it from the app.</p>
+            <ul class="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-white/85">
+              <li class="flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-marigold"></i><span data-bn="ফেব্রুয়ারি পর্যন্ত ৪টি অনুষ্ঠান">4 events till February</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="ticket" class="w-4 h-4 text-marigold"></i><span data-bn="পাস সদস্য অ্যাপে">Passes in the member app</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="hand-heart" class="w-4 h-4 text-marigold"></i><span data-bn="স্বেচ্ছাসেবক চাই">Volunteers always wanted</span></li>
             </ul>
           </div>
-          <div class="lg:col-span-5 relative aspect-[4/3] rounded-2xl overflow-hidden bg-paper-2"><div class="absolute inset-0" data-photo="race"></div><span class="absolute bottom-2 right-2 text-[11.5px] text-white bg-black/50 px-1.5 rounded" data-credit="race"></span></div>
         </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="pujaCrowd"></span></p>
       </div>
 
       <div class="mx-auto max-w-[1160px] px-5 pt-12 pb-20">
@@ -389,19 +412,22 @@
 
     <!-- ================= CATERING ================= -->
     <section data-screen="catering" class="book-catering">
-      <div class="page-hero bg-turmeric-wash/60">
-        <div class="mx-auto max-w-[1160px] px-5 py-12 lg:py-16 grid lg:grid-cols-12 gap-10 items-center">
-          <div class="lg:col-span-7">
-            <p class="eyebrow text-turmeric" data-bn="ক্যাটারিং · শুধু পরিবেশন">Catering · serving only</p>
-            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.4rem,6vw,3.75rem)] text-turmeric" data-bn="মৈত্রী পরিবেশন">Maitree Serving</h1>
-            <p class="mt-4 text-[18px] text-ink-2 max-w-[54ch] leading-relaxed" data-bn="যে দল প্রতি বছর পূজায় হাজার মানুষকে ভোগ পরিবেশন করে, তারাই আপনার অনুষ্ঠানে পরিবেশন করবে। আমরা রান্না করি না: খাবার আপনার রাঁধুনি বা ক্যাটারারের, পরিবেশন আমাদের। লাভের টাকা ক্লাবের কাজে যায়।">The team that serves bhog to thousands at the pujas, serving at your occasion. We don’t cook: the food comes from your cook or caterer, and we serve it. The profit goes back into the club.</p>
+      <div class="banner">
+        <div class="banner-media" data-photo="catBuffet" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="ক্যাটারিং">Catering</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-[#f5c463]" data-bn="ক্যাটারিং · শুধু পরিবেশন">Catering · serving only</p>
+            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)] text-white" data-bn="মৈত্রী পরিবেশন">Maitree Serving</h1>
+            <p class="mt-4 text-[18px] text-white/85 max-w-[54ch] leading-relaxed" data-bn="যে দল প্রতি বছর পূজায় হাজার মানুষকে ভোগ পরিবেশন করে, তারাই আপনার অনুষ্ঠানে পরিবেশন করবে। আমরা রান্না করি না: খাবার আপনার রাঁধুনি বা ক্যাটারারের, পরিবেশন আমাদের। লাভের টাকা ক্লাবের কাজে যায়।">The team that serves bhog to thousands at the pujas, serving at your occasion. We don’t cook: the food comes from your cook or caterer, and we serve it. The profit goes back into the club.</p>
             <div class="mt-7 flex flex-wrap gap-2.5">
               <a href="#catering-quote" data-jump class="btn bg-turmeric text-white hover:bg-[#7a4f00] h-12 px-6"><span data-bn="দাম জানুন">Get a quote</span></a>
-              <a href="https://wa.me/919830012345?text=Catering%20enquiry" target="_blank" rel="noopener" class="btn btn-line h-12 px-5"><i data-lucide="message-circle"></i><span data-bn="হোয়াটসঅ্যাপ">WhatsApp us</span></a>
+              <a href="https://wa.me/919830012345?text=Catering%20enquiry" target="_blank" rel="noopener" class="btn btn-glass h-12 px-5"><i data-lucide="message-circle"></i><span data-bn="হোয়াটসঅ্যাপ">WhatsApp us</span></a>
             </div>
           </div>
-          <div class="lg:col-span-5 relative aspect-[4/3] rounded-2xl overflow-hidden bg-paper-2"><div class="absolute inset-0" data-photo="feast"></div><span class="absolute bottom-2 right-2 text-[11.5px] text-white bg-black/50 px-1.5 rounded" data-credit="feast"></span></div>
         </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="catBuffet"></span></p>
       </div>
       <div class="border-b border-rule">
         <dl class="mx-auto max-w-[1160px] px-5 grid grid-cols-2 md:grid-cols-4">
@@ -483,20 +509,23 @@
 
     <!-- ================= NURSERY ================= -->
     <section data-screen="nursery" class="book-nursery">
-      <div class="page-hero bg-tulsi-wash/70">
-        <div class="mx-auto max-w-[1160px] px-5 py-12 lg:py-16 grid lg:grid-cols-12 gap-10 items-center">
-          <div class="lg:col-span-7">
-            <p class="eyebrow text-tulsi" data-bn="নার্সারি">Plant nursery</p>
-            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.4rem,6vw,3.75rem)] text-tulsi" data-bn="মৈত্রী নার্সারি">Maitree Nursery</h1>
-            <p class="mt-4 text-[18px] text-ink-2 max-w-[54ch] leading-relaxed" data-bn="ক্লাবের গেটের পাশে ফুল, ফল আর ঘরের গাছ। বেছে নিন, হোয়াটসঅ্যাপে তালিকা পাঠান, গেট থেকে নিয়ে যান।">Flowers, fruit saplings and house plants beside the club gate. Pick them here, send the list on WhatsApp, and collect from the gate.</p>
-            <ul class="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-ink-2">
-              <li class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-tulsi"></i><span data-bn="সকাল ৭–১০ ও বিকেল ৫–৮">7–10 am &amp; 5–8 pm</span></li>
-              <li class="flex items-center gap-2"><i data-lucide="badge-percent" class="w-4 h-4 text-tulsi"></i><span data-bn="সদস্যদের ১০% ছাড়">Members 10% off</span></li>
-              <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-tulsi"></i><span data-bn="ক্লাবের গেট থেকে নিন">Collect at the club gate</span></li>
+      <div class="banner">
+        <div class="banner-media" data-photo="nurseryTable" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="নার্সারি">Nursery</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-[#a8dcb0]" data-bn="নার্সারি">Plant nursery</p>
+            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)] text-white" data-bn="মৈত্রী নার্সারি">Maitree Nursery</h1>
+            <p class="mt-4 text-[18px] text-white/85 max-w-[54ch] leading-relaxed" data-bn="ক্লাবের গেটের পাশে ফুল, ফল আর ঘরের গাছ। বেছে নিন, হোয়াটসঅ্যাপে তালিকা পাঠান, গেট থেকে নিয়ে যান।">Flowers, fruit saplings and house plants beside the club gate. Pick them here, send the list on WhatsApp, and collect from the gate.</p>
+            <ul class="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-white/85">
+              <li class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-marigold"></i><span data-bn="সকাল ৭–১০ ও বিকেল ৫–৮">7–10 am &amp; 5–8 pm</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="badge-percent" class="w-4 h-4 text-marigold"></i><span data-bn="সদস্যদের ১০% ছাড়">Members 10% off</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-marigold"></i><span data-bn="ক্লাবের গেট থেকে নিন">Collect at the club gate</span></li>
             </ul>
           </div>
-          <div class="lg:col-span-5 relative aspect-[4/3] rounded-2xl overflow-hidden bg-paper-2"><div class="absolute inset-0" data-photo="nurseryTable"></div><span class="absolute bottom-2 right-2 text-[11.5px] text-white bg-black/50 px-1.5 rounded" data-credit="nurseryTable"></span></div>
         </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="nurseryTable"></span></p>
       </div>
       <div class="mx-auto max-w-[1160px] px-5 py-10 pb-36">
         <ol class="grid sm:grid-cols-3 gap-4 mb-10">
@@ -534,18 +563,18 @@
 
     <!-- ================= COMMITTEE ================= -->
     <section data-screen="committee">
-      <div class="page-hero bg-paper-2">
-        <div class="mx-auto max-w-[1160px] px-5 py-12 lg:py-14 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          <div class="lg:col-span-7">
-          <p class="eyebrow text-sindoor" data-bn="ক্লাবের কথা">About the club</p>
-          <h1 class="mt-3 font-display text-[clamp(2.4rem,6vw,3.75rem)] leading-[1.05]" data-bn="প্রতিবেশীদের হাতে চলা ক্লাব">A club run by its neighbours</h1>
-          <p class="mt-4 text-[17px] text-ink-2 max-w-[60ch] leading-relaxed num" data-bn="নথিভুক্ত সংস্থা, রেজি. নং S-0027153 / 2022-23। কমিটি প্রতি দুই বছর এজিএম-এ সদস্যদের ভোটে নির্বাচিত, সবাই স্বেচ্ছাসেবী।">A registered society, Reg. No. S-0027153 / 2022-23. The committee is elected by members at the AGM every two years, and everyone on it is a volunteer.</p>
+      <div class="banner">
+        <div class="banner-media" data-photo="pujaMorning" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="আমাদের কথা">About</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-marigold" data-bn="ক্লাবের কথা">About the club</p>
+          <h1 class="mt-3 font-display text-[clamp(2.6rem,6.4vw,4.4rem)] leading-[1.05]" data-bn="প্রতিবেশীদের হাতে চলা ক্লাব">A club run by its neighbours</h1>
+          <p class="mt-4 text-[17px] text-white/85 max-w-[60ch] leading-relaxed num" data-bn="নথিভুক্ত সংস্থা, রেজি. নং S-0027153 / 2022-23। কমিটি প্রতি দুই বছর এজিএম-এ সদস্যদের ভোটে নির্বাচিত, সবাই স্বেচ্ছাসেবী।">A registered society, Reg. No. S-0027153 / 2022-23. The committee is elected by members at the AGM every two years, and everyone on it is a volunteer.</p>
           </div>
-          <figure class="lg:col-span-5">
-            <div class="relative aspect-[4/3] rounded-[22px] overflow-hidden bg-paper-3"><div class="absolute inset-0" data-photo="pujaMorning"></div></div>
-            <figcaption class="mt-2 text-[12.5px] text-ink-3"><span data-bn="পূজার সকাল">Puja morning</span> · <span data-credit="pujaMorning"></span></figcaption>
-          </figure>
         </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="pujaMorning"></span></p>
       </div>
       <!-- Our story: history, numbers, timeline -->
       <div class="mx-auto max-w-[1160px] px-5 pt-12 grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
@@ -616,9 +645,25 @@
     </section>
 
     <!-- ================= GALLERY ================= -->
-    <section data-screen="gallery" class="mx-auto max-w-[1160px] px-5 pt-12 pb-24">
+    <section data-screen="gallery">
+      <div class="banner">
+        <div class="banner-media" data-photo="sindoor" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="ছবির খাতা">Gallery</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-marigold" data-bn="ছবিতে পাড়া">The para in pictures</p>
+            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)]" data-bn="ছবির খাতা">Gallery</h1>
+            <p class="mt-4 text-[18px] text-white/85 max-w-[54ch] leading-relaxed" data-bn="প্রতিটি পূজা, খেলা ও শিবির, তারিখ ধরে রাখা। অ্যালবাম খুললে সব ছবি ও ভিডিও।">Every puja, match and camp, kept by date. Open an album to see all its photos and videos.</p>
+            <div class="mt-7"><a href="https://wa.me/919830012345?text=I%20have%20photos%20or%20videos%20for%20the%20club%20gallery" target="_blank" rel="noopener" class="btn btn-glass h-12 px-5"><i data-lucide="image-plus"></i><span data-bn="ছবি বা ভিডিও পাঠান">Send photos or videos</span></a></div>
+          </div>
+        </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="sindoor"></span></p>
+      </div>
+      <div class="mx-auto max-w-[1160px] px-5 pt-10 pb-24">
       <div id="gallery-root"></div>
       <p class="mt-16 pt-6 border-t border-rule text-sm text-ink-3"><span data-bn="ছবিতে আপনি আছেন আর সরাতে চান? ক্লাবকে জানান, সরিয়ে দেব।">In a photo and want it removed? Tell the club and we’ll take it down.</span></p>
+      </div>
     </section>
 
     <!-- ================= PRIVACY ================= -->
@@ -645,12 +690,23 @@
     </section>
 
     <!-- ================= JOIN ================= -->
-    <section data-screen="join" class="mx-auto max-w-[1160px] px-5 pt-10 pb-20 grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+    <section data-screen="join">
+      <div class="banner">
+        <div class="banner-media" data-photo="runners" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="সদস্য হোন">Become a member</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-marigold" data-bn="সদস্যপদ">Membership</p>
+            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)]" data-bn="সদস্য হোন">Become a member</h1>
+            <p class="mt-4 text-[18px] text-white/85 max-w-[54ch] leading-relaxed" data-bn="তিন ধাপের ফর্ম, পাঁচ মিনিট। একই বাড়ির লোকেরা একই ফর্মে যোগ দিতে পারেন।">A three-step form that takes five minutes. People in the same household can join on the same form.</p>
+          </div>
+        </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="runners"></span></p>
+      </div>
+      <div class="mx-auto max-w-[1160px] px-5 pt-10 pb-20 grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
       <div class="lg:col-span-5 lg:sticky lg:top-24">
-        <p class="eyebrow text-sindoor" data-bn="সদস্যপদ">Membership</p>
-        <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.2rem,5.5vw,3.4rem)]" data-bn="সদস্য হোন">Become a member</h1>
-        <p class="mt-3 text-[16px] text-ink-2 max-w-[44ch]" data-bn="তিন ধাপের ফর্ম, পাঁচ মিনিট। একই বাড়ির লোকেরা একই ফর্মে যোগ দিতে পারেন।">A three-step form that takes five minutes. People in the same household can join on the same form.</p>
-        <div class="mt-5 flex flex-wrap gap-2 text-[14px]">
+        <div class="flex flex-wrap gap-2 text-[14px]">
           <span class="chip h-8 px-3 bg-paper-2 text-ink"><span class="num">₹100</span>&nbsp;<span data-bn="/ মাস">/ month</span></span>
           <span class="chip h-8 px-3 bg-paper-2 text-ink"><span class="num">₹1,100</span>&nbsp;<span data-bn="/ বছর">/ year</span></span>
           <span class="chip h-8 px-3 bg-paper-2 text-ink"><span data-bn="ভর্তি">Admission</span>&nbsp;<span class="num">₹500</span></span>
@@ -757,20 +813,24 @@
         <p><span data-bn="আগে থেকেই সদস্য?">Already a member?</span> <a href="login.html" class="font-semibold text-sindoor hover:underline" data-bn="অ্যাপে লগইন করুন">Sign in to the app</a></p>
         <p><span data-bn="প্রশ্ন আছে?">Questions?</span> <a href="tel:+919830012345" class="font-semibold text-sindoor hover:underline num">+91 98300 12345</a></p>
       </div>
+      </div>
     </section>
     <!-- ================= NOTICES ================= -->
     <section data-screen="notices">
-      <div class="page-hero bg-paper-2">
-        <div class="mx-auto max-w-[1160px] px-5 py-12 lg:py-16 grid lg:grid-cols-12 gap-8 lg:items-end">
-          <div class="lg:col-span-8">
-            <p class="eyebrow text-sindoor" data-bn="ক্লাবের খবর">Club news</p>
-            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.4rem,6vw,3.75rem)] text-sindoor" data-bn="নোটিস বোর্ড">Notice board</h1>
-            <p class="mt-4 text-[18px] text-ink-2 max-w-[56ch] leading-relaxed" data-bn="সভা, অনুষ্ঠান, হিসাব আর হারানো-পাওয়া। ক্লাবের গেটের বোর্ডে যে নোটিস থাকে, এখানেও তাই।">Meetings, events, accounts, lost and found. The same notices that go up on the board at the club gate.</p>
-          </div>
-          <div class="lg:col-span-4 lg:justify-self-end">
-            <button type="button" data-focus-wa class="btn btn-line h-12 px-5"><i data-lucide="message-circle"></i><span data-bn="হোয়াটসঅ্যাপে নোটিস পান">Get notices on WhatsApp</span></button>
+      <div class="banner">
+        <div class="banner-media" data-photo="garlands" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="নোটিস বোর্ড">Notice board</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-marigold" data-bn="ক্লাবের খবর">Club news</p>
+            <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)] text-white" data-bn="নোটিস বোর্ড">Notice board</h1>
+            <p class="mt-4 text-[18px] text-white/85 max-w-[56ch] leading-relaxed" data-bn="সভা, অনুষ্ঠান, হিসাব আর হারানো-পাওয়া। ক্লাবের গেটের বোর্ডে যে নোটিস থাকে, এখানেও তাই।">Meetings, events, accounts, lost and found. The same notices that go up on the board at the club gate.</p>
+          
+            <div class="mt-7"><button type="button" data-focus-wa class="btn btn-glass h-12 px-5"><i data-lucide="message-circle"></i><span data-bn="হোয়াটসঅ্যাপে নোটিস পান">Get notices on WhatsApp</span></button></div>
           </div>
         </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="garlands"></span></p>
       </div>
       <div class="mx-auto max-w-[1160px] px-5 pt-10 pb-20">
         <div class="flex flex-wrap gap-2" role="group" aria-label="Filter notices" id="notice-filters"></div>
@@ -792,12 +852,18 @@
 
     <!-- ================= CHANDA & ACCOUNTS ================= -->
     <section data-screen="chanda">
-      <div class="page-hero bg-sindoor-wash/50">
-        <div class="mx-auto max-w-[1160px] px-5 py-12 lg:py-16">
-          <p class="eyebrow text-sindoor" data-bn="পূজার চাঁদা · খোলা খাতা">Puja chanda · open books</p>
-          <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.4rem,6vw,3.75rem)] text-sindoor" data-bn="চাঁদা ও হিসাব">Chanda &amp; accounts</h1>
-          <p class="mt-4 text-[18px] text-ink-2 max-w-[60ch] leading-relaxed" data-bn="ক্লাব চলে চাঁদা আর সদস্যদের মাসিক চাঁদায়। এখানে দেখুন এখন কী তোলা হচ্ছে, গত পূজার টাকা কোথায় গেল, আর তার পেছনের কাগজপত্র।">The club runs on puja chanda and members’ subscriptions. Here is what we are raising now, where last year’s money went, and the papers behind it.</p>
+      <div class="banner">
+        <div class="banner-media" data-photo="diyaTray" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="চাঁদা ও হিসাব">Chanda &amp; accounts</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-marigold" data-bn="পূজার চাঁদা · খোলা খাতা">Puja chanda · open books</p>
+          <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)] text-white" data-bn="চাঁদা ও হিসাব">Chanda &amp; accounts</h1>
+          <p class="mt-4 text-[18px] text-white/85 max-w-[60ch] leading-relaxed" data-bn="ক্লাব চলে চাঁদা আর সদস্যদের মাসিক চাঁদায়। এখানে দেখুন এখন কী তোলা হচ্ছে, গত পূজার টাকা কোথায় গেল, আর তার পেছনের কাগজপত্র।">The club runs on puja chanda and members’ subscriptions. Here is what we are raising now, where last year’s money went, and the papers behind it.</p>
+          </div>
         </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="diyaTray"></span></p>
       </div>
 
       <div class="mx-auto max-w-[1160px] px-5 pt-12 pb-20">
@@ -927,12 +993,18 @@
 
     <!-- ================= CONTACT ================= -->
     <section data-screen="contact">
-      <div class="page-hero bg-paper-2">
-        <div class="mx-auto max-w-[1160px] px-5 py-12 lg:py-16">
-          <p class="eyebrow text-sindoor" data-bn="যোগাযোগ ও পথ">Contact &amp; directions</p>
-          <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.4rem,6vw,3.75rem)] text-sindoor" data-bn="ক্লাবে আসুন">Come to the club</h1>
-          <p class="mt-4 text-[18px] text-ink-2 max-w-[56ch] leading-relaxed" data-bn="যেকোনো সন্ধ্যায় ক্লাব ঘরে চলে আসুন, ফোন করুন, বা নিচে লিখুন। ঠিক মানুষের কাছে পৌঁছে দেব।">Drop into the club room any evening, call, or write below. We pass it to the right person.</p>
+      <div class="banner">
+        <div class="banner-media" data-photo="diyas" aria-hidden="true"></div>
+        <div class="banner-shade"></div>
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-16 pb-14 sm:pt-24 sm:pb-20 min-h-[360px] sm:min-h-[440px] flex flex-col justify-end">
+          <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="যোগাযোগ">Contact</span></nav>
+          <div class="max-w-[680px]">
+            <p class="eyebrow text-marigold" data-bn="যোগাযোগ ও পথ">Contact &amp; directions</p>
+          <h1 class="mt-3 font-display leading-[1.05] text-[clamp(2.6rem,6.4vw,4.4rem)] text-white" data-bn="ক্লাবে আসুন">Come to the club</h1>
+          <p class="mt-4 text-[18px] text-white/85 max-w-[56ch] leading-relaxed" data-bn="যেকোনো সন্ধ্যায় ক্লাব ঘরে চলে আসুন, ফোন করুন, বা নিচে লিখুন। ঠিক মানুষের কাছে পৌঁছে দেব।">Drop into the club room any evening, call, or write below. We pass it to the right person.</p>
+          </div>
         </div>
+        <p class="banner-credit"><span data-bn="ছবি">Photo</span>: <span data-credit="diyas"></span></p>
       </div>
       <div class="mx-auto max-w-[1160px] px-5 pt-12 pb-20">
         <div class="grid lg:grid-cols-12 gap-10 items-start">
@@ -1030,28 +1102,55 @@
 
   <!-- Footer -->
   <footer class="site-footer bg-ink text-white/75 text-[15px]">
-    <div class="mx-auto max-w-[1160px] px-5">
-      <!-- WhatsApp sign-up strip -->
-      <div class="py-10 border-b border-white/10 grid lg:grid-cols-12 gap-6 lg:items-center">
-        <div class="lg:col-span-6">
-          <h2 class="flex items-center gap-2.5 text-[20px] font-semibold text-white"><i data-lucide="message-circle" class="size-5 text-marigold"></i><span data-bn="ক্লাবের খবর হোয়াটসঅ্যাপে">Club news on WhatsApp</span></h2>
-          <p class="mt-1.5 text-white/65" data-bn="পূজা, খেলা আর সভার নোটিস। মাসে দু-তিনটে বার্তা, তার বেশি নয়। যেকোনো সময় STOP লিখে বন্ধ করুন।">Puja, sports and meeting notices. Two or three messages a month, never more. Reply STOP any time.</p>
+    <!-- Newsletter: club news on WhatsApp or email -->
+  <div class="news-band relative overflow-hidden">
+    <div class="relative z-[1] mx-auto max-w-[1160px] px-5 py-12 sm:py-14 lg:py-16 grid lg:grid-cols-12 gap-8 lg:gap-14 lg:items-center">
+        <div class="lg:col-span-6 relative">
+          <p class="flex items-center gap-2 text-[12.5px] leading-none font-semibold uppercase tracking-[0.14em] text-marigold"><span class="w-1.5 h-1.5 rounded-full bg-marigold"></span><span data-bn="ক্লাবের চিঠি">The club letter</span></p>
+          <h2 class="mt-3 font-display text-white leading-[1.08] text-[clamp(1.9rem,4.2vw,2.75rem)]" data-bn="কোনো পূজা, খেলা বা সভা আর বাদ যাবে না">Never miss a puja, a match or a meeting</h2>
+          <p class="mt-3 text-white/70 max-w-[46ch]" data-bn="মাসে দু-তিনটে ছোট বার্তা: তারিখ, সময় আর কী আনতে হবে। বিজ্ঞাপন নেই, নম্বর কাউকে দেওয়া হয় না।">Two or three short notes a month: the date, the time and what to bring. No ads, and your number is never shared.</p>
+          <ul class="mt-5 flex flex-wrap gap-2 text-[13.5px]">
+            <li class="news-chip"><i data-lucide="flame" class="w-4 h-4 text-marigold"></i><span data-bn="পূজার তারিখ">Puja dates</span></li>
+            <li class="news-chip"><i data-lucide="trophy" class="w-4 h-4 text-marigold"></i><span data-bn="খেলা ও প্রতিযোগিতা">Sports and contests</span></li>
+            <li class="news-chip"><i data-lucide="users" class="w-4 h-4 text-marigold"></i><span data-bn="সভার নোটিস">Meeting notices</span></li>
+          </ul>
         </div>
-        <form class="lg:col-span-6" id="wa-form" novalidate>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <label class="sr-only" for="wa-phone" data-bn="মোবাইল নম্বর">Mobile number</label>
-            <input id="wa-phone" name="phone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="98300 00000" data-phone class="field-dark flex-1 h-11 px-4 bg-white/5 border border-white/15 text-white num rounded-md placeholder:text-white/40 focus:outline-none focus:border-marigold focus:ring-2 focus:ring-marigold/40" />
-            <button class="btn btn-primary h-11 px-5"><span data-bn="যোগ দিন">Subscribe</span></button>
+
+        <form class="lg:col-span-5 lg:col-start-8 relative" id="wa-form" novalidate>
+          <p class="text-[13.5px] font-semibold text-white/85" id="news-via-label" data-bn="কোথায় খবর পাবেন">Where should we send it?</p>
+          <div class="mt-2.5 grid grid-cols-2 gap-1 p-1 rounded-full bg-white/[.08] border border-white/10 text-[14px]" role="radiogroup" aria-labelledby="news-via-label">
+            <button type="button" role="radio" aria-checked="true" data-news-via="wa" class="news-tab"><i data-lucide="message-circle" class="w-4 h-4"></i><span data-bn="হোয়াটসঅ্যাপ">WhatsApp</span></button>
+            <button type="button" role="radio" aria-checked="false" data-news-via="email" tabindex="-1" class="news-tab"><i data-lucide="mail" class="w-4 h-4"></i><span data-bn="ইমেল">Email</span></button>
           </div>
+          <label class="sr-only" for="wa-phone" id="news-label" data-bn="মোবাইল নম্বর">Mobile number</label>
+          <div class="news-field mt-3 sm:flex sm:items-center sm:rounded-full sm:bg-white sm:p-1.5 sm:focus-within:ring-4 sm:focus-within:ring-marigold/40" data-err-anchor>
+            <div class="news-input flex-1 min-w-0 flex items-center rounded-full bg-white text-ink focus-within:ring-4 focus-within:ring-marigold/40 sm:focus-within:ring-0">
+              <span class="pl-5 pr-2 text-ink-3 font-semibold num shrink-0" id="news-prefix" aria-hidden="true">+91</span>
+              <input id="wa-phone" name="contact" type="tel" inputmode="tel" required autocomplete="tel" placeholder="98300 00000" data-phone class="w-full min-w-0 h-12 pr-4 bg-transparent text-ink num rounded-full placeholder:text-ink-3/70 focus:outline-none" />
+            </div>
+            <button class="btn btn-primary h-12 px-6 rounded-full shrink-0 w-full sm:w-auto mt-2 sm:mt-0"><span data-bn="যোগ দিন">Subscribe</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+          </div>
+          <p class="mt-3 flex items-center gap-2 text-[12.5px] text-white/55 sm:pl-5"><i data-lucide="shield-check" class="w-4 h-4 shrink-0"></i><span id="news-note" data-bn="যেকোনো সময় STOP লিখে বন্ধ করুন।">Reply STOP any time to leave.</span></p>
         </form>
       </div>
+    </div>
 
+    <div class="mx-auto max-w-[1160px] px-5">
       <!-- Link columns -->
       <div class="py-12 grid grid-cols-2 md:grid-cols-12 gap-x-6 gap-y-10">
         <div class="col-span-2 md:col-span-4">
           <a href="#home" class="inline-flex items-center gap-3 text-white"><span id="foot-seal"></span><span><span class="block font-display text-[22px] leading-none" data-bn="গেদে মৈত্রী ক্লাব">Gede Maitree Club</span><span class="block mt-1 text-[12px] uppercase tracking-[0.12em] text-white/55" data-bn="নেতাজি পাড়া · ২০১৪ থেকে">Netaji Para · since 2014</span></span></a>
           <p class="mt-5 max-w-[36ch] text-white/65" data-bn="প্রতিবেশীদের দ্বারা, প্রতিবেশীদের জন্য। পূজা, খেলা, পরিবেশনের দল আর পাড়ার নার্সারি।">Run by neighbours, for neighbours. Pujas, sports, a serving team and the para’s own nursery.</p>
-          <div class="mt-5 flex items-center rounded-md border border-white/15 p-0.5 text-[13px] w-max" role="group" aria-label="Language">
+
+          <!-- Social: placeholder handles, replace with the club's real pages before launch -->
+          <p class="mt-6 text-[13px] font-semibold uppercase tracking-[0.1em] text-white" data-bn="ক্লাবকে অনুসরণ করুন">Follow the club</p>
+          <ul class="mt-3 flex flex-wrap gap-2.5">
+            <li><a href="https://www.facebook.com/gedemaitreeclub" target="_blank" rel="noopener" class="social-btn social-facebook" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" class="w-[18px] h-[18px]" aria-hidden="true"><path fill="currentColor" d="M9.1 23.7v-8H6.6V12h2.5v-1.6c0-4.1 1.8-6 5.9-6 .4 0 1 0 1.5.1l1.1.2V8l-.6-.1h-.8c-.7 0-1.2.1-1.6.3-.3.2-.5.4-.7.6-.3.4-.4 1-.4 1.8V12h3.9l-.4 2.1-.3 1.6h-3.2V24c5.9-.8 10.5-5.8 10.5-12C24 5.4 18.6 0 12 0S0 5.4 0 12c0 5.6 3.9 10.4 9.1 11.7Z"/></svg></a></li>
+            <li><a href="https://www.instagram.com/gedemaitreeclub" target="_blank" rel="noopener" class="social-btn social-instagram" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" class="w-[18px] h-[18px]" aria-hidden="true"><rect x="2.75" y="2.75" width="18.5" height="18.5" rx="5.25" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.4" cy="6.6" r="1.25" fill="currentColor"/></svg></a></li>
+            <li><a href="https://www.youtube.com/@gedemaitreeclub" target="_blank" rel="noopener" class="social-btn social-youtube" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" class="w-[18px] h-[18px]" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2C.5 9 .5 12 .5 12s0 3 .5 4.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1c.5-1.8.5-4.8.5-4.8s0-3-.5-4.8ZM9.7 15.4V8.6l5.9 3.4-5.9 3.4Z"/></svg></a></li>
+            <li><a href="https://wa.me/919830012345" target="_blank" rel="noopener" class="social-btn social-whatsapp" aria-label="WhatsApp" title="WhatsApp"><svg viewBox="0 0 24 24" class="w-[18px] h-[18px]" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="M12 2.6a9.4 9.4 0 0 0-8.1 14.2L2.6 21.4l4.7-1.2A9.4 9.4 0 1 0 12 2.6Z"/><path fill="currentColor" d="M8.9 7.6c.3-.3.8-.3 1 .1l.9 1.8c.1.3.1.6-.2.8l-.6.6c.6 1.2 1.5 2.1 2.7 2.7l.6-.6c.2-.2.5-.3.8-.2l1.8.9c.4.2.4.7.1 1-.7.8-1.7 1.1-2.6.8a8 8 0 0 1-5.3-5.3c-.3-.9 0-1.9.8-2.6Z"/></svg></a></li>
+          </ul>
+          <div class="mt-6 flex items-center rounded-md border border-white/15 p-0.5 text-[13px] w-max" role="group" aria-label="Language">
             <button type="button" data-site-lang="en" lang="en" class="px-3 h-8 rounded font-semibold text-white/70 aria-pressed:bg-white aria-pressed:text-ink">English</button>
             <button type="button" data-site-lang="bn" lang="bn" class="px-3 h-8 rounded font-semibold text-white/70 aria-pressed:bg-white aria-pressed:text-ink">বাংলা</button>
           </div>
