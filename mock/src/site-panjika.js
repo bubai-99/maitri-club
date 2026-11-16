@@ -233,11 +233,11 @@ export function renderPanjika(param) {
 }
 
 /* ---------- Home: today's tithi strip ---------- */
-export function renderTodayStrip(sel0 = '#home-tithi') {
-  const el = $(sel0);
+export function renderTodayStrip(sel0 = '#home-tithi', { href = '#panjika', live = true, day } = {}) {
+  const el = typeof sel0 === 'string' ? $(sel0) : sel0;
   if (!el) return;
   const draw0 = () => {
-    const k = todayKey();
+    const k = day || todayKey();
     const p = panjikaDay(k);
     const next = panjikaDates.filter((x) => x.kind !== 'wedding' && x.date >= k)[0];
     const ticks = Array.from({ length: 27 }, (_, i) => {
@@ -245,7 +245,7 @@ export function renderTodayStrip(sel0 = '#home-tithi') {
       return `<line x1="${(50 + r1 * Math.cos(ang)).toFixed(2)}" y1="${(50 + r1 * Math.sin(ang)).toFixed(2)}" x2="${(50 + r2 * Math.cos(ang)).toFixed(2)}" y2="${(50 + r2 * Math.sin(ang)).toFixed(2)}"/>`;
     }).join('');
     const nk = NAKSHATRA[p.nakshatra.i];
-    el.innerHTML = `<a href="#panjika" class="pj-cosmos group">
+    el.innerHTML = `<a href="${href}" class="pj-cosmos group">
       <span class="pj-sky" aria-hidden="true"><span class="pj-nebula"></span><span class="pj-stars pj-s1"></span><span class="pj-stars pj-s2"></span><span class="pj-shoot"></span></span>
       <span class="pj-orbit" aria-hidden="true">
         <svg viewBox="0 0 100 100" class="pj-ring"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,.22)" stroke-width=".6"/><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,226,168,.3)" stroke-width=".5" stroke-dasharray="1.5 2.5"/><g stroke="rgba(255,255,255,.45)" stroke-width=".7" stroke-linecap="round">${ticks}</g><circle cx="96" cy="50" r="1.8" fill="#ffd27a"/></svg>
@@ -266,5 +266,5 @@ export function renderTodayStrip(sel0 = '#home-tithi') {
     refreshIcons();
   };
   draw0();
-  document.addEventListener('langchange', draw0);
+  if (live) document.addEventListener('langchange', draw0);
 }

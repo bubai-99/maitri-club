@@ -1,4 +1,4 @@
-import { boot, t, seal, router, applyLang, refreshIcons, toast, lang } from './shared.js';
+import { boot, t, seal, router, applyLang, refreshIcons, toast, lang, demo } from './shared.js';
 import { photo } from './photos.js';
 document.querySelectorAll('[data-auth-photo]').forEach((el) => { el.innerHTML = photo(el.dataset.authPhoto, { cls: 'w-full h-full object-cover', sizes: '45vw' }); });
 
@@ -142,10 +142,11 @@ S.done = () => `
   </div>`;
 
 /* Member: activate an existing family's account */
-S.activate = () => `
+S.activate = () => { const ok = demo.get().approved; return `
   ${back('#login')}
   ${head('Activate your account', 'অ্যাকাউন্ট চালু করুন', 'Your family is already on the club register. Link your phone to it once.', 'আপনার পরিবার ক্লাবের খাতায় আছে। একবার ফোন নম্বরটা যুক্ত করুন।')}
-  <form class="mt-8 space-y-5" id="f" novalidate>
+  ${ok ? `<div class="mt-6 rounded-lg bg-tulsi-wash/60 border border-tulsi/40 p-4 flex items-start gap-3"><i data-lucide="party-popper" class="w-5 h-5 text-tulsi shrink-0 mt-0.5"></i><p class="text-[15px]">${t(`Welcome to the club, ${ok.head}. The committee approved your family as <strong class="num">${ok.no}</strong>.`, `ক্লাবে স্বাগত, ${ok.head}। কমিটি আপনার পরিবারকে <strong class="num">${ok.no}</strong> নম্বরে অনুমোদন করেছে।`)}</p></div>` : ''}
+  <form class="mt-8 space-y-5" id="f" novalidate data-prefill="${ok ? `${ok.no}|${ok.phone}` : ''}">
     <div>
       <label class="block" for="famno"><span class="label">${t('Family number', 'পরিবার নম্বর')}</span></label>
       <input id="famno" class="field num uppercase" placeholder="MC-0104" autocomplete="off" aria-describedby="famno-hint famno-err" />
@@ -154,20 +155,21 @@ S.activate = () => `
     </div>
     <div>${phoneField('phone', ['Mobile number on the register', 'খাতায় থাকা মোবাইল নম্বর'])}</div>
     ${primary('Send code', 'কোড পাঠান')}
-  </form>`;
+  </form>`; };
 
-S.setpass = () => `
+S.setpass = () => { const ok = demo.get().approved; return `
   ${head('Set a password', 'পাসওয়ার্ড দিন', 'Optional. You can always sign in with a code instead.', 'ইচ্ছে হলে। চাইলে সবসময় কোড দিয়েও লগইন করা যায়।')}
   <div class="mt-6 rounded-lg border-2 border-ink p-4 flex items-center gap-3">
-    <span class="w-10 h-10 rounded-full bg-ink text-white grid place-items-center font-display">${t('A', 'অ')}</span>
-    <div><p class="font-semibold">${t('Ananya Mukherjee', 'অনন্যা মুখার্জি')}</p><p class="text-sm text-ink-2 num">MC-0104 · ${t('Lane 2 · 3 people', '২ নং গলি · ৩ জন')}</p></div>
+    ${ok ? `<span class="w-10 h-10 rounded-full bg-ink text-white grid place-items-center font-display">${ok.head.charAt(0)}</span>
+    <div><p class="font-semibold">${ok.head}</p><p class="text-sm text-ink-2 num">${ok.no} · ${t(`${ok.lane} · ${ok.people} ${ok.people === 1 ? 'person' : 'people'}`, `${ok.lane} · ${ok.people} জন`)}</p></div>` : `<span class="w-10 h-10 rounded-full bg-ink text-white grid place-items-center font-display">${t('A', 'অ')}</span>
+    <div><p class="font-semibold">${t('Ananya Mukherjee', 'অনন্যা মুখার্জি')}</p><p class="text-sm text-ink-2 num">MC-0104 · ${t('Lane 2 · 3 people', '২ নং গলি · ৩ জন')}</p></div>`}
     <i data-lucide="badge-check" class="ml-auto w-6 h-6"></i>
   </div>
   <form class="mt-6 space-y-5" id="f" novalidate>
     <div>${passField('pass', ['Password', 'পাসওয়ার্ড'], { autocomplete: 'new-password', meter: true })}</div>
     ${primary('Save and open the app', 'সেভ করে অ্যাপ খুলুন')}
   </form>
-  <a href="app.html" class="btn btn-ghost w-full mt-2">${t('Skip, I’ll use codes', 'বাদ দিন, কোড ব্যবহার করব')}</a>`;
+  <a href="app.html" class="btn btn-ghost w-full mt-2">${t('Skip, I’ll use codes', 'বাদ দিন, কোড ব্যবহার করব')}</a>`; };
 
 /* Member: apply to join (3 steps) */
 const stepper = (n) => `
@@ -404,6 +406,9 @@ function render(name) {
   host.dataset.view = name;
   host.innerHTML = `<div class="rise">${S[name]()}</div>`;
   applyLang(host); refreshIcons(); wire(name);
+  // Prototype: a family the committee just approved (see shared.js demo) is filled in
+  const pre = host.querySelector('[data-prefill]')?.dataset.prefill;
+  if (pre) { const [no, ph] = pre.split('|'); host.querySelector('#famno').value = no; if (ph) host.querySelector('#phone').value = ph.replace(/(\d{5})(\d{5})/, '$1 $2'); }
   const first = host.querySelector('input:not([type=checkbox]):not([type=radio]), select');
   if (first && name !== 'otp' && matchMedia('(min-width: 640px)').matches) first.focus();
 }

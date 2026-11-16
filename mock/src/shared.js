@@ -8,6 +8,16 @@ export let lang = (() => {
   try { return localStorage.getItem(LS_KEY) || 'en'; } catch { return 'en'; }
 })();
 
+/**
+ * Prototype only: carries one application from the website Join form to the console and the
+ * member login, so the whole journey can be clicked through. Lives in this browser only.
+ */
+const DEMO_KEY = 'maitri-demo-flow';
+export const demo = {
+  get() { try { return JSON.parse(localStorage.getItem(DEMO_KEY)) || {}; } catch { return {}; } },
+  set(patch) { try { localStorage.setItem(DEMO_KEY, JSON.stringify({ ...demo.get(), ...patch })); } catch { /* storage blocked */ } },
+};
+
 /** Bilingual inline text. English is the source; Bengali swaps in. */
 export const t = (en, bn) => `<span data-bn="${bn.replace(/"/g, '&quot;')}">${en}</span>`;
 

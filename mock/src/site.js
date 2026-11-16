@@ -1,4 +1,4 @@
-import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang } from './shared.js';
+import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang, demo } from './shared.js';
 import { PHOTOS, ALBUMS, GALLERY, photo, credit } from './photos.js';
 import { serversFor, memberRate, events, pastEvents, cateringPackages, plants, plantCats, committee, club } from './data.js';
 import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, pujaSpend } from './site-data.js';
@@ -123,11 +123,15 @@ document.getElementById('hero-credit').innerHTML = `${t('Video', 'ভিডি�
 {
   const v = document.getElementById('hero-video');
   const btn = document.getElementById('hero-play');
-  // Still image for reduced motion, data saver and phones (the video is 12 MB); the play button still loads it
+  // Smallest file that looks sharp under the dark shade: 2.6 MB on phones, 7.3 MB on most screens, 12 MB only on very wide ones
+  const size = matchMedia('(max-width: 767px)').matches ? 'sd_640_360_30fps' : matchMedia('(min-width: 1600px)').matches ? 'hd_1280_720_30fps' : 'sd_960_540_30fps';
+  // Still image for reduced motion, data saver and phones; the play button still loads the video
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData || matchMedia('(max-width: 767px)').matches;
+  v.preload = calm ? 'none' : 'metadata';
+  v.src = `https://videos.pexels.com/video-files/5697994/5697994-${size}.mp4`;
   const show = (on) => { btn.innerHTML = `<i data-lucide="${on ? 'pause' : 'play'}" class="w-4 h-4"></i>`; btn.setAttribute('aria-label', on ? (lang === 'bn' ? 'ভিডিও থামান' : 'Pause the video') : (lang === 'bn' ? 'ভিডিও চালান' : 'Play the video')); refreshIcons(); };
   const play = () => v.play().then(() => show(true)).catch(() => show(false));
-  if (calm) { v.preload = 'none'; show(false); } else play();
+  if (calm) show(false); else play();
   btn.addEventListener('click', () => { if (v.paused) play(); else { v.pause(); show(false); } });
   // Pause when the home page is not showing or the tab is hidden
   const sync = () => { const onHome = document.querySelector('[data-screen="home"]').classList.contains('is-active'); if (!onHome || document.hidden) v.pause(); else if (!calm && btn.getAttribute('aria-label')?.match(/Pause|থামান/)) v.play().catch(() => {}); };
@@ -773,6 +777,16 @@ joinForm.addEventListener('submit', (e) => {
   if (joinStep < 3) { $('#join-next').click(); return; }
   if (!validate(stepEl(3))) return;
   const fam = [...$('#dependents').querySelectorAll('input')].filter((i) => i.value.trim()).length;
+  const s1 = stepEl(1), s2 = stepEl(2);
+  demo.set({
+    app: {
+      id: 'AP-26-020', head: s1.querySelector('#join-name').value.trim(), phone: s1.querySelector('input[type=tel]').value.replace(/\D/g, '').slice(-10),
+      lane: s2.querySelector('select').value, address: s2.querySelector('textarea').value.trim(),
+      people: [...$('#dependents').querySelectorAll('input')].map((i) => i.value.trim()).filter(Boolean),
+      plan: stepEl(3).querySelectorAll('input[name=plan]')[1].checked ? 'yearly' : 'monthly',
+    },
+    approved: null,
+  });
   confirmPanel(e.currentTarget, 'Application received', 'আবেদন পেয়েছি', [
     [fam ? `Your form covers you and ${fam} family member${fam === 1 ? '' : 's'}. Each of you gets an ID card.` : 'Your form is with the committee.', fam ? `আপনার ফর্মে আপনি ও পরিবারের ${bnNum(fam)} জন। প্রত্যেকে আইডি কার্ড পাবেন।` : 'আপনার ফর্ম কমিটির কাছে।'],
     ['Bring your Aadhaar card to the club room once. The committee approves forms at the next meeting, Sunday 16 Nov, and sends you an SMS.', 'আধার কার্ড একবার ক্লাব ঘরে দেখিয়ে যাবেন। পরের সভায় (রবি ১৬ নভে) অনুমোদন হবে, এসএমএস পাবেন।'],

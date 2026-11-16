@@ -1,6 +1,7 @@
 import { boot, t, inr, dn, seal, qr, router, applyLang, refreshIcons, toast, lang, setLang } from './shared.js';
 import { cardFront, cardBack, fillQrs, printCards, downloadCard } from './idcard.js';
 import { events, notices, club } from './data.js';
+import { renderTodayStrip } from './site-panjika.js';
 import { profile, household, store, receipts, receiptKinds, bookOf, alerts, fee, TODAY, agm } from './member-data.js';
 import {
   $, $$, L, paint, fdate, fmonth, monthPlain, dayMon, addMonths, bnD, pageHead, sectionTitle, empty, skeleton, segmented, chips,
@@ -167,6 +168,8 @@ function renderHome() {
       <div class="lg:col-span-2 space-y-4 lg:space-y-6 min-w-0">
         ${duesCard()}
 
+        <div id="app-tithi"></div>
+
         ${!store.installDismissed && !standalone ? `
         <div class="rounded-lg border border-rule bg-card p-4 flex items-center gap-3" id="install-card">
           <span class="w-11 h-11 rounded-lg bg-paper-2 grid place-items-center shrink-0">${seal({ size: 34, rotate: -6 })}</span>
@@ -235,6 +238,8 @@ function renderHome() {
         </a>
       </div>
     </div>`);
+  // Today's panjika: same box as the website home; opens the full panjika on the website
+  renderTodayStrip('#app-tithi', { href: 'index.html#panjika', live: false, day: TODAY });
   $('[data-install-dismiss]')?.addEventListener('click', () => { store.installDismissed = true; $('#install-card').remove(); ok('Okay. You can install it any time from Settings.', 'ঠিক আছে। সেটিংস থেকে যেকোনো সময় ইনস্টল করা যাবে।', 'info'); });
 }
 

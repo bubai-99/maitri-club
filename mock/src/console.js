@@ -1,9 +1,10 @@
-import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang } from './shared.js';
+import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang, demo } from './shared.js';
 import { PHOTOS, ALBUMS, GALLERY, photo } from './photos.js';
 import { peopleOf, cardFront, cardBack, fillQrs, printCards, downloadCard } from './idcard.js';
+import { panjikaDates, duties, rolePerms } from './data.js';
 import { bnText, families, ledger, books, chanda, cateringOrders, cateringStatus, cateringPackages, plants, memberDiscount, notices, events, club, serversFor, memberRate, auditLog } from './data.js';
 import { panjikaScreen } from './console-panjika.js';
-import { initAdmin, logAudit, addReceipt, canSee, lockedScreen, wireNotice, audienceRadios, searchPages } from './console-admin.js';
+import { initAdmin, logAudit, addReceipt, canSee, viewAs, lockedScreen, wireNotice, audienceRadios, searchPages } from './console-admin.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -99,12 +100,19 @@ function dashboard() {
   const totalOut = Object.values(books).reduce((a, b) => a + b.expense, 0);
   const collected = chanda.areas.reduce((a, b) => a + b.got, 0) + 13000;
   const dueFams = families.filter((f) => f.dueMonths >= 3);
+  const bnD = (x) => String(x).replace(/[0-9]/g, (d) => '০১২৩৪৫৬৭৮৯'[d]);
+  // The prototype's "today" is Sunday 15 November 2026
+  const TODAY = Date.UTC(2026, 10, 15);
+  const soon = panjikaDates.filter((p) => p.kind === 'puja').map((p) => ({ ...p, days: Math.round((Date.parse(p.date) - TODAY) / 86400000) })).find((p) => p.days >= 0 && p.days <= 10);
+  const gaps = (duties.blood || []).reduce((a, d) => a + Math.max(0, d.need - d.who.length), 0);
+  const role = viewAs && rolePerms.roles.find((r) => r.id === viewAs);
+  const hello = role ? t(`Good evening, ${role.people}. Here is what is waiting for you.`, `শুভ সন্ধ্যা, ${role.peopleBn}। আপনার জন্য যা অপেক্ষা করছে।`) : t('Good evening, Tapas-da. Here is where the books stand.', 'শুভ সন্ধ্যা, তাপস-দা। খাতার হাল এই রকম।');
   paint(screen('dashboard'), `
-    ${pageHead('Sunday, 15 November', 'রবিবার, ১৫ নভেম্বর', t('Good evening, Tapas-da. Here is where the books stand.', 'শুভ সন্ধ্যা, তাপস-দা। খাতার হাল এই রকম।'))}
+    ${pageHead('Sunday, 15 November', 'রবিবার, ১৫ নভেম্বর', hello)}
 
     <div class="grid xl:grid-cols-12 gap-6">
       <!-- Books sheet -->
-      <div class="xl:col-span-7 paper-card overflow-hidden">
+      <div class="xl:col-span-7 paper-card overflow-hidden ${canSee('receipts') ? '' : 'hidden'}">
         <div class="px-5 pt-4 pb-3 flex items-center border-b border-rule">
           <h2 class="font-display text-xl">${t('November books', 'নভেম্বরের খাতা')}</h2>
           <a href="#khata" class="ml-auto text-sm font-semibold text-sindoor hover:underline">${t('Open khata', 'খাতা খুলুন')}</a>
@@ -131,12 +139,24 @@ function dashboard() {
         </div>
       </div>
 
-      <!-- Needs you -->
-      <div class="xl:col-span-5">
-        <h2 class="font-display text-xl mb-3">${t('Needs you today', 'আজকের কাজ')}</h2>
+      <!-- Needs you: first on phones, beside the books on wide screens -->
+      <div class="${canSee('receipts') ? 'xl:col-span-5' : 'xl:col-span-12 max-w-[720px]'} order-first xl:order-none">
+        <h2 class="font-display text-xl mb-3 flex items-center gap-2.5">${t('Needs you today', 'আজকের কাজ')}<span id="todo-count" class="chip h-6 px-2 text-[13px] bg-sindoor text-white num"></span></h2>
         <ul class="space-y-3" id="todo">
+          ${soon ? `<li data-need="panjika" class="paper-card p-4 flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-[#1f1440] text-[#ffe2a8] grid place-items-center shrink-0"><i data-lucide="moon-star" class="w-[18px] h-[18px]"></i></span>
+            <div class="flex-1"><p class="font-semibold leading-snug">${t(`${soon.en} in ${soon.days} days`, `${soon.bn} আর ${bnD(soon.days)} দিন পরে`)}</p>
+            <p class="text-sm text-ink-3 mt-0.5">${t('Check the puja times against the panjika before the notice goes out', 'নোটিস যাওয়ার আগে পঞ্জিকার সঙ্গে পূজার সময় মিলিয়ে নিন')}</p></div>
+            <a href="#panjika" class="btn btn-line btn-sm shrink-0">${t('Check', 'মেলান')}</a>
+          </li>` : ''}
+          ${gaps ? `<li data-need="volunteers" class="paper-card p-4 flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-sindoor-wash text-sindoor grid place-items-center shrink-0"><i data-lucide="hand-helping" class="w-[18px] h-[18px]"></i></span>
+            <div class="flex-1"><p class="font-semibold leading-snug">${t(`Blood Donation Camp: ${gaps} volunteer places empty`, `রক্তদান শিবির: ${bnD(gaps)}টি স্বেচ্ছাসেবকের জায়গা খালি`)}</p>
+            <p class="text-sm text-ink-3 mt-0.5">${t('Sat 28 Nov · registration desk and donor care', 'শনি ২৮ নভে · নাম লেখার টেবিল ও রক্তদাতার যত্ন')}</p></div>
+            <a href="#volunteers/blood" class="btn btn-line btn-sm shrink-0">${t('Fill', 'ভরুন')}</a>
+          </li>` : ''}
           ${pendingUpi.map((p, i) => `
-          <li class="paper-card p-4" data-upi="${i}">
+          <li class="paper-card p-4" data-need="collect" data-upi="${i}">
             <div class="flex items-start gap-3">
               <span class="w-9 h-9 rounded-full bg-marigold-wash text-turmeric grid place-items-center shrink-0"><i data-lucide="smartphone" class="w-[18px] h-[18px]"></i></span>
               <div class="flex-1 min-w-0">
@@ -145,13 +165,13 @@ function dashboard() {
               </div>
               <span class="font-semibold">${inr(p.amount)}</span>
             </div>
-            <div class="flex gap-2 mt-3 pl-12">
+            <div class="flex flex-wrap gap-2 mt-3 sm:pl-12">
               <button class="btn btn-ink btn-sm" data-confirm="${i}"><i data-lucide="check"></i>${t('Matches bank, confirm', 'ব্যাংকে মিলেছে, নিশ্চিত')}</button>
               <button class="btn btn-ghost btn-sm" data-flag="${i}">${t('Not in bank yet', 'ব্যাংকে আসেনি')}</button>
             </div>
           </li>`).join('')}
           ${pendingExpenses.map((x, i) => `
-          <li class="paper-card p-4" data-exp="${i}">
+          <li class="paper-card p-4" data-need="receipts" data-exp="${i}">
             <div class="flex items-start gap-3">
               <span class="w-9 h-9 rounded-full bg-ink text-white grid place-items-center shrink-0"><i data-lucide="stamp" class="w-[18px] h-[18px]"></i></span>
               <div class="flex-1 min-w-0">
@@ -160,37 +180,37 @@ function dashboard() {
               </div>
               <span class="font-semibold">${inr(x.amount)}</span>
             </div>
-            <div class="flex gap-2 mt-3 pl-12">
+            <div class="flex flex-wrap gap-2 mt-3 sm:pl-12">
               <button class="btn btn-ink btn-sm" data-exp-ok="${i}"><i data-lucide="check"></i>${t('Approve', 'অনুমোদন')}</button>
               <button class="btn btn-ghost btn-sm" data-act="bill" data-head="${x.head}" data-amt="${x.amount}">${t('See bill', 'বিল দেখুন')}</button>
               <button class="btn btn-ghost btn-sm" data-exp-no="${i}">${t('Send back', 'ফেরত')}</button>
             </div>
           </li>`).join('')}
-          ${openApps().length ? `<li class="paper-card p-4 flex items-start gap-3">
+          ${openApps().length ? `<li data-need="applications" class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-tulsi-wash text-tulsi grid place-items-center shrink-0"><i data-lucide="user-check" class="w-[18px] h-[18px]"></i></span>
             <div class="flex-1"><p class="font-semibold leading-snug">${t(`${openApps().length} membership applications to review`, `${openApps().length}টি সদস্যপদের আবেদন দেখতে হবে`)}</p>
             <p class="text-sm text-ink-3 mt-0.5">${openApps().map((a) => t(a.head, a.headBn)).join(', ')}</p></div>
             <a href="#applications" class="btn btn-line btn-sm shrink-0">${t('Review', 'দেখুন')}</a>
           </li>` : ''}
-          <li class="paper-card p-4 flex items-start gap-3">
+          <li data-need="dues" class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-sindoor-wash text-sindoor grid place-items-center shrink-0"><i data-lucide="bell-ring" class="w-[18px] h-[18px]"></i></span>
             <div class="flex-1"><p class="font-semibold leading-snug">${t(`${dueFams.length} families owe 3 months or more`, `${dueFams.length}টি পরিবারের ৩ মাস বা বেশি বকেয়া`)}</p>
             <p class="text-sm text-ink-3 mt-0.5">${dueFams.slice(0, 3).map((f) => t(f.head, f.headBn)).join(', ')} …</p></div>
             <a href="#dues" class="btn btn-line btn-sm shrink-0">${t('Remind', 'তাগাদা')}</a>
           </li>
-          ${admin.cashOutside() ? `<li class="paper-card p-4 flex items-start gap-3">
+          ${admin.cashOutside() ? `<li data-need="receipts" class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-paper-2 text-ink grid place-items-center shrink-0"><i data-lucide="hand-coins" class="w-[18px] h-[18px]"></i></span>
             <div class="flex-1"><p class="font-semibold leading-snug">${t(`${inr(admin.cashOutside())} cash is still with collectors`, `সংগ্রাহকদের কাছে এখনও ${inr(admin.cashOutside())} নগদ`)}</p>
             <p class="text-sm text-ink-3 mt-0.5">${t('Bapi Halder has held chanda cash for 10 days · 3 bank lines to match', 'বাপি হালদারের কাছে ১০ দিন ধরে চাঁদার নগদ · ব্যাংকের ৩টি লাইন মেলাতে হবে')}</p></div>
             <a href="#cash" class="btn btn-line btn-sm shrink-0">${t('Receive', 'বুঝে নিন')}</a>
           </li>` : ''}
-          <li class="paper-card p-4 flex items-start gap-3">
+          <li data-need="catering" class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-turmeric-wash text-turmeric grid place-items-center shrink-0"><i data-lucide="chef-hat" class="w-[18px] h-[18px]"></i></span>
             <div class="flex-1"><p class="font-semibold leading-snug">${t('Riya & Arka wedding: quote sent 4 days ago', 'রিয়া ও অর্কর বিয়ে: ৪ দিন আগে কোটেশন গেছে')}</p>
             <p class="text-sm text-ink-3 mt-0.5">${t('220 guests · Full setup · 6 Dec', '২২০ জন · সম্পূর্ণ ব্যবস্থা · ৬ ডিসে')}</p></div>
             <a href="#catering" class="btn btn-line btn-sm shrink-0">${t('Follow up', 'খোঁজ নিন')}</a>
           </li>
-          <li class="paper-card p-4 flex items-start gap-3">
+          <li data-need="nursery" class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-tulsi-wash text-tulsi grid place-items-center shrink-0"><i data-lucide="sprout" class="w-[18px] h-[18px]"></i></span>
             <div class="flex-1"><p class="font-semibold leading-snug">${t('3 plants almost out of stock', '৩টি গাছ প্রায় শেষ')}</p>
             <p class="text-sm text-ink-3 mt-0.5">${t('Snake plant, Chrysanthemum, Guava', 'স্নেক প্ল্যান্ট, চন্দ্রমল্লিকা, পেয়ারা')}</p></div>
@@ -200,7 +220,7 @@ function dashboard() {
       </div>
 
       <!-- Recent entries -->
-      <div class="xl:col-span-12 paper-card overflow-hidden">
+      <div class="xl:col-span-12 paper-card overflow-hidden ${canSee('receipts') ? '' : 'hidden'}">
         <div class="px-5 pt-4 pb-3 flex items-center border-b border-rule">
           <h2 class="font-display text-xl">${t('Latest entries', 'সাম্প্রতিক এন্ট্রি')}</h2>
           <span class="ml-auto text-sm text-ink-3">${t('Every entry shows who wrote it', 'প্রতিটি এন্ট্রিতে লেখকের নাম থাকে')}</span>
@@ -208,10 +228,21 @@ function dashboard() {
         ${ledgerTable(ledger.slice(0, 6), { compact: true })}
       </div>
     </div>`);
+  // Each task belongs to a page; a role only sees the tasks for pages it can open
+  $$('#todo > li[data-need]').forEach((li) => { if (!canSee(li.dataset.need)) li.remove(); });
+  const count = () => {
+    const left = $$('#todo > li:not([data-done])').length;
+    const c = $('#todo-count');
+    c.innerHTML = dn(String(left)); c.classList.toggle('hidden', !left);
+    $('#todo-clear')?.remove();
+    if (!left) $('#todo').insertAdjacentHTML('beforeend', `<li id="todo-clear" class="paper-card p-6 text-center"><span class="w-11 h-11 mx-auto rounded-full bg-tulsi-wash text-tulsi grid place-items-center"><i data-lucide="check-check" class="w-5 h-5"></i></span><p class="font-semibold mt-3">${t('Nothing waiting for you', 'আপনার জন্য কোনো কাজ বাকি নেই')}</p><p class="text-sm text-ink-3 mt-1">${t('New payments and requests will show up here.', 'নতুন পেমেন্ট আর অনুরোধ এখানে আসবে।')}</p></li>`);
+    applyLang($('#todo')); refreshIcons();
+  };
+  count();
   const settle = (b, html) => {
     const li = b.closest('li');
-    const prev = li.innerHTML;
     paint(li, html);
+    li.dataset.done = '1'; count();
     li.querySelector('[data-undo]')?.addEventListener('click', () => dashboard());
   };
   $$('[data-confirm]').forEach((b) => b.addEventListener('click', () => {
@@ -257,6 +288,14 @@ const approved = [
   { head: 'Mousumi Dhar', headBn: 'মৌসুমী ধর', no: 'MC-0171', on: '28 Oct' },
 ];
 let nextFamNo = 173;
+// Prototype: an application sent from the website Join form in this browser arrives here
+{
+  const { app: sent, approved: ok } = demo.get();
+  if (sent && !applications.some((a) => a.id === sent.id)) {
+    applications.unshift({ id: sent.id, head: sent.head, headBn: sent.head, phone: sent.phone, lane: sent.lane, laneBn: sent.lane, address: sent.address, people: sent.people.map((n) => [n, 'Family']), plan: sent.plan, applied: '15 Nov', via: 'Website', status: ok ? 'done' : 'new', note: '', mine: true });
+    if (ok) { approved.unshift({ head: sent.head, headBn: sent.head, no: ok.no, on: '15 Nov' }); nextFamNo++; }
+  }
+}
 const openApps = () => applications.filter((a) => a.status === 'new' || a.status === 'info');
 let selApp = applications[0].id;
 function applicationsScreen(param) {
@@ -1526,7 +1565,7 @@ const ACTIONS = {
       <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Send welcome on WhatsApp with the app link', 'হোয়াটসঅ্যাপে স্বাগত বার্তা ও অ্যাপের লিঙ্ক')}</label>
       <label class="flex items-center gap-3 text-[15px]"><input type="checkbox" class="switch" checked />${t('Add their ID cards to “To print”', 'আইডি কার্ড “প্রিন্ট বাকি”-তে যোগ')}</label>`,
       'Approve and create family', 'অনুমোদন ও পরিবার তৈরি', `${a.head} is now family ${no}. Welcome message sent.`, `${a.headBn} এখন পরিবার ${no}। স্বাগত বার্তা গেছে।`,
-      { onDone: () => { a.status = 'done'; approved.unshift({ head: a.head, headBn: a.headBn, no, on: '15 Nov' }); nextFamNo++; rerender(); } });
+      { onDone: () => { if (a.mine) demo.set({ approved: { no, head: a.head, phone: a.phone, people: a.people.length + 1, lane: a.lane } }); a.status = 'done'; approved.unshift({ head: a.head, headBn: a.headBn, no, on: '15 Nov' }); nextFamNo++; rerender(); } });
   },
   'app-info'(b) {
     const a = applications.find((x) => x.id === b.dataset.id);
