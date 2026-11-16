@@ -1,5 +1,6 @@
 import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang, demo } from './shared.js';
 import { PHOTOS, ALBUMS, GALLERY, photo, credit } from './photos.js';
+import './site-cms.js'; // the committee's edits from the console, applied before anything is drawn
 import { serversFor, memberRate, events, pastEvents, cateringPackages, plants, plantCats, committee, club } from './data.js';
 import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, pujaSpend } from './site-data.js';
 import { mountReviews } from './site-reviews.js';

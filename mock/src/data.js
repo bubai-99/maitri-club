@@ -359,6 +359,7 @@ export const rolePerms = {
     { id: 'catering', en: 'Catering', bn: 'ক্যাটারিং', screens: ['catering'], p: { secretary: 'view', treasurer: 'view', puja: 'none', catering: 'full', nursery: 'none', volunteer: 'none' } },
     { id: 'nursery', en: 'Nursery', bn: 'নার্সারি', screens: ['nursery'], p: { secretary: 'view', treasurer: 'view', puja: 'none', catering: 'none', nursery: 'full', volunteer: 'none' } },
     { id: 'events', en: 'Events, volunteers, assets & gallery', bn: 'অনুষ্ঠান, স্বেচ্ছাসেবক, সম্পত্তি ও ছবি', screens: ['events', 'panjika', 'volunteers', 'assets', 'gallery'], p: { secretary: 'full', treasurer: 'view', puja: 'full', catering: 'view', nursery: 'none', volunteer: 'view' } },
+    { id: 'website', en: 'Website content', bn: 'ওয়েবসাইটের লেখা', screens: ['website'], p: { secretary: 'full', treasurer: 'view', puja: 'view', catering: 'none', nursery: 'none', volunteer: 'none' } },
     { id: 'notices', en: 'Notices & meetings', bn: 'নোটিস ও সভা', screens: ['meetings'], p: { secretary: 'full', treasurer: 'full', puja: 'full', catering: 'view', nursery: 'view', volunteer: 'view' } },
     { id: 'admin', en: 'Reports, audit log & settings', bn: 'রিপোর্ট, অডিট লগ ও সেটিংস', screens: ['reports', 'audit', 'settings'], p: { secretary: 'full', treasurer: 'full', puja: 'none', catering: 'none', nursery: 'none', volunteer: 'none' } },
   ],

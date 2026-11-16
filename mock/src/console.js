@@ -4,6 +4,7 @@ import { peopleOf, cardFront, cardBack, fillQrs, printCards, downloadCard } from
 import { panjikaDates, duties, rolePerms } from './data.js';
 import { bnText, families, ledger, books, chanda, cateringOrders, cateringStatus, cateringPackages, plants, memberDiscount, notices, events, club, serversFor, memberRate, auditLog } from './data.js';
 import { panjikaScreen } from './console-panjika.js';
+import { websiteScreen } from './console-website.js';
 import { initAdmin, logAudit, addReceipt, canSee, viewAs, lockedScreen, wireNotice, audienceRadios, searchPages } from './console-admin.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -35,7 +36,7 @@ const NAV = [
   { group: ['Members', 'সদস্য'], items: [['applications', 'user-check', 'Applications', 'আবেদন', '3'], ['members', 'users', 'Families', 'পরিবার'], ['collect', 'hand-coins', 'Collect payment', 'টাকা জমা'], ['dues', 'bell-ring', 'Dues & reminders', 'বকেয়া ও তাগাদা', String(families.filter((f) => f.due).length)], ['cards', 'id-card', 'ID cards', 'পরিচয়পত্র'], ['donors', 'droplet', 'Blood donors', 'রক্তদাতা']] },
   { group: ['Books', 'খাতা'], items: [['khata', 'book-open', 'Khata', 'খাতা'], ['receipts', 'receipt', 'Receipts register', 'রসিদ খাতা'], ['cash', 'landmark', 'Cash & bank', 'নগদ ও ব্যাংক', '3'], ['chanda', 'hand-heart', 'Puja chanda', 'পূজার চাঁদা']] },
   { group: ['Businesses', 'ব্যবসা'], items: [['catering', 'chef-hat', 'Catering', 'ক্যাটারিং', '2'], ['nursery', 'sprout', 'Nursery', 'নার্সারি']] },
-  { group: ['Club', 'ক্লাব'], items: [['events', 'calendar-days', 'Events', 'অনুষ্ঠান'], ['panjika', 'moon-star', 'Panjika', 'পঞ্জিকা'], ['volunteers', 'hand-helping', 'Volunteers', 'স্বেচ্ছাসেবক'], ['meetings', 'megaphone', 'Notices & meetings', 'নোটিস ও সভা'], ['gallery', 'images', 'Gallery', 'ছবি ও ভিডিও', '2'], ['assets', 'package', 'Club assets', 'ক্লাবের সম্পত্তি']] },
+  { group: ['Club', 'ক্লাব'], items: [['events', 'calendar-days', 'Events', 'অনুষ্ঠান'], ['panjika', 'moon-star', 'Panjika', 'পঞ্জিকা'], ['volunteers', 'hand-helping', 'Volunteers', 'স্বেচ্ছাসেবক'], ['meetings', 'megaphone', 'Notices & meetings', 'নোটিস ও সভা'], ['gallery', 'images', 'Gallery', 'ছবি ও ভিডিও', '2'], ['website', 'globe', 'Website', 'ওয়েবসাইট'], ['assets', 'package', 'Club assets', 'ক্লাবের সম্পত্তি']] },
   { group: ['Admin', 'অ্যাডমিন'], items: [['reports', 'chart-column', 'Reports', 'রিপোর্ট'], ['audit', 'history', 'Audit log', 'অডিট লগ'], ['settings', 'settings', 'Settings', 'সেটিংস']] },
 ];
 function paintNav() {
@@ -1975,7 +1976,7 @@ const admin = initAdmin({
 });
 Object.assign(ACTIONS, admin.actions);
 
-const SCREENS = { dashboard, applications: applicationsScreen, gallery: galleryScreen, members, collect, dues, khata, chanda: chandaScreen, catering, nursery, meetings, events: eventsScreen, reports, settings, profile, cards: cardsScreen, panjika: () => panjikaScreen({ paint, pageHead, screen, formDrawer, fld, inp, radioRow, logAudit }), ...admin.screens };
+const SCREENS = { dashboard, applications: applicationsScreen, gallery: galleryScreen, members, collect, dues, khata, chanda: chandaScreen, catering, nursery, meetings, events: eventsScreen, reports, settings, profile, cards: cardsScreen, panjika: () => panjikaScreen({ paint, pageHead, screen, formDrawer, fld, inp, radioRow, logAudit }), website: () => websiteScreen({ paint, pageHead, screen, formDrawer, fld, inp, logAudit }), ...admin.screens };
 const show = (name, param) => (canSee(name) ? SCREENS[name]?.(param) : lockedScreen(screen(name), name));
 router('dashboard', (name, param) => { current = name; currentParam = param; show(name, param); });
 document.addEventListener('langchange', () => { paintNav(); show(current, currentParam); });

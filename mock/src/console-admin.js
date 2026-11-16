@@ -39,6 +39,7 @@ const MODS = {
   settings: ['Settings', 'সেটিংস', 'settings'], security: ['Security', 'নিরাপত্তা', 'settings/security'], data: ['Data & backup', 'ডেটা ও ব্যাকআপ', 'settings/data'],
   catering: ['Catering', 'ক্যাটারিং', 'catering'], nursery: ['Nursery', 'নার্সারি', 'nursery'], events: ['Events', 'অনুষ্ঠান', 'events'],
   volunteers: ['Volunteers', 'স্বেচ্ছাসেবক', 'volunteers'], assets: ['Assets', 'সম্পত্তি', 'assets'], notices: ['Notices', 'নোটিস', 'meetings'],
+  website: ['Website', 'ওয়েবসাইট', 'website'],
   form: ['Console', 'কনসোল', 'dashboard'],
 };
 const AUDIT_GROUPS = [

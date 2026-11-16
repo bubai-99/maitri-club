@@ -12,6 +12,18 @@ export let lang = (() => {
  * Prototype only: carries one application from the website Join form to the console and the
  * member login, so the whole journey can be clicked through. Lives in this browser only.
  */
+/* Website content edited from the console's Website screen.
+   Prototype: kept in this browser's storage, so the console and the website must be open in the same browser.
+   In the real system this is a table on the server and the website reads it. Shape:
+   { text: { key: { en, bn } }, photos: { key: url }, notices: { hidden: [id], added: [notice] }, committee: [..] | null, at } */
+const SITE_KEY = 'maitri-site-content';
+export const SITE_CONTENT_KEY = SITE_KEY;
+export const siteContent = {
+  get() { try { return JSON.parse(localStorage.getItem(SITE_KEY)) || {}; } catch { return {}; } },
+  set(patch) { try { localStorage.setItem(SITE_KEY, JSON.stringify({ ...siteContent.get(), ...patch, at: new Date().toISOString() })); } catch { /* storage blocked */ } },
+  clear() { try { localStorage.removeItem(SITE_KEY); } catch { /* storage blocked */ } },
+};
+
 const DEMO_KEY = 'maitri-demo-flow';
 export const demo = {
   get() { try { return JSON.parse(localStorage.getItem(DEMO_KEY)) || {}; } catch { return {}; } },
