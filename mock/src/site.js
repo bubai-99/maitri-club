@@ -167,10 +167,13 @@ function renderHomeExtras() {
       </a>
     </li>`).join('');
   const strip = document.getElementById('home-strip');
-  strip.innerHTML = ['sindoor', 'feast2', 'pujaCrowd', 'marigold', 'runners', 'diyas', 'nurseryTable'].map((k) => `
-    <a href="#gallery" class="snap-start shrink-0 w-[210px] sm:w-[260px] aspect-[4/5] rounded-[18px] overflow-hidden group bg-paper-3" aria-label="${lang === 'bn' ? PHOTOS[k].altBn : PHOTOS[k].alt}">
+  // Rendered twice so the strip can loop without a seam; the copy is hidden from screen readers and tabbing.
+  const tiles = (copy) => ['sindoor', 'feast2', 'pujaCrowd', 'marigold', 'runners', 'diyas', 'nurseryTable'].map((k, i) => `
+    <a href="#gallery" ${i === 0 ? 'data-set-start' : ''} class="shrink-0 w-[210px] sm:w-[260px] aspect-[4/5] rounded-[18px] overflow-hidden group bg-paper-3" ${copy ? 'aria-hidden="true" tabindex="-1"' : `aria-label="${lang === 'bn' ? PHOTOS[k].altBn : PHOTOS[k].alt}"`}>
       ${photo(k, { w: 700, cls: 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]', sizes: '300px' })}
     </a>`).join('');
+  strip.innerHTML = tiles(false) + (reduceMotion() ? '' : tiles(true));
+  autoScroll(strip);
   const cm = document.getElementById('home-committee');
   if (!cm) { applyLang(nb); applyLang(strip); refreshIcons(); return; }
   cm.innerHTML = committee.slice(0, 4).map((c) => `
@@ -183,6 +186,39 @@ function renderHomeExtras() {
     </li>`).join('');
   applyLang(nb); applyLang(strip); applyLang(cm); refreshIcons();
 }
+/* Home photo strip drifts sideways on its own. It pauses while the pointer is over it, while it has
+   focus, during a swipe and for a moment after, and when it is off screen or the tab is hidden.
+   Manual scrolling still works: the drift picks up from wherever the visitor left it. */
+function autoScroll(el, speed = 32 /* px per second */) {
+  if (el.dataset.auto || reduceMotion()) return;
+  el.dataset.auto = '1';
+  let pos = el.scrollLeft, last = pos, prev = 0, hold = 0, hover = false, focus = false, seen = true;
+  const loop = () => { const s = el.querySelectorAll('[data-set-start]'); return s.length > 1 ? s[1].offsetLeft - s[0].offsetLeft : 0; };
+  const rest = (ms) => { hold = performance.now() + ms; };
+  el.addEventListener('mouseenter', () => { hover = true; });
+  el.addEventListener('mouseleave', () => { hover = false; });
+  el.addEventListener('focusin', () => { focus = true; });
+  el.addEventListener('focusout', () => { focus = false; });
+  el.addEventListener('pointerdown', () => rest(4000), { passive: true });
+  el.addEventListener('touchstart', () => rest(4000), { passive: true });
+  el.addEventListener('wheel', () => rest(2500), { passive: true });
+  new IntersectionObserver(([e]) => { seen = e.isIntersecting; }).observe(el);
+  const tick = (now) => {
+    const dt = prev ? Math.min(now - prev, 50) / 1000 : 0;
+    prev = now;
+    if (Math.abs(el.scrollLeft - last) > 1) pos = el.scrollLeft; // visitor moved it
+    const w = loop();
+    if (w && seen && !hover && !focus && now > hold && !document.hidden) {
+      pos += speed * dt;
+      if (pos >= w) pos -= w;
+      el.scrollLeft = pos;
+    } else if (w && el.scrollLeft >= w) { pos = el.scrollLeft - w; el.scrollLeft = pos; }
+    last = el.scrollLeft;
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
 renderHomeExtras();
 document.addEventListener('langchange', renderHomeExtras);
 
@@ -191,6 +227,8 @@ let album = 'all';
 let mediaType = 'all';
 let gYear = 'all';
 let gOpen = null; // album id when #gallery/<id> is open
+let gIdx = 0; // which item of the open album is in the player
+let gPick = null; // item chosen from a video card, applied when the album opens
 const years = [...new Set(GALLERY.map((g) => g.date.slice(0, 4)))];
 const isVideo = (it) => !!it.v;
 const posterOf = (it) => (isVideo(it) ? it.poster : it.p);
@@ -221,105 +259,182 @@ function tile(it, i, { cls = 'aspect-square', sizes = '(min-width: 1024px) 280px
   </button>`;
 }
 
-function albumCard(g, { big = false } = {}) {
+/* YouTube-style pieces: the club as the "channel", 16:9 thumbnails, title under the picture. */
+const clubName = () => t('Gede Maitree Club', 'গেদে মৈত্রী ক্লাব');
+const avatar = (sz = 'w-9 h-9', px = 32) => `<span class="${sz} shrink-0 rounded-full bg-card ring-1 ring-rule grid place-items-center overflow-hidden" aria-hidden="true">${seal({ size: px, rotate: 0, estd: false })}</span>`;
+const itemTitle = (it, g) => (isVideo(it) ? t(it.v, it.vBn) : `<span data-alt-title>${altOf(posterOf(it))}</span>`);
+const thumbSizes = '(min-width: 1280px) 280px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw';
+const durBadge = (it) => `<span class="absolute right-1.5 bottom-1.5 rounded-md bg-black/80 text-white text-[12px] font-semibold px-1.5 py-0.5 num">${dn(it.dur)}</span>`;
+
+function cardMeta(title, line) {
+  return `<div class="mt-3 flex gap-3">
+    ${avatar()}
+    <div class="min-w-0">
+      <h3 class="font-semibold text-[15.5px] leading-snug line-clamp-2 group-hover:text-sindoor transition-colors">${title}</h3>
+      <p class="mt-1 text-[13.5px] text-ink-3">${clubName()}</p>
+      <p class="text-[13.5px] text-ink-3 num">${line}</p>
+    </div>
+  </div>`;
+}
+
+/* An album shown like a playlist: stacked edges above the thumbnail and an item count on it. */
+function albumCard(g) {
   const a = albumOf(g);
   return `<a href="#gallery/${g.id}" class="group block" aria-label="${lang === 'bn' ? g.bn : g.en}">
-    <div class="relative ${big ? 'aspect-[16/10]' : 'aspect-[4/3]'} rounded-2xl overflow-hidden bg-paper-2">
-      ${photo(coverOf(g), { w: big ? 1400 : 800, cls: 'absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]', sizes: big ? '(min-width: 1024px) 760px, 100vw' : '(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw' })}
-      ${countChips(g.items)}
+    <div class="mx-4 h-1 rounded-t-md bg-ink/15"></div><div class="mx-2 h-1 rounded-t-md bg-ink/30"></div>
+    <div class="relative aspect-video rounded-xl overflow-hidden bg-paper-2">
+      ${photo(coverOf(g), { w: 800, cls: 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]', sizes: thumbSizes })}
+      <span class="absolute right-1.5 bottom-1.5 rounded-md bg-black/80 text-white text-[12px] font-semibold px-1.5 py-0.5 flex items-center gap-1"><i data-lucide="list-video" class="w-3.5 h-3.5"></i><span class="num">${dn(String(g.items.length))}</span></span>
+      <span class="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity grid place-items-center text-white text-[14px] font-semibold"><span class="flex items-center gap-1.5"><i data-lucide="play" class="w-4 h-4 fill-current"></i>${t('Open album', 'অ্যালবাম খুলুন')}</span></span>
     </div>
-    <p class="mt-3.5 text-[13px] font-semibold text-sindoor num">${t(g.when, g.whenBn)}</p>
-    <h3 class="mt-1 font-display ${big ? 'text-[1.9rem]' : 'text-[1.35rem]'} leading-snug group-hover:text-sindoor transition-colors">${t(g.en, g.bn)}</h3>
-    <p class="mt-0.5 text-[14px] text-ink-3">${t(a.en, a.bn)}</p>
+    ${cardMeta(t(g.en, g.bn), `${t(a.en, a.bn)} · ${t(g.when, g.whenBn)}`)}
   </a>`;
 }
 
+/* A single video from an album; opens the watch page on that item. */
+function videoCard(it, g) {
+  const n = g.items.indexOf(it);
+  return `<a href="#gallery/${g.id}" data-pick-item="${n}" class="group block" aria-label="${lang === 'bn' ? it.vBn : it.v}">
+    <div class="relative aspect-video rounded-xl overflow-hidden bg-paper-2">
+      ${photo(posterOf(it), { w: 800, cls: 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]', sizes: thumbSizes })}
+      ${durBadge(it)}
+    </div>
+    ${cardMeta(t(it.v, it.vBn), `${t(g.en, g.bn)} · ${t(g.when, g.whenBn)}`)}
+  </a>`;
+}
+
+const chipCls = 'shrink-0 h-8 px-3 rounded-lg text-[14px] font-medium whitespace-nowrap bg-paper-2 text-ink hover:bg-ink/10 aria-pressed:bg-ink aria-pressed:text-white';
+
 function galleryIndex() {
-  const tabs = [{ key: 'all', en: 'All', bn: 'সব' }, ...ALBUMS];
-  const types = [['all', 'Albums', 'অ্যালবাম', 'layout-grid'], ['photo', 'Photos', 'ছবি', 'image'], ['video', 'Videos', 'ভিডিও', 'play']];
+  const types = [['all', 'All', 'সব'], ['video', 'Videos', 'ভিডিও'], ['photo', 'Photos', 'ছবি']];
   const list = GALLERY.filter((g) => (album === 'all' || g.album === album) && (gYear === 'all' || g.date.startsWith(gYear)));
   const all = list.flatMap((g) => g.items);
-  const filtered = album !== 'all' || gYear !== 'all';
   let body = '';
   let flat = [];
+  const grid = 'grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-9';
   if (!list.length) {
     body = `<div class="py-20 text-center"><i data-lucide="image-off" class="w-8 h-8 mx-auto text-ink-3"></i>
       <p class="mt-3 font-semibold">${t('Nothing here for this choice', 'এই বাছাইয়ে কিছু নেই')}</p>
       <p class="mt-1 text-ink-2">${t('Try another album or year.', 'অন্য অ্যালবাম বা বছর দেখুন।')}</p>
       <button type="button" class="btn btn-line btn-sm mt-4" data-g-reset>${t('Show everything', 'সব দেখান')}</button></div>`;
-  } else if (mediaType !== 'all') {
-    // A wall of every photo or every video, newest first
-    flat = list.flatMap((g) => g.items.filter((it) => (mediaType === 'video') === isVideo(it)).map((it) => ({ it, g })));
-    body = flat.length ? `<div class="mt-8 grid ${mediaType === 'video' ? 'sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-8' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3'}">
-      ${flat.map(({ it, g }, i) => mediaType === 'video'
-        ? `<figure>${tile(it, i, { cls: 'aspect-video', w: 900, sizes: '(min-width: 1024px) 370px, 50vw' })}
-            <figcaption class="mt-3"><p class="font-semibold leading-snug">${t(it.v, it.vBn)}</p><p class="text-[14px] text-ink-3 mt-0.5"><a href="#gallery/${g.id}" class="hover:text-sindoor">${t(g.en, g.bn)}</a> · <span class="num">${t(g.when, g.whenBn)}</span></p></figcaption></figure>`
-        : tile(it, i)).join('')}</div>`
+  } else if (mediaType === 'photo') {
+    flat = list.flatMap((g) => g.items.filter((it) => !isVideo(it)).map((it) => ({ it, g })));
+    body = `<div class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">${flat.map(({ it }, i) => tile(it, i)).join('')}</div>`;
+  } else if (mediaType === 'video') {
+    const vids = list.flatMap((g) => g.items.filter(isVideo).map((it) => videoCard(it, g)));
+    body = vids.length ? `<div class="mt-6 ${grid}">${vids.join('')}</div>`
       : `<p class="py-16 text-center text-ink-2">${t('No videos in this choice yet.', 'এই বাছাইয়ে এখনো ভিডিও নেই।')}</p>`;
   } else {
-    const [latest, ...rest] = list;
-    const featured = filtered ? null : latest;
-    const shown = featured ? rest : list;
-    const byYear = years.map((y) => [y, shown.filter((g) => g.date.startsWith(y))]).filter(([, gs]) => gs.length);
-    body = `${featured ? `
-      <div class="mt-10 grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
-        <div class="lg:col-span-8">${albumCard(featured, { big: true })}</div>
-        <div class="lg:col-span-4">
-          <p class="eyebrow text-ink-3">${t('Latest album', 'সাম্প্রতিক অ্যালবাম')}</p>
-          <div class="mt-4 grid grid-cols-3 gap-2">${featured.items.slice(0, 3).map((it) => `<a href="#gallery/${featured.id}" class="relative block aspect-square rounded-xl overflow-hidden bg-paper-2" tabindex="-1" aria-hidden="true">${photo(posterOf(it), { w: 300, cls: 'absolute inset-0 w-full h-full object-cover', sizes: '120px' })}${isVideo(it) ? '<span class="absolute inset-0 grid place-items-center"><span class="w-8 h-8 rounded-full bg-white/95 grid place-items-center"><i data-lucide="play" class="w-3.5 h-3.5 ml-0.5 fill-current"></i></span></span>' : ''}</a>`).join('')}</div>
-          <p class="mt-4 text-[15px] text-ink-2">${countLine(featured.items)}</p>
-          <a href="#gallery/${featured.id}" class="btn btn-ink mt-4">${t('Open the album', 'অ্যালবাম খুলুন')}<i data-lucide="arrow-right"></i></a>
-        </div>
-      </div>` : ''}
+    const vids = list.flatMap((g) => g.items.filter(isVideo).map((it) => videoCard(it, g)));
+    const byYear = years.map((y) => [y, list.filter((g) => g.date.startsWith(y))]).filter(([, gs]) => gs.length);
+    body = `${vids.length ? `
+      <section class="mt-8" aria-label="${lang === 'bn' ? 'ভিডিও' : 'Videos'}">
+        <div class="flex items-center gap-2 mb-4"><i data-lucide="clapperboard" class="w-5 h-5 text-sindoor"></i><h2 class="text-[1.25rem] font-bold">${t('Videos', 'ভিডিও')}</h2>
+          <button type="button" data-mt="video" class="ml-auto text-[14px] font-semibold text-sindoor hover:underline">${t('See all', 'সব দেখুন')}</button></div>
+        <div class="flex gap-4 overflow-x-auto no-scrollbar snap-x -mx-5 px-5 pb-1">${vids.map((v) => `<div class="snap-start shrink-0 w-[78%] sm:w-[46%] lg:w-[31%] xl:w-[23.5%]">${v}</div>`).join('')}</div>
+      </section>` : ''}
       ${byYear.map(([y, gs]) => `
-        <section class="mt-16" aria-label="${lang === 'bn' ? bnNum(y) : y}">
-          <div class="flex items-center gap-4 mb-6"><h2 class="font-display text-[1.75rem] leading-none num">${dn(y)}</h2><span class="text-sm text-ink-3">${t(`${gs.length} album${gs.length === 1 ? '' : 's'}`, `${bnNum(gs.length)}টি অ্যালবাম`)}</span><span class="flex-1 h-px bg-rule"></span></div>
-          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${gs.map((g) => albumCard(g)).join('')}</div>
+        <section class="mt-12" aria-label="${lang === 'bn' ? bnNum(y) : y}">
+          <div class="flex items-baseline gap-3 mb-4 pt-6 border-t border-rule"><h2 class="text-[1.25rem] font-bold num">${dn(y)}</h2><span class="text-[14px] text-ink-3">${t(`${gs.length} album${gs.length === 1 ? '' : 's'}`, `${bnNum(gs.length)}টি অ্যালবাম`)}</span></div>
+          <div class="${grid}">${gs.map((g) => albumCard(g)).join('')}</div>
         </section>`).join('')}`;
   }
   const { p: np, v: nv } = counts(all);
   return { flat, html: `
-    <div class="flex flex-col md:flex-row md:items-center gap-3 py-3 border-y border-rule">
-      <div class="flex gap-1.5 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 md:flex-1 md:min-w-0" role="group" aria-label="${lang === 'bn' ? 'অ্যালবাম' : 'Albums'}">
-        ${tabs.map((a) => `<button type="button" data-album="${a.key}" aria-pressed="${album === a.key}" class="shrink-0 h-9 px-3.5 rounded-full text-[14.5px] font-medium whitespace-nowrap text-ink-2 hover:bg-paper-2 hover:text-ink aria-pressed:bg-ink aria-pressed:text-white">${t(a.en, a.bn)}</button>`).join('')}
-      </div>
-      <div class="flex flex-wrap items-center gap-2 shrink-0">
-        <div class="inline-flex rounded-lg bg-paper-2 p-1" role="group" aria-label="${lang === 'bn' ? 'দেখান' : 'Show'}">
-          ${types.map(([k, en, bn, icon]) => `<button type="button" data-mt="${k}" aria-pressed="${mediaType === k}" class="h-8 px-2.5 sm:px-3 rounded-md text-[13.5px] font-semibold flex items-center gap-1.5 text-ink-2 aria-pressed:bg-card aria-pressed:text-ink aria-pressed:shadow-[0_1px_2px_rgba(0,0,0,.1)]"><i data-lucide="${icon}" class="w-4 h-4"></i>${t(en, bn)}</button>`).join('')}
+    <div class="sticky top-[65px] z-20 -mx-5 px-5 py-3 bg-paper/95 backdrop-blur border-b border-rule">
+      <div class="flex items-center gap-2">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar flex-1 min-w-0" role="group" aria-label="${lang === 'bn' ? 'দেখান' : 'Show'}">
+          ${types.map(([k, en, bn]) => `<button type="button" data-mt="${k}" aria-pressed="${mediaType === k}" class="${chipCls}">${t(en, bn)}</button>`).join('')}
+          <span class="shrink-0 w-px my-1 bg-rule" aria-hidden="true"></span>
+          ${[{ key: 'all', en: 'Every album', bn: 'সব অ্যালবাম' }, ...ALBUMS].map((a) => `<button type="button" data-album="${a.key}" aria-pressed="${album === a.key}" class="${chipCls}">${t(a.en, a.bn)}</button>`).join('')}
         </div>
-        <label><span class="sr-only">${lang === 'bn' ? 'বছর' : 'Year'}</span><select id="g-year" class="field h-10 w-auto pr-8 text-[14.5px]">${[['all', lang === 'bn' ? 'সব বছর' : 'All years'], ...years.map((y) => [y, lang === 'bn' ? bnNum(y) : y])].map(([v, l]) => `<option value="${v}" ${gYear === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+        <label class="shrink-0"><span class="sr-only">${lang === 'bn' ? 'বছর' : 'Year'}</span><select id="g-year" class="field h-8 w-auto pr-8 text-[14px] py-0">${[['all', lang === 'bn' ? 'সব বছর' : 'All years'], ...years.map((y) => [y, lang === 'bn' ? bnNum(y) : y])].map(([v, l]) => `<option value="${v}" ${gYear === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
       </div>
     </div>
-    <p class="mt-4 text-sm text-ink-3" aria-live="polite">${t(`${list.length} album${list.length === 1 ? '' : 's'} · ${np} photo${np === 1 ? '' : 's'} · ${nv} video${nv === 1 ? '' : 's'}`, `${bnNum(list.length)}টি অ্যালবাম · ${bnNum(np)}টি ছবি · ${bnNum(nv)}টি ভিডিও`)}</p>
+    <div class="mt-5 flex items-center gap-3">
+      ${avatar('w-12 h-12', 44)}
+      <div class="min-w-0"><p class="font-bold text-[17px] leading-tight">${clubName()}</p>
+        <p class="text-[13.5px] text-ink-3" aria-live="polite">${t(`${list.length} album${list.length === 1 ? '' : 's'} · ${np} photo${np === 1 ? '' : 's'} · ${nv} video${nv === 1 ? '' : 's'}`, `${bnNum(list.length)}টি অ্যালবাম · ${bnNum(np)}টি ছবি · ${bnNum(nv)}টি ভিডিও`)}</p></div>
+    </div>
     ${body}` };
 }
 
+const noVideoYet = () => `<div class="absolute inset-0 grid place-items-center p-6 text-center bg-black/60"><div class="max-w-md text-white">
+  <i data-lucide="clapperboard" class="w-10 h-10 mx-auto text-marigold"></i>
+  <p class="mt-3 font-semibold text-lg">${t('The club’s video plays here', 'এখানে ক্লাবের ভিডিও চলবে')}</p>
+  <p class="mt-1 text-white/80 text-[15px]">${t('Prototype: no video file yet. The committee uploads a video or pastes a YouTube link, and it plays in this player.', 'প্রোটোটাইপ: এখনো ভিডিও নেই। কমিটি ভিডিও আপলোড করবে বা ইউটিউব লিঙ্ক দেবে, এখানেই চলবে।')}</p></div></div>`;
+
+/* Album as a watch page: the player on the left, the album as a playlist on the right. */
 function galleryAlbum(g) {
   const a = albumOf(g);
   const flat = g.items.map((it) => ({ it, g }));
+  const n = Math.min(gIdx, g.items.length - 1);
+  const it = g.items[n];
+  const k = posterOf(it);
   const i0 = GALLERY.indexOf(g);
-  const more = [GALLERY[i0 + 1], GALLERY[i0 - 1], GALLERY[i0 + 2]].filter(Boolean).slice(0, 3);
+  const more = GALLERY.filter((x) => x !== g).sort((x, y) => Math.abs(GALLERY.indexOf(x) - i0) - Math.abs(GALLERY.indexOf(y) - i0)).slice(0, 4);
   const share = `https://wa.me/?text=${encodeURIComponent(`${g.en} · Gede Maitree Club gallery\n${location.origin}${location.pathname}#gallery/${g.id}`)}`;
+  const ctl = 'w-11 h-11 grid place-items-center rounded-full bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm transition';
+  const player = `
+    <div class="relative aspect-video bg-black rounded-xl overflow-hidden group/player" data-player>
+      ${isVideo(it) ? `
+        <img src="${PHOTOS[k].src(1600)}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-75" />
+        <button type="button" data-play class="absolute inset-0 grid place-items-center group" aria-label="${lang === 'bn' ? 'চালান' : 'Play'}: ${lang === 'bn' ? it.vBn : it.v}">
+          <span class="w-[68px] h-12 rounded-2xl bg-sindoor text-white grid place-items-center shadow-2xl group-hover:scale-105 transition-transform"><i data-lucide="play" class="w-7 h-7 ml-0.5 fill-current"></i></span></button>
+        <div class="absolute inset-x-0 bottom-0 px-3 pb-2 pt-6 bg-gradient-to-t from-black/80 to-transparent text-white text-[13px] pointer-events-none">
+          <div class="h-1 rounded-full bg-white/30"><div class="h-full w-0 bg-sindoor rounded-full"></div></div>
+          <div class="mt-2 flex items-center gap-3"><i data-lucide="play" class="w-4 h-4 fill-current"></i><i data-lucide="volume-2" class="w-4 h-4"></i><span class="num">0:00 / ${dn(it.dur)}</span><i data-lucide="maximize" class="w-4 h-4 ml-auto"></i></div>
+        </div>`
+      : `<img src="${PHOTOS[k].src(1600)}" alt="${altOf(k)}" class="absolute inset-0 w-full h-full object-contain" />`}
+      <span class="absolute left-3 top-3 rounded-md bg-black/60 text-white text-[12.5px] font-semibold px-2 py-0.5 num">${dn(`${n + 1} / ${g.items.length}`)}</span>
+      <button type="button" data-zoom="${n}" class="${ctl} absolute right-3 top-3 !w-9 !h-9" aria-label="${lang === 'bn' ? 'পুরো পর্দায় দেখুন' : 'View full screen'}"><i data-lucide="expand" class="w-4 h-4"></i></button>
+      ${g.items.length > 1 ? `
+      <button type="button" data-step="-1" class="${ctl} absolute left-3 top-1/2 -translate-y-1/2 sm:opacity-0 sm:group-hover/player:opacity-100 focus-visible:opacity-100" aria-label="${lang === 'bn' ? 'আগের' : 'Previous'}"><i data-lucide="chevron-left"></i></button>
+      <button type="button" data-step="1" class="${ctl} absolute right-3 top-1/2 -translate-y-1/2 sm:opacity-0 sm:group-hover/player:opacity-100 focus-visible:opacity-100" aria-label="${lang === 'bn' ? 'পরের' : 'Next'}"><i data-lucide="chevron-right"></i></button>` : ''}
+    </div>`;
+  const playlist = `
+    <div class="rounded-xl border border-rule bg-card overflow-hidden">
+      <div class="px-4 py-3 bg-paper-2">
+        <p class="font-bold leading-snug">${t(g.en, g.bn)}</p>
+        <p class="text-[13px] text-ink-3 mt-0.5"><span>${clubName()}</span> · <span class="num">${dn(`${n + 1} / ${g.items.length}`)}</span></p>
+      </div>
+      <ol class="max-h-[420px] overflow-y-auto py-1">
+        ${g.items.map((x, j) => `<li><button type="button" data-pick="${j}" aria-current="${j === n}" class="w-full flex items-center gap-2 pl-2 pr-3 py-1.5 text-left hover:bg-paper-2 aria-[current=true]:bg-sindoor-wash">
+          <span class="w-5 shrink-0 text-center text-[12px] text-ink-3 num">${j === n ? '<i data-lucide="play" class="w-3 h-3 mx-auto fill-current text-sindoor"></i>' : dn(String(j + 1))}</span>
+          <span class="relative w-[112px] shrink-0 aspect-video rounded-md overflow-hidden bg-paper-2">${photo(posterOf(x), { w: 300, cls: 'absolute inset-0 w-full h-full object-cover', sizes: '112px' })}${isVideo(x) ? `<span class="absolute right-1 bottom-1 rounded bg-black/80 text-white text-[11px] font-semibold px-1 num">${dn(x.dur)}</span>` : ''}</span>
+          <span class="min-w-0"><span class="block text-[14px] font-semibold leading-snug line-clamp-2">${itemTitle(x, g)}</span><span class="block text-[12.5px] text-ink-3 mt-0.5">${isVideo(x) ? t('Video', 'ভিডিও') : t('Photo', 'ছবি')}</span></span>
+        </button></li>`).join('')}
+      </ol>
+    </div>`;
+  const upNext = more.map((m) => `<a href="#gallery/${m.id}" class="group flex gap-2.5">
+      <span class="relative w-[168px] shrink-0 aspect-video rounded-lg overflow-hidden bg-paper-2">${photo(coverOf(m), { w: 400, cls: 'absolute inset-0 w-full h-full object-cover', sizes: '168px' })}<span class="absolute right-1 bottom-1 rounded bg-black/80 text-white text-[11px] font-semibold px-1 flex items-center gap-0.5"><i data-lucide="list-video" class="w-3 h-3"></i><span class="num">${dn(String(m.items.length))}</span></span></span>
+      <span class="min-w-0"><span class="block text-[14px] font-semibold leading-snug line-clamp-2 group-hover:text-sindoor">${t(m.en, m.bn)}</span><span class="block text-[12.5px] text-ink-3 mt-1">${clubName()}</span><span class="block text-[12.5px] text-ink-3 num">${t(m.when, m.whenBn)}</span></span>
+    </a>`).join('');
   return { flat, html: `
     <a href="#gallery" class="inline-flex items-center gap-1.5 text-[15px] font-semibold text-ink-2 hover:text-ink"><i data-lucide="arrow-left" class="w-4 h-4"></i>${t('All albums', 'সব অ্যালবাম')}</a>
-    <div class="mt-6 flex flex-wrap items-end justify-between gap-6">
-      <div class="max-w-[60ch]">
-        <p class="eyebrow text-sindoor num">${t(g.when, g.whenBn)} · ${t(a.en, a.bn)}</p>
-        <h1 class="mt-3 font-display text-[clamp(2.2rem,5vw,3.5rem)] leading-[1.05]">${t(g.en, g.bn)}</h1>
-        <p class="mt-3 text-[16px] text-ink-2">${countLine(g.items)}</p>
+    <div class="mt-4 grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-7 items-start">
+      <div class="min-w-0">
+        ${player}
+        <h1 class="mt-4 text-[1.3rem] sm:text-[1.5rem] font-bold leading-snug">${isVideo(it) ? t(it.v, it.vBn) : t(g.en, g.bn)}</h1>
+        <div class="mt-3 flex flex-wrap items-center gap-3">
+          ${avatar('w-10 h-10', 36)}
+          <div class="min-w-0 mr-auto"><p class="font-semibold leading-tight">${clubName()}</p><p class="text-[13px] text-ink-3">${t('Netaji Para, since 2014', 'নেতাজি পাড়া, ২০১৪ থেকে')}</p></div>
+          <div class="flex gap-2">
+            <a href="${share}" target="_blank" rel="noopener" class="btn btn-line btn-sm rounded-full"><i data-lucide="share-2"></i>${t('Share', 'শেয়ার')}</a>
+            <a href="https://wa.me/919830012345?text=${encodeURIComponent(`I have photos for the album: ${g.en}`)}" target="_blank" rel="noopener" class="btn btn-ink btn-sm rounded-full"><i data-lucide="image-plus"></i>${t('Add yours', 'আপনার ছবি দিন')}</a>
+          </div>
+        </div>
+        <div class="mt-4 rounded-xl bg-paper-2 p-4 text-[14.5px]">
+          <p class="font-semibold num">${t(g.when, g.whenBn)} · ${t(a.en, a.bn)} · ${countLine(g.items)}</p>
+          <p class="mt-1.5 text-ink-2">${isVideo(it) ? t(`From the album “${g.en}”.`, `“${g.bn}” অ্যালবাম থেকে।`) : altOf(k)}</p>
+          <p class="mt-3 text-[13px] text-ink-3">${isVideo(it) ? t('Cover photo', 'প্রচ্ছদ') : t('Photo', 'ছবি')}: ${credit(k)} · ${t('Sample photos, to be replaced with the club’s own.', 'নমুনা ছবি, ক্লাবের নিজের ছবি এলে বদলানো হবে।')}</p>
+        </div>
       </div>
-      <div class="flex gap-2">
-        <a href="${share}" target="_blank" rel="noopener" class="btn btn-line"><i data-lucide="share-2"></i>${t('Share', 'শেয়ার')}</a>
-        <a href="https://wa.me/919830012345?text=${encodeURIComponent(`I have photos for the album: ${g.en}`)}" target="_blank" rel="noopener" class="btn btn-ink"><i data-lucide="image-plus"></i>${t('Add yours', 'আপনার ছবি দিন')}</a>
-      </div>
-    </div>
-    <div class="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 grid-flow-dense">
-      ${flat.map(({ it }, i) => `<div class="${i === 0 && flat.length > 2 ? 'col-span-2 row-span-2' : ''}">${tile(it, i, i === 0 && flat.length > 2 ? { w: 1200, sizes: '(min-width: 1024px) 570px, 100vw' } : {})}</div>`).join('')}
-    </div>
-    <p class="mt-4 text-[13px] text-ink-3">${t('Tap a photo to see it large. Use the arrow keys or swipe to move through the album.', 'ছবিতে চাপ দিলে বড় দেখাবে। তির চিহ্ন বা সোয়াইপে পরের ছবি।')}</p>
-    ${more.length ? `<section class="mt-20">
-      <div class="flex items-center gap-4 mb-6"><h2 class="font-display text-[1.75rem] leading-none">${t('More albums', 'আরও অ্যালবাম')}</h2><span class="flex-1 h-px bg-rule"></span><a href="#gallery" class="text-[15px] font-semibold text-sindoor hover:underline">${t('See all', 'সব দেখুন')}</a></div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${more.map((m) => albumCard(m)).join('')}</div></section>` : ''}` };
+      <aside class="space-y-5" aria-label="${lang === 'bn' ? 'এই অ্যালবামে' : 'In this album'}">
+        ${playlist}
+        <div><h2 class="font-bold mb-3">${t('More albums', 'আরও অ্যালবাম')}</h2><div class="space-y-3">${upNext}</div></div>
+      </aside>
+    </div>` };
 }
 
 function renderGallery() {
@@ -327,12 +442,30 @@ function renderGallery() {
   const g = gOpen && GALLERY.find((x) => x.id === gOpen);
   const { html, flat } = g ? galleryAlbum(g) : galleryIndex();
   root.innerHTML = html;
+  // On an album, the player is the page: drop the big banner so it sits near the top, like a watch page.
+  const banner = $('[data-screen="gallery"] > .banner');
+  if (banner) banner.hidden = !!g;
+  root.parentElement.classList.toggle('pt-10', !g);
+  root.parentElement.classList.toggle('pt-6', !!g);
   applyLang(root); refreshIcons();
   root.querySelectorAll('[data-album]').forEach((b) => b.addEventListener('click', () => { album = b.dataset.album; renderGallery(); }));
   root.querySelectorAll('[data-mt]').forEach((b) => b.addEventListener('click', () => { mediaType = b.dataset.mt; renderGallery(); }));
   root.querySelector('#g-year')?.addEventListener('change', (e) => { gYear = e.target.value; renderGallery(); });
   root.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => openLightbox(Number(b.dataset.zoom), flat)));
   root.querySelector('[data-g-reset]')?.addEventListener('click', () => { album = 'all'; mediaType = 'all'; gYear = 'all'; renderGallery(); });
+  root.querySelectorAll('[data-pick-item]').forEach((b) => b.addEventListener('click', () => { gPick = Number(b.dataset.pickItem); }));
+  if (!g) return;
+  const show = (j) => {
+    gIdx = (j + g.items.length) % g.items.length;
+    renderGallery();
+    const p = root.querySelector('[data-player]');
+    if (p.getBoundingClientRect().top < 0) p.scrollIntoView({ block: 'start', behavior: reduceMotion() ? 'auto' : 'smooth' });
+  };
+  root.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => show(Number(b.dataset.pick))));
+  root.querySelectorAll('[data-step]').forEach((b) => b.addEventListener('click', () => { show(gIdx + Number(b.dataset.step)); root.querySelector(`[data-step="${b.dataset.step}"]`)?.focus(); }));
+  root.querySelector('[data-play]')?.addEventListener('click', (e) => { e.currentTarget.outerHTML = noVideoYet(); applyLang(root); refreshIcons(); });
+  const cur = root.querySelector('[aria-current="true"]'); const ol = cur?.closest('ol');
+  if (ol) ol.scrollTop = Math.max(0, cur.offsetTop - ol.offsetTop - 8);
 }
 
 function openLightbox(start, list) {
@@ -366,10 +499,7 @@ function openLightbox(start, list) {
       <p class="text-center text-white/70 text-[13px] pb-4 px-4">${isVideo(it) ? t('Cover photo', 'প্রচ্ছদ') + ': ' : ''}${credit(k)}</p>`;
     applyLang(box); refreshIcons();
     box.querySelector('[data-play]')?.addEventListener('click', (e) => {
-      e.currentTarget.outerHTML = `<div class="absolute inset-0 grid place-items-center p-6 text-center bg-black/60"><div class="max-w-md text-white">
-        <i data-lucide="clapperboard" class="w-10 h-10 mx-auto text-marigold"></i>
-        <p class="mt-3 font-semibold text-lg">${t('The club’s video plays here', 'এখানে ক্লাবের ভিডিও চলবে')}</p>
-        <p class="mt-1 text-white/80 text-[15px]">${t('Prototype: no video file yet. The committee uploads a video or pastes a YouTube link, and it plays in this player.', 'প্রোটোটাইপ: এখনো ভিডিও নেই। কমিটি ভিডিও আপলোড করবে বা ইউটিউব লিঙ্ক দেবে, এখানেই চলবে।')}</p></div></div>`;
+      e.currentTarget.outerHTML = noVideoYet();
       applyLang(box); refreshIcons();
     });
     box.querySelector('[data-x]').focus();
@@ -889,7 +1019,7 @@ function onRoute(screen, param) {
   }
   let title = () => null;
   if (screen === 'event') { renderEventDetail(param); title = () => { const e = events.find((x) => x.id === param); return e ? (lang === 'bn' ? e.titleBn : e.title) : null; }; scrollTo({ top: 0 }); }
-  if (screen === 'gallery') { const g = GALLERY.find((x) => x.id === param); gOpen = g ? g.id : null; renderGallery(); if (g) { title = () => (lang === 'bn' ? g.bn : g.en); } scrollTo({ top: 0 }); }
+  if (screen === 'gallery') { const g = GALLERY.find((x) => x.id === param); gOpen = g ? g.id : null; gIdx = g ? (gPick ?? 0) : 0; gPick = null; renderGallery(); if (g) { title = () => (lang === 'bn' ? g.bn : g.en); } scrollTo({ top: 0 }); }
   if (screen === 'panjika') { renderPanjika(param); scrollTo({ top: 0 }); }
   if (screen === 'notice') { renderNoticeDetail(param); title = () => { const n = publicNotices.find((x) => x.id === param); return n ? (lang === 'bn' ? n.titleBn : n.title) : null; }; scrollTo({ top: 0 }); }
   markNav(screen);
