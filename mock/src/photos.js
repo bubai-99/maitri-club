@@ -44,6 +44,9 @@ export const PHOTOS = {
   p13: { src: u('1637924925587-2551d0661c52'), by: 'Ilham Abitama', page: 'https://unsplash.com/photos/0vZz7v9bFEA', alt: 'Pink bougainvillea flowers', altBn: 'গোলাপি বাগানবিলাস' },
   p14: { src: u('1758649094570-9dc3b30ce80d'), by: 'Santhosh Sethumadhavan', page: 'https://unsplash.com/photos/qklO7VepVZw', alt: 'Curry leaves on a branch', altBn: 'ডালে কারিপাতা' },
 };
+/* About page group photo. Sample for now: replace with the club's own group picture
+   (e.g. src: () => '/group.jpg', by: 'Gede Maitree Club', page: '#committee'). */
+PHOTOS.group = { src: u('1771998829261-4aee91696b5c'), by: 'Speedy Sandy', page: 'https://unsplash.com/photos/group-of-people-posing-for-a-photo-outdoors-zVlHozIFphk', alt: 'Young volunteers and children posing together outdoors', altBn: 'বাইরে একসাথে ছবি তুলছেন তরুণ স্বেচ্ছাসেবক ও ছোটরা' };
 
 /* Albums are the kinds of event; the gallery filters by them. */
 export const ALBUMS = [

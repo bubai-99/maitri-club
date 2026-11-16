@@ -139,7 +139,12 @@ document.getElementById('hero-credit').innerHTML = `${t('Video', 'ভিডি�
   addEventListener('hashchange', () => setTimeout(sync, 0));
   document.addEventListener('visibilitychange', sync);
 }
-document.querySelectorAll('[data-photo]').forEach((el) => { el.innerHTML = photo(el.dataset.photo, { cls: 'w-full h-full object-cover', sizes: '(min-width: 768px) 570px, 100vw' }); });
+document.querySelectorAll('[data-photo]').forEach((el) => { el.innerHTML = photo(el.dataset.photo, { cls: 'w-full h-full object-cover', sizes: el.dataset.sizes || '(min-width: 768px) 570px, 100vw' }); });
+// About: the group photo settles from a slight zoom as it scrolls into view
+{
+  const band = document.getElementById('group-photo');
+  if (band) new IntersectionObserver(([e], o) => { if (e.isIntersecting) { band.classList.add('is-in'); o.disconnect(); } }, { threshold: 0.25 }).observe(band);
+}
 document.querySelectorAll('[data-credit]').forEach((el) => { el.innerHTML = credit(el.dataset.credit); });
 
 /* ---------- Home: khata ledger of Durga Puja spending ---------- */
