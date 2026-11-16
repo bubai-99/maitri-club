@@ -117,12 +117,13 @@ document.addEventListener('click', (e) => {
 
 /* Photos */
 document.getElementById('hero-photo').innerHTML = photo('pujaNight', { cls: 'w-full h-full object-cover', eager: true, w: 1800 });
-document.getElementById('hero-credit').innerHTML = `${t('Video', 'ভিডিও')}: <a href="https://www.pexels.com/@piyush-prabhakar-2157425222/" target="_blank" rel="noopener" class="hover:underline">Piyush Prabhakar / Pexels</a>`;
+document.getElementById('hero-credit').innerHTML = `${t('Video', 'ভিডিও')}: <a href="https://www.pexels.com/@debasish-bose-1630780/" target="_blank" rel="noopener" class="hover:underline">Debasish Bose / Pexels</a>`;
 /* Home banner video: plays muted on loop; still photo for reduced motion or data saver; pause button */
 {
   const v = document.getElementById('hero-video');
   const btn = document.getElementById('hero-play');
-  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData;
+  // Still image for reduced motion, data saver and phones (the video is 12 MB); the play button still loads it
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData || matchMedia('(max-width: 767px)').matches;
   const show = (on) => { btn.innerHTML = `<i data-lucide="${on ? 'pause' : 'play'}" class="w-4 h-4"></i>`; btn.setAttribute('aria-label', on ? (lang === 'bn' ? 'ভিডিও থামান' : 'Pause the video') : (lang === 'bn' ? 'ভিডিও চালান' : 'Play the video')); refreshIcons(); };
   const play = () => v.play().then(() => show(true)).catch(() => show(false));
   if (calm) { v.preload = 'none'; show(false); } else play();

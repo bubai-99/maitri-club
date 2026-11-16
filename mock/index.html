@@ -94,12 +94,13 @@
     <!-- ================= HOME ================= -->
     <!-- The para's club: Bengali nameplate and a photo mosaic, the next event as a ticket, then what the club does, its story, what's on, the money, the people and how to join. -->
     <section data-screen="home">
-      <!-- Hero: full-width video banner (Durga Puja pandal at night) with a still photo underneath -->
+      <!-- Hero: full-width video banner (Durga Puja aarti at a para pandal), with the poster as the still on phones -->
       <div class="banner min-h-[80svh] lg:min-h-[86svh] flex items-end md:items-center">
         <div class="banner-media" id="hero-photo" aria-hidden="true"></div>
-        <div class="banner-media" aria-hidden="true"><video id="hero-video" muted loop playsinline preload="metadata" poster="https://images.pexels.com/videos/34732242/a-beautiful-view-durga-puja-durga-puja-pandal-indian-festival-34732242.jpeg?auto=compress&w=1600" disablepictureinpicture><source src="https://videos.pexels.com/video-files/34732242/14723156_1920_1080_25fps.mp4" type="video/mp4" /></video></div>
+        <div class="banner-media" aria-hidden="true"><video id="hero-video" muted loop playsinline preload="metadata" poster="https://images.pexels.com/videos/5697994/goddess-maa-durga-aarti-5697994.jpeg?auto=compress&w=1600" disablepictureinpicture><source src="https://videos.pexels.com/video-files/5697994/5697994-hd_1280_720_30fps.mp4" type="video/mp4" /></video></div>
         <div class="banner-shade"></div>
-        <div class="relative w-full mx-auto max-w-[1160px] px-5 pt-28 pb-20 md:py-24">
+        <div class="relative w-full mx-auto max-w-[1160px] px-5 pt-28 pb-20 md:pt-28 md:pb-24 grid lg:grid-cols-12 gap-10 lg:gap-8 items-end">
+          <div class="lg:col-span-8 min-w-0">
           <p class="eyebrow text-marigold"><span data-bn="নেতাজি পাড়া · প্রতিষ্ঠা ২০১৪">Netaji Para · Est. 2014</span></p>
           <h1 class="mt-4 font-display leading-[1.04] text-[clamp(2.6rem,6.4vw,4.8rem)] max-w-[15ch]" data-bn="বারো বছরের পূজা, খেলা আর পাশে থাকা">Twelve years of pujas, play and looking out for each other</h1>
           <p class="mt-5 text-[17px] sm:text-[19px] leading-relaxed text-white/85 max-w-[50ch]" data-bn="প্রতিবেশীদের হাতে চলা ক্লাব। দুর্গা, কালী ও সরস্বতী পূজা, ক্রীড়া দিবস, রক্তদান, বিয়েবাড়িতে পরিবেশন আর গেটের পাশে একটা নার্সারি।">A club run by neighbours. Durga, Kali and Saraswati Puja, sports day, blood donation, a serving team for the para’s weddings and a nursery by the gate.</p>
@@ -107,11 +108,18 @@
             <a href="#join" class="btn btn-primary h-12 px-6 text-base"><span data-bn="সদস্য হোন">Become a member</span></a>
             <a href="#events" class="btn btn-glass h-12 px-6 text-base"><span data-bn="কী হচ্ছে দেখুন">See what’s on</span><i data-lucide="arrow-right"></i></a>
           </div>
-          <dl class="mt-10 pt-5 border-t border-white/20 grid grid-cols-3 gap-4 max-w-[480px]">
-              <div><dt class="text-[12.5px] text-white/70" data-bn="সদস্য পরিবার">Member families</dt><dd class="mt-1 font-display text-[1.9rem] leading-none num" data-bn="৩১২">312</dd></div>
-              <div><dt class="text-[12.5px] text-white/70" data-bn="স্বেচ্ছাসেবক">Volunteers</dt><dd class="mt-1 font-display text-[1.9rem] leading-none num" data-bn="৬১">61</dd></div>
-              <div><dt class="text-[12.5px] text-white/70" data-bn="পূজায় ভোগ">Bhog plates</dt><dd class="mt-1 font-display text-[1.9rem] leading-none num" data-bn="৪,২০০">4,200</dd></div>
-            </dl>
+          </div>
+          <!-- The club in numbers: glass panel, bottom right -->
+          <div class="lg:col-span-4 lg:justify-self-end w-full lg:max-w-[360px]">
+            <div class="hero-glass rounded-[22px] p-5 sm:p-6">
+              <p class="flex items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white/75"><span data-bn="সংখ্যায় ক্লাব">The club in numbers</span><span class="num normal-case tracking-normal font-medium text-white/55" data-bn="২০২৫–২৬">2025–26</span></p>
+              <dl class="mt-4 grid grid-cols-3 lg:grid-cols-1 gap-3 lg:gap-0 lg:divide-y lg:divide-white/15">
+                <div class="lg:flex lg:items-baseline lg:justify-between lg:py-3 lg:first:pt-0"><dt class="text-[12.5px] text-white/70 lg:order-2" data-bn="সদস্য পরিবার">Member families</dt><dd class="mt-1 lg:mt-0 font-display text-[1.75rem] sm:text-[2rem] leading-none num" data-bn="৩১২">312</dd></div>
+                <div class="lg:flex lg:items-baseline lg:justify-between lg:py-3"><dt class="text-[12.5px] text-white/70 lg:order-2" data-bn="স্বেচ্ছাসেবক">Volunteers</dt><dd class="mt-1 lg:mt-0 font-display text-[1.75rem] sm:text-[2rem] leading-none num" data-bn="৬১">61</dd></div>
+                <div class="lg:flex lg:items-baseline lg:justify-between lg:py-3 lg:last:pb-0"><dt class="text-[12.5px] text-white/70 lg:order-2" data-bn="পূজায় ভোগ">Bhog plates</dt><dd class="mt-1 lg:mt-0 font-display text-[1.75rem] sm:text-[2rem] leading-none num" data-bn="৪,২০০">4,200</dd></div>
+              </dl>
+            </div>
+          </div>
         </div>
         <button type="button" class="banner-play" id="hero-play" aria-label="Pause the video"><i data-lucide="pause" class="w-4 h-4"></i></button>
         <p class="banner-credit" id="hero-credit"></p>
