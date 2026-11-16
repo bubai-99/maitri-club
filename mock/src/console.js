@@ -105,6 +105,7 @@ function dashboard() {
   const TODAY = Date.UTC(2026, 10, 15);
   const soon = panjikaDates.filter((p) => p.kind === 'puja').map((p) => ({ ...p, days: Math.round((Date.parse(p.date) - TODAY) / 86400000) })).find((p) => p.days >= 0 && p.days <= 10);
   const gaps = (duties.blood || []).reduce((a, d) => a + Math.max(0, d.need - d.who.length), 0);
+  const webVol = demo.get().volunteer; const newVol = webVol?.name && !webVol.status ? webVol : null;
   const role = viewAs && rolePerms.roles.find((r) => r.id === viewAs);
   const hello = role ? t(`Good evening, ${role.people}. Here is what is waiting for you.`, `শুভ সন্ধ্যা, ${role.peopleBn}। আপনার জন্য যা অপেক্ষা করছে।`) : t('Good evening, Tapas-da. Here is where the books stand.', 'শুভ সন্ধ্যা, তাপস-দা। খাতার হাল এই রকম।');
   paint(screen('dashboard'), `
@@ -148,6 +149,12 @@ function dashboard() {
             <div class="flex-1"><p class="font-semibold leading-snug">${t(`${soon.en} in ${soon.days} days`, `${soon.bn} আর ${bnD(soon.days)} দিন পরে`)}</p>
             <p class="text-sm text-ink-3 mt-0.5">${t('Check the puja times against the panjika before the notice goes out', 'নোটিস যাওয়ার আগে পঞ্জিকার সঙ্গে পূজার সময় মিলিয়ে নিন')}</p></div>
             <a href="#panjika" class="btn btn-line btn-sm shrink-0">${t('Check', 'মেলান')}</a>
+          </li>` : ''}
+          ${newVol ? `<li data-need="volunteers" class="paper-card p-4 flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-marigold-wash text-turmeric grid place-items-center shrink-0"><i data-lucide="globe" class="w-[18px] h-[18px]"></i></span>
+            <div class="flex-1"><p class="font-semibold leading-snug">${t(`${newVol.name} signed up to volunteer`, `${newVol.name} স্বেচ্ছাসেবক হতে নাম দিয়েছেন`)}</p>
+            <p class="text-sm text-ink-3 mt-0.5">${t('From the website’s Get involved page', 'ওয়েবসাইটের “হাত লাগান” পাতা থেকে')}</p></div>
+            <a href="#volunteers${newVol.duty ? `/${newVol.duty.split(':')[0]}` : ''}" class="btn btn-line btn-sm shrink-0">${t('Review', 'দেখুন')}</a>
           </li>` : ''}
           ${gaps ? `<li data-need="volunteers" class="paper-card p-4 flex items-start gap-3">
             <span class="w-9 h-9 rounded-full bg-sindoor-wash text-sindoor grid place-items-center shrink-0"><i data-lucide="hand-helping" class="w-[18px] h-[18px]"></i></span>

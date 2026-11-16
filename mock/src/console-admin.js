@@ -2,7 +2,7 @@
 // Audit log, cash & bank, receipts register, blood donors, volunteers, club assets,
 // roles & "view as", data export & backup, notice preview, AGM pack, shortcuts and the bell.
 // Sample data only. Nothing is sent, banked or restored.
-import { t, inr, dn, applyLang, refreshIcons, toast, lang, seal } from './shared.js';
+import { t, inr, dn, applyLang, refreshIcons, toast, lang, seal, demo } from './shared.js';
 import { peopleOf } from './idcard.js';
 import {
   bnText, families, ledger, books, events, club, chanda, notices,
@@ -434,15 +434,47 @@ function waListDrawer(titleEn, titleBn, people, text, noteEn, noteBn) {
 /* ---------------- Volunteers & duty roster ---------------- */
 let vEvt = 'sports';
 const vols = volunteers.map((v) => ({ ...v }));
+// A sign-up from the website's Get involved page (prototype: kept in this browser).
+// Once added, the person stays on the list and on their duty after a reload.
+const webVol = () => { const v = demo.get().volunteer; return v && v.name ? v : null; };
+const laneBnOf = (lane) => (lane === 'other' ? 'পাড়ার বাইরে' : chanda.areas.find((a) => a.lane === lane)?.laneBn || lane);
+const laneOf = (lane) => (lane === 'other' ? 'Outside the para' : lane);
+function webVolAdd(v) {
+  if (!vols.find((x) => x.name === v.name)) vols.push({ name: v.name, nameBn: v.name, lane: laneOf(v.lane), laneBn: laneBnOf(v.lane), skills: v.skills.filter((k) => volunteerSkills[k]).length ? v.skills.filter((k) => volunteerSkills[k]) : ['serving'], hours: 0, phone: v.phone, web: true });
+  if (v.duty) { const [e, i] = v.duty.split(':'); const d = duties[e]?.[Number(i)]; if (d && !d.who.includes(v.name)) d.who.push(v.name); }
+}
+{ const v = webVol(); if (v?.status === 'added') webVolAdd(v); }
 const vName = (n) => { const v = vols.find((x) => x.name === n); return v ? t(v.name, v.nameBn) : n; };
 function volunteersScreen(param) {
   if (param && duties[param]) vEvt = param;
+  const wv = webVol();
+  const wd = wv?.duty ? (() => { const [e, i] = wv.duty.split(':'); const ev0 = events.find((x) => x.id === e); const d = duties[e]?.[Number(i)]; return d && ev0 ? { ev0, d } : null; })() : null;
+  const FREE = { weekends: ['Weekends', 'সপ্তাহান্তে'], evenings: ['Evenings', 'সন্ধ্যায়'], pujas: ['Only during pujas', 'শুধু পূজার সময়'] };
+  const skillTxt = (k) => (volunteerSkills[k] ? t(volunteerSkills[k].en, volunteerSkills[k].bn) : t('Nursery', 'নার্সারি'));
+  const signup = wv && !wv.status ? `
+    <div class="paper-card mb-5 border-l-4 border-l-marigold">
+      <div class="px-5 py-4 flex flex-wrap items-start gap-4">
+        <span class="w-10 h-10 rounded-full bg-marigold-wash text-turmeric grid place-items-center shrink-0"><i data-lucide="globe" class="w-5 h-5"></i></span>
+        <div class="flex-1 min-w-[16rem]">
+          <p class="text-[12.5px] font-semibold uppercase tracking-wide text-turmeric">${t('New sign-up from the website', 'ওয়েবসাইট থেকে নতুন নাম')}</p>
+          <p class="mt-1 font-semibold text-[17px]">${esc(wv.name)} <span class="text-sm font-normal text-ink-3">· ${t(laneOf(wv.lane), laneBnOf(wv.lane))} · <span class="num">${dn(wv.phone.replace(/(\d{5})(\d{5})/, '$1 $2'))}</span></span></p>
+          <p class="mt-1.5 flex flex-wrap gap-1">${wv.skills.map((k) => `<span class="chip h-6 text-[12px] border border-rule">${skillTxt(k)}</span>`).join('')}</p>
+          <p class="mt-2 text-sm text-ink-2">${wd ? t(`Wants: ${wd.d.duty}, ${wd.ev0.title} (${wd.ev0.day} ${wd.ev0.mon})`, `চান: ${wd.d.dutyBn}, ${wd.ev0.titleBn} (${bnD(wd.ev0.day)} ${wd.ev0.monBn})`) : t('Any duty, call to decide', 'যে কোনো কাজ, ফোনে ঠিক হবে')} · ${t(...(FREE[wv.free] || FREE.weekends))}</p>
+        </div>
+        <div class="flex flex-wrap gap-2 shrink-0">
+          <a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${wv.phone}"><i data-lucide="message-circle"></i>${t('WhatsApp', 'হোয়াটসঅ্যাপ')}</a>
+          <button class="btn btn-ghost btn-sm" data-act="webvol-skip">${t('Not now', 'এখন না')}</button>
+          <button class="btn btn-ink btn-sm" data-act="webvol-add"><i data-lucide="user-plus"></i>${wd ? t('Add & put on duty', 'যোগ ও দায়িত্ব দিন') : t('Add to list', 'তালিকায় যোগ')}</button>
+        </div>
+      </div>
+    </div>` : '';
   const ev = events.find((e) => e.id === vEvt);
   const list = duties[vEvt];
   const short = list.filter((d) => d.who.length < d.need);
   C.paint(C.screen('volunteers'), `
     ${C.pageHead('Volunteers', 'স্বেচ্ছাসেবক', t('Duty rosters for each event, attendance on the day, and hours for the AGM thank-you list.', 'প্রতি অনুষ্ঠানের দায়িত্ব, দিনের হাজিরা, আর এজিএম-এর ধন্যবাদ তালিকার জন্য ঘণ্টা।'), `
       <button class="btn btn-ink btn-sm" data-act="vol-add"><i data-lucide="user-plus"></i>${t('Add volunteer', 'স্বেচ্ছাসেবক যোগ')}</button>`)}
+    ${signup}
     <div class="flex flex-wrap gap-2 mb-5" role="tablist">
       ${Object.keys(duties).map((k) => { const e = events.find((x) => x.id === k); return `<a href="#volunteers/${k}" role="tab" aria-selected="${vEvt === k}" class="chip h-9 px-3.5 text-sm border border-rule bg-card aria-selected:bg-ink aria-selected:text-paper aria-selected:border-ink">${dn(e.day)} ${t(e.mon, e.monBn)} · ${t(e.title, e.titleBn)}</a>`; }).join('')}
     </div>
@@ -471,7 +503,7 @@ function volunteersScreen(param) {
           <span class="ml-auto text-sm text-ink-3 num">${t(`${vols.reduce((a, b) => a + b.hours, 0)} hours this year`, `এ বছর ${bnD(vols.reduce((a, b) => a + b.hours, 0))} ঘণ্টা`)}</span></div>
         <ul class="divide-y divide-rule">
           ${[...vols].sort((a, b) => b.hours - a.hours).map((v) => `<li class="px-5 py-3 flex items-start gap-3">
-            <div class="flex-1 min-w-0"><p class="font-semibold">${t(v.name, v.nameBn)} <span class="text-sm font-normal text-ink-3">· ${t(v.lane, v.laneBn)}</span></p>
+            <div class="flex-1 min-w-0"><p class="font-semibold">${t(v.name, v.nameBn)} <span class="text-sm font-normal text-ink-3">· ${t(v.lane, v.laneBn)}</span>${v.web ? ` <span class="chip h-5 px-1.5 text-[11px] bg-marigold-wash text-turmeric align-middle">${t('New', 'নতুন')}</span>` : ''}</p>
               <p class="mt-1 flex flex-wrap gap-1">${v.skills.map((s) => `<span class="chip h-6 text-[12px] border border-rule">${s === 'gate' ? '<i data-lucide="scan-line"></i>' : ''}${t(volunteerSkills[s].en, volunteerSkills[s].bn)}</span>`).join('')}</p></div>
             <span class="text-right shrink-0"><span class="block font-semibold num">${dn(String(v.hours))}</span><span class="block text-[12px] text-ink-3">${t('hours', 'ঘণ্টা')}</span></span>
             <a class="btn btn-ghost btn-sm shrink-0" target="_blank" rel="noopener" href="https://wa.me/91${v.phone}" aria-label="WhatsApp ${esc(v.name)}"><i data-lucide="message-circle"></i></a>
@@ -747,6 +779,20 @@ export function searchPages(q) {
 
 /* ---------------- Actions ---------------- */
 const ACTIONS = {
+  'webvol-add'() {
+    const v = webVol(); if (!v) return;
+    webVolAdd(v);
+    demo.set({ volunteer: { ...v, status: 'added' } });
+    if (v.duty) vEvt = v.duty.split(':')[0];
+    logAudit('volunteers', `Added website sign-up ${v.name}`, `ওয়েবসাইটের নাম যোগ ${v.name}`);
+    ok(v.duty ? `${v.name} added and put on duty. They get a WhatsApp confirmation.` : `${v.name} added to the volunteer list.`, v.duty ? `${v.name} যোগ হয়েছেন, দায়িত্বও দেওয়া হয়েছে। হোয়াটসঅ্যাপে জানানো হবে।` : `${v.name} স্বেচ্ছাসেবক তালিকায় যোগ হয়েছেন।`);
+    if (location.hash !== `#volunteers/${vEvt}` && v.duty) location.hash = `#volunteers/${vEvt}`; else C.rerender();
+  },
+  'webvol-skip'() {
+    const v = webVol(); if (!v) return;
+    demo.set({ volunteer: { ...v, status: 'skipped' } });
+    C.rerender();
+  },
   'audit-csv'() { downloadCsv('audit-log.csv', CSV.audit()); },
   'audit-note'(b) {
     const a = auditLog.find((x) => x.id === b.dataset.id);

@@ -4,6 +4,7 @@ import { serversFor, memberRate, events, pastEvents, cateringPackages, plants, p
 import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, pujaSpend } from './site-data.js';
 import { mountReviews } from './site-reviews.js';
 import { renderPanjika, renderTodayStrip } from './site-panjika.js';
+import { renderVolunteer, initVolunteerForm } from './site-volunteer.js';
 import { validate, enhanceForm, confirmPanel, ref, bnNum, initials, daysUntil } from './site-ui.js';
 import {
   kindLabel, ics, eventTime, renderNotices, renderNoticeDetail, renderEventDetail, renderPujaBreakdown,
@@ -939,8 +940,10 @@ renderChanda();
 renderContact();
 initChandaForm();
 initContactForm();
+renderVolunteer();
+initVolunteerForm();
 document.addEventListener('langchange', () => {
-  renderNotices(); renderChanda(); renderContact();
+  renderNotices(); renderChanda(); renderContact(); renderVolunteer();
   if (current.screen === 'event') renderEventDetail(current.param);
   if (current.screen === 'notice') renderNoticeDetail(current.param);
   setTitle(current.screen, current.title());
@@ -975,6 +978,7 @@ const TITLES = {
   nursery: ['Maitree Nursery', 'মৈত্রী নার্সারি'], gallery: ['Gallery', 'ছবি'], committee: ['About the club', 'ক্লাবের কথা'],
   chanda: ['Chanda & accounts', 'চাঁদা ও হিসাব'], contact: ['Contact & directions', 'যোগাযোগ ও পথ'],
   panjika: ['Panjika', 'পঞ্জিকা'],
+  volunteer: ['Get involved', 'হাত লাগান'],
   join: ['Become a member', 'সদস্য হোন'], privacy: ['Privacy & terms', 'গোপনীয়তা ও শর্ত'],
   notfound: ['Page not found', 'পাতা পাওয়া যায়নি'], event: ['Event', 'অনুষ্ঠান'], notice: ['Notice', 'নোটিস'],
 };
