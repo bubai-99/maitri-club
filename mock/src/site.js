@@ -3,6 +3,7 @@ import { PHOTOS, ALBUMS, GALLERY, photo, credit } from './photos.js';
 import { serversFor, memberRate, events, pastEvents, cateringPackages, plants, plantCats, committee, club } from './data.js';
 import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, pujaSpend } from './site-data.js';
 import { mountReviews } from './site-reviews.js';
+import { renderPanjika, renderTodayStrip } from './site-panjika.js';
 import { validate, enhanceForm, confirmPanel, ref, bnNum, initials, daysUntil } from './site-ui.js';
 import {
   kindLabel, ics, eventTime, renderNotices, renderNoticeDetail, renderEventDetail, renderPujaBreakdown,
@@ -829,6 +830,7 @@ const TITLES = {
   events: ['Events', 'অনুষ্ঠান'], notices: ['Notices', 'নোটিস'], catering: ['Maitree Serving', 'মৈত্রী পরিবেশন'],
   nursery: ['Maitree Nursery', 'মৈত্রী নার্সারি'], gallery: ['Gallery', 'ছবি'], committee: ['About the club', 'ক্লাবের কথা'],
   chanda: ['Chanda & accounts', 'চাঁদা ও হিসাব'], contact: ['Contact & directions', 'যোগাযোগ ও পথ'],
+  panjika: ['Panjika', 'পঞ্জিকা'],
   join: ['Become a member', 'সদস্য হোন'], privacy: ['Privacy & terms', 'গোপনীয়তা ও শর্ত'],
   notfound: ['Page not found', 'পাতা পাওয়া যায়নি'], event: ['Event', 'অনুষ্ঠান'], notice: ['Notice', 'নোটিস'],
 };
@@ -874,6 +876,7 @@ function onRoute(screen, param) {
   let title = () => null;
   if (screen === 'event') { renderEventDetail(param); title = () => { const e = events.find((x) => x.id === param); return e ? (lang === 'bn' ? e.titleBn : e.title) : null; }; scrollTo({ top: 0 }); }
   if (screen === 'gallery') { const g = GALLERY.find((x) => x.id === param); gOpen = g ? g.id : null; renderGallery(); if (g) { title = () => (lang === 'bn' ? g.bn : g.en); } scrollTo({ top: 0 }); }
+  if (screen === 'panjika') { renderPanjika(param); scrollTo({ top: 0 }); }
   if (screen === 'notice') { renderNoticeDetail(param); title = () => { const n = publicNotices.find((x) => x.id === param); return n ? (lang === 'bn' ? n.titleBn : n.title) : null; }; scrollTo({ top: 0 }); }
   markNav(screen);
   Object.assign(current, { screen, param, title });
@@ -884,5 +887,6 @@ function onRoute(screen, param) {
   }
   firstRoute = false;
 }
+renderTodayStrip();
 router('home', onRoute);
 boot('site');

@@ -51,6 +51,7 @@
       </a>
       <nav class="hidden lg:flex items-center gap-0.5 ml-auto text-[15px] font-medium" aria-label="Main">
         <a href="#events" data-nav="events" class="nav-link"><span data-bn="অনুষ্ঠান">Events</span></a>
+        <a href="#panjika" data-nav="panjika" class="nav-link"><span data-bn="পঞ্জিকা">Panjika</span></a>
         <a href="#notices" data-nav="notices" class="nav-link"><span data-bn="নোটিস">Notices</span></a>
         <a href="#catering" data-nav="catering" class="nav-link nav-catering"><span data-bn="ক্যাটারিং">Catering</span></a>
         <a href="#nursery" data-nav="nursery" class="nav-link nav-nursery"><span data-bn="নার্সারি">Nursery</span></a>
@@ -71,6 +72,7 @@
     <nav id="mobile-nav" class="lg:hidden hidden border-t border-rule bg-paper max-h-[calc(100dvh-6.5rem)] overflow-y-auto" aria-label="Main mobile">
       <ul class="px-5 py-2 text-[17px] grid sm:grid-cols-2 sm:gap-x-8">
         <li><a href="#events" data-nav="events" class="mnav-link" data-bn="অনুষ্ঠান">Events</a></li>
+        <li><a href="#panjika" data-nav="panjika" class="mnav-link" data-bn="পঞ্জিকা">Panjika</a></li>
         <li><a href="#notices" data-nav="notices" class="mnav-link" data-bn="নোটিস">Notices</a></li>
         <li><a href="#catering" data-nav="catering" class="mnav-link" data-bn="ক্যাটারিং">Catering</a></li>
         <li><a href="#nursery" data-nav="nursery" class="mnav-link" data-bn="নার্সারি">Nursery</a></li>
@@ -148,6 +150,7 @@
             </div>
           </div>
         </div>
+        <div id="home-tithi" class="mt-3"></div>
       </div>
 
       <!-- What the club does: three numbered photo cards -->
@@ -992,6 +995,73 @@
     </section>
 
     <!-- ================= CONTACT ================= -->
+    <!-- ================= PANJIKA ================= -->
+    <!-- Tithi, nakshatra, sunrise and the Bengali date are calculated in the browser (src/panjika.js).
+         Puja times and wedding days come from the committee (admin console → Panjika). -->
+    <section data-screen="panjika">
+      <div class="banner pj-banner">
+        <div class="relative mx-auto max-w-[1160px] px-5 pt-14 pb-12 sm:pt-20 sm:pb-16 min-h-[360px] sm:min-h-[420px] grid md:grid-cols-12 gap-8 items-end">
+          <div class="md:col-span-8 min-w-0">
+            <nav class="crumbs text-[13px] mb-5" aria-label="Breadcrumb"><a href="#home" data-bn="হোম">Home</a><span class="mx-2 text-white/40">/</span><span class="text-white" data-bn="পঞ্জিকা">Panjika</span></nav>
+            <p class="eyebrow text-marigold" id="pj-eyebrow"></p>
+            <h1 class="mt-3 font-display leading-[1.02] text-[clamp(2.6rem,7vw,5rem)]" id="pj-title"></h1>
+            <p class="mt-3 text-[17px] sm:text-[19px] text-white/80" id="pj-sub"></p>
+            <div class="mt-7 flex flex-wrap items-center gap-2">
+              <button type="button" class="btn btn-glass h-11 w-11 px-0" data-pj-step="-1" id="pj-prev"><i data-lucide="chevron-left"></i></button>
+              <label class="btn btn-glass h-11 px-4 cursor-pointer relative"><i data-lucide="calendar-days"></i><span data-bn="তারিখ বাছুন">Pick a date</span><input type="date" id="pj-date" class="absolute inset-0 opacity-0 cursor-pointer" /></label>
+              <button type="button" class="btn btn-glass h-11 w-11 px-0" data-pj-step="1" id="pj-next"><i data-lucide="chevron-right"></i></button>
+              <button type="button" class="btn bg-white text-ink hover:bg-paper-2 h-11 px-4" id="pj-today"><span data-bn="আজ">Today</span></button>
+            </div>
+          </div>
+          <div class="md:col-span-4 flex md:justify-end">
+            <figure class="flex items-center gap-4 md:flex-col md:items-end md:text-right">
+              <span id="pj-moon" class="block w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44"></span>
+              <figcaption class="text-[14px] text-white/75" id="pj-moon-cap"></figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="mx-auto max-w-[1160px] px-5 py-12">
+        <!-- The day -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" id="pj-day" aria-live="polite"></div>
+        <div id="pj-on-day"></div>
+
+        <!-- Month -->
+        <div class="mt-14 flex flex-wrap items-end justify-between gap-4">
+          <div><p class="gz-kicker" data-bn="মাসের পঞ্জিকা">The month</p><h2 class="mt-2 gz-headline text-[clamp(1.9rem,4vw,2.6rem)]" id="pj-month-title"></h2><p class="mt-1 text-[15px] text-ink-2" id="pj-month-bn"></p></div>
+          <div class="flex gap-2">
+            <button type="button" class="btn btn-line h-10 w-10 px-0" id="pj-mprev"><i data-lucide="chevron-left"></i></button>
+            <button type="button" class="btn btn-line h-10 w-10 px-0" id="pj-mnext"><i data-lucide="chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="mt-5 pj-cal" id="pj-cal"></div>
+        <ul class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[13.5px] text-ink-2" id="pj-legend"></ul>
+
+        <!-- Pujas and wedding days -->
+        <div class="mt-16 grid lg:grid-cols-12 gap-8 lg:gap-10">
+          <div class="lg:col-span-7">
+            <p class="gz-kicker" data-bn="পূজা ও পার্বণ">Pujas and parbon</p>
+            <h2 class="mt-2 gz-headline text-[clamp(1.9rem,4vw,2.6rem)]" data-bn="সামনের দিনগুলো">Coming up</h2>
+            <ol class="mt-6 border-t border-ink/80" id="pj-pujas"></ol>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="rounded-[22px] bg-turmeric-wash/60 p-6 sm:p-7 book-catering">
+              <p class="gz-kicker !text-turmeric" data-bn="বিয়ের দিন">Wedding days</p>
+              <h2 class="mt-2 font-display leading-tight text-[clamp(1.7rem,3.4vw,2.2rem)]" data-bn="বিয়ের তারিখ ও লগ্ন">Dates and lagna</h2>
+              <ul class="mt-5 space-y-2.5" id="pj-weddings"></ul>
+              <a href="#catering-quote" class="btn btn-ink mt-6 w-full sm:w-auto"><i data-lucide="utensils"></i><span data-bn="মৈত্রী পরিবেশন বুক করুন">Book Maitree Serving</span></a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="mt-14 rounded-2xl bg-paper-2 p-5 sm:p-6 flex gap-4 text-[14.5px] text-ink-2">
+          <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
+          <div class="space-y-2" id="pj-note"></div>
+        </aside>
+      </div>
+    </section>
+
     <section data-screen="contact">
       <div class="banner">
         <div class="banner-media" data-photo="diyas" aria-hidden="true"></div>
@@ -1160,6 +1230,7 @@
           <ul class="mt-4 space-y-2.5">
             <li><a href="#events" class="hover:text-white" data-bn="অনুষ্ঠান">Events</a></li>
             <li><a href="#notices" class="hover:text-white" data-bn="নোটিস">Notices</a></li>
+            <li><a href="#panjika" class="hover:text-white" data-bn="পঞ্জিকা">Panjika</a></li>
             <li><a href="#gallery" class="hover:text-white" data-bn="ছবি">Gallery</a></li>
             <li><a href="#committee" class="hover:text-white" data-bn="আমাদের কথা ও কমিটি">About &amp; committee</a></li>
             <li><a href="#chanda" class="hover:text-white" data-bn="চাঁদা ও হিসাব">Chanda &amp; accounts</a></li>
