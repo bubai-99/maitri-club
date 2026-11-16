@@ -46,7 +46,8 @@ export const PHOTOS = {
 };
 /* About page group photo. Sample for now: replace with the club's own group picture
    (e.g. src: () => '/group.jpg', by: 'Gede Maitree Club', page: '#committee'). */
-PHOTOS.group = { src: u('1771998829261-4aee91696b5c'), by: 'Speedy Sandy', page: 'https://unsplash.com/photos/group-of-people-posing-for-a-photo-outdoors-zVlHozIFphk', alt: 'Young volunteers and children posing together outdoors', altBn: 'বাইরে একসাথে ছবি তুলছেন তরুণ স্বেচ্ছাসেবক ও ছোটরা' };
+PHOTOS.group = { src: u('1764006195843-e6f9a5781500'), by: 'Michael Proctor', page: 'https://unsplash.com/photos/a-group-of-people-sitting-on-a-couch-GaaVbBLDLv0',
+  alt: 'A group of friends sitting together on sofas in a bright room', altBn: 'উজ্জ্বল ঘরে সোফায় একসাথে বসে একদল বন্ধু' };
 
 /* Albums are the kinds of event; the gallery filters by them. */
 export const ALBUMS = [

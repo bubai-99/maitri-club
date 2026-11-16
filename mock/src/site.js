@@ -143,7 +143,18 @@ document.querySelectorAll('[data-photo]').forEach((el) => { el.innerHTML = photo
 // About: the group photo settles from a slight zoom as it scrolls into view
 {
   const band = document.getElementById('group-photo');
-  if (band) new IntersectionObserver(([e], o) => { if (e.isIntersecting) { band.classList.add('is-in'); o.disconnect(); } }, { threshold: 0.25 }).observe(band);
+  // Checked on scroll as well as by an observer: the band starts inside a hidden screen, and the
+  // observer alone does not always report it once that screen is shown.
+  const check = () => {
+    const r = band.getBoundingClientRect();
+    if (r.height && r.top < innerHeight * 0.8 && r.bottom > 0) { band.classList.add('is-in'); removeEventListener('scroll', check); removeEventListener('hashchange', later); }
+  };
+  const later = () => setTimeout(check, 50);
+  if (band) {
+    addEventListener('scroll', check, { passive: true });
+    addEventListener('hashchange', later);
+    new IntersectionObserver(() => check()).observe(band);
+  }
 }
 document.querySelectorAll('[data-credit]').forEach((el) => { el.innerHTML = credit(el.dataset.credit); });
 

@@ -424,31 +424,24 @@ body[data-basket="on"]:has([data-screen="nursery"].is-active) .to-top { bottom: 
 .banner-play:hover { background: rgba(0,0,0,.65); }
 @media (prefers-reduced-motion: reduce) { .banner-media img { animation: none; } }
 
-/* About: full-width group photo band, festive stripe on top, slow settle as it scrolls in */
-.group-band { position: relative; isolation: isolate; overflow: hidden; margin-bottom: 0; background: #17181c; color: #fff;
-  height: clamp(460px, 78vh, 760px); }
-.group-band::before { content: ''; position: absolute; inset: 0 0 auto; height: 8px; z-index: 2;
+/* About: group photo, Partiful-style. Heading and numbers above, then the photo clean and edge to edge
+   (no text on faces, a soft shade at the bottom), a festive stripe on its top edge, settling from a slight zoom as it scrolls in. */
+.group-band { margin-bottom: 0; }
+.group-band-media { position: relative; overflow: hidden; height: min(60vw, 88vh); min-height: 260px; background: var(--color-paper-2); }
+.group-band-media::before { content: ''; position: absolute; inset: 0 0 auto; height: 8px; z-index: 1;
   background: repeating-linear-gradient(90deg, var(--color-sindoor) 0 36px, var(--color-marigold) 36px 72px); }
-.group-band-media { position: absolute; inset: 0; z-index: -2; }
-.group-band-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%;
-  transform: scale(1.12); filter: saturate(.85); transition: transform 2.8s var(--ease-out-expo), filter 2.8s ease; }
-.group-band.is-in .group-band-media img { transform: scale(1); filter: saturate(1.05); }
-.group-band-shade { position: absolute; inset: 0; z-index: -1;
-  background:
-    linear-gradient(90deg, rgba(14,15,19,.82) 0%, rgba(14,15,19,.5) 32%, rgba(14,15,19,0) 58%),
-    linear-gradient(0deg, rgba(14,15,19,.9) 0%, rgba(14,15,19,.4) 32%, rgba(14,15,19,0) 60%),
-    radial-gradient(70% 60% at 0% 100%, rgba(210,31,27,.35), transparent 70%); }
-@media (max-width: 767px) {
-  .group-band-shade { background: linear-gradient(0deg, rgba(14,15,19,.94) 0%, rgba(14,15,19,.7) 45%, rgba(14,15,19,.1) 80%); }
-}
-.group-band .eyebrow, .group-band h2, .group-band figcaption, .group-band dl { opacity: 0; transform: translateY(14px);
-  transition: opacity .8s ease, transform .8s var(--ease-out-expo); }
-.group-band.is-in .eyebrow, .group-band.is-in h2, .group-band.is-in figcaption, .group-band.is-in dl { opacity: 1; transform: none; }
-.group-band.is-in h2 { transition-delay: .12s; }
-.group-band.is-in figcaption { transition-delay: .24s; }
-.group-band.is-in dl { transition-delay: .36s; }
+.group-band-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%;
+  transform: scale(1.1); transition: transform 2.6s var(--ease-out-expo); }
+.group-band.is-in .group-band-media img { transform: scale(1); }
+/* Soft shade rising from the bottom edge so the photo melts into the dark band below */
+.group-band-media::after { content: ""; position: absolute; inset: auto 0 0; height: 45%; pointer-events: none;
+  background: linear-gradient(0deg, rgba(14,15,19,.72) 0%, rgba(14,15,19,.35) 45%, rgba(14,15,19,0) 100%); }
+@media (max-width: 767px) { .group-band-media { height: 70vw; } }
+.group-band-text > div { opacity: 0; transform: translateY(14px); transition: opacity .8s ease, transform .8s var(--ease-out-expo); }
+.group-band.is-in .group-band-text > div { opacity: 1; transform: none; }
+.group-band.is-in .group-band-text > div + div { transition-delay: .15s; }
 @media (prefers-reduced-motion: reduce) {
-  .group-band-media img, .group-band .eyebrow, .group-band h2, .group-band figcaption, .group-band dl { transition: none; transform: none; opacity: 1; }
+  .group-band-media img, .group-band-text > div { transition: none; transform: none; opacity: 1; }
 }
 
 /* ---------- Footer newsletter + social ---------- */
