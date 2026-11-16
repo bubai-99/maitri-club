@@ -17,6 +17,7 @@
     "@fontsource-variable/anek-bangla": "^5.3.0",
     "@fontsource/dm-serif-display": "^5.3.0",
     "@fontsource/tiro-bangla": "^5.3.0",
+    "astronomy-engine": "2.1.19",
     "html-to-image": "^1.11.13",
     "lucide": "^1.72.0",
     "qrcode": "^1.5.4"

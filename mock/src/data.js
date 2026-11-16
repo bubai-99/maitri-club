@@ -23,6 +23,31 @@ export const events = [
   { id: 'saraswati', date: '2027-02-11', day: '11', mon: 'Feb', monBn: 'ফেব্রু', title: 'Saraswati Puja', titleBn: 'সরস্বতী পূজা', time: 'Pushpanjali 9:30 am', place: 'Club pandal', placeBn: 'ক্লাব প্যান্ডেল', kind: 'puja', pass: false },
 ];
 
+/**
+ * Panjika dates the committee enters from the club's panjika (admin console → Panjika).
+ * kind: 'puja' | 'parbon' (solar days, sankranti) | 'wedding'. tithi: the tithi the day is kept on (0–29), for the times shown.
+ * PROTOTYPE SAMPLES: the committee checks every date and time against its panjika before launch.
+ */
+export const panjikaSource = { en: 'the club’s panjika', bn: 'ক্লাবের পঞ্জিকা' };
+export const panjikaDates = [
+  { id: 'pj1', kind: 'puja', date: '2026-11-19', tithi: 8, en: 'Jagaddhatri Puja', bn: 'জগদ্ধাত্রী পূজা' },
+  { id: 'pj2', kind: 'puja', date: '2026-11-24', tithi: 14, en: 'Rash Purnima', bn: 'রাসপূর্ণিমা' },
+  { id: 'pj3', kind: 'parbon', date: '2027-01-14', en: 'Poush Sankranti · pithe-puli', bn: 'পৌষ সংক্রান্তি · পিঠে-পুলি' },
+  { id: 'pj4', kind: 'puja', date: '2027-02-11', tithi: 4, en: 'Saraswati Puja', bn: 'সরস্বতী পূজা', event: 'saraswati' },
+  { id: 'pj5', kind: 'puja', date: '2027-03-22', tithi: 14, en: 'Dol Purnima', bn: 'দোলপূর্ণিমা' },
+  { id: 'pj6', kind: 'parbon', date: '2027-04-14', en: 'Choitro Sankranti · Charak', bn: 'চৈত্র সংক্রান্তি · চড়ক' },
+  { id: 'pj7', kind: 'parbon', date: '2027-04-15', en: 'Poila Boishakh · Bengali New Year 1434', bn: 'পয়লা বৈশাখ · নববর্ষ ১৪৩৪' },
+  { id: 'w1', kind: 'wedding', date: '2026-11-22', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['8:10 pm – 1:40 am', 'রাত ৮:১০ – ১:৪০'] },
+  { id: 'w2', kind: 'wedding', date: '2026-11-27', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['7:25 pm – 11:50 pm', 'সন্ধ্যা ৭:২৫ – রাত ১১:৫০'] },
+  { id: 'w3', kind: 'wedding', date: '2026-12-03', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['9:05 pm – 2:20 am', 'রাত ৯:০৫ – ২:২০'] },
+  { id: 'w4', kind: 'wedding', date: '2026-12-07', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['6:50 pm – 10:30 pm', 'সন্ধ্যা ৬:৫০ – রাত ১০:৩০'] },
+  { id: 'w5', kind: 'wedding', date: '2027-01-22', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['8:40 pm – 3:10 am', 'রাত ৮:৪০ – ৩:১০'] },
+  { id: 'w6', kind: 'wedding', date: '2027-01-28', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['7:55 pm – 12:30 am', 'সন্ধ্যা ৭:৫৫ – রাত ১২:৩০'] },
+  { id: 'w7', kind: 'wedding', date: '2027-02-04', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['9:30 pm – 4:00 am', 'রাত ৯:৩০ – ভোর ৪:০০'] },
+  { id: 'w8', kind: 'wedding', date: '2027-02-19', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['8:15 pm – 1:05 am', 'রাত ৮:১৫ – ১:০৫'] },
+  { id: 'w9', kind: 'wedding', date: '2027-03-03', en: 'Wedding day', bn: 'বিয়ের দিন', lagna: ['7:40 pm – 11:15 pm', 'সন্ধ্যা ৭:৪০ – রাত ১১:১৫'] },
+];
+
 export const pastEvents = [
   { title: 'Durga Puja 2026', titleBn: 'দুর্গাপূজা ২০২৬', when: '17–21 Oct', note: '4,200 bhog served · 61 volunteers', noteBn: '৪,২০০ জনকে ভোগ · ৬১ জন স্বেচ্ছাসেবক' },
   { title: 'Kali Puja & Bhai Phonta', titleBn: 'কালীপূজা ও ভাইফোঁটা', when: '8–10 Nov', note: 'Green-crackers-only night', noteBn: 'শুধু সবুজ বাজি' },
@@ -333,7 +358,7 @@ export const rolePerms = {
     { id: 'chanda', en: 'Puja chanda', bn: 'পূজার চাঁদা', screens: ['chanda'], p: { secretary: 'full', treasurer: 'full', puja: 'full', catering: 'none', nursery: 'none', volunteer: 'own' } },
     { id: 'catering', en: 'Catering', bn: 'ক্যাটারিং', screens: ['catering'], p: { secretary: 'view', treasurer: 'view', puja: 'none', catering: 'full', nursery: 'none', volunteer: 'none' } },
     { id: 'nursery', en: 'Nursery', bn: 'নার্সারি', screens: ['nursery'], p: { secretary: 'view', treasurer: 'view', puja: 'none', catering: 'none', nursery: 'full', volunteer: 'none' } },
-    { id: 'events', en: 'Events, volunteers, assets & gallery', bn: 'অনুষ্ঠান, স্বেচ্ছাসেবক, সম্পত্তি ও ছবি', screens: ['events', 'volunteers', 'assets', 'gallery'], p: { secretary: 'full', treasurer: 'view', puja: 'full', catering: 'view', nursery: 'none', volunteer: 'view' } },
+    { id: 'events', en: 'Events, volunteers, assets & gallery', bn: 'অনুষ্ঠান, স্বেচ্ছাসেবক, সম্পত্তি ও ছবি', screens: ['events', 'panjika', 'volunteers', 'assets', 'gallery'], p: { secretary: 'full', treasurer: 'view', puja: 'full', catering: 'view', nursery: 'none', volunteer: 'view' } },
     { id: 'notices', en: 'Notices & meetings', bn: 'নোটিস ও সভা', screens: ['meetings'], p: { secretary: 'full', treasurer: 'full', puja: 'full', catering: 'view', nursery: 'view', volunteer: 'view' } },
     { id: 'admin', en: 'Reports, audit log & settings', bn: 'রিপোর্ট, অডিট লগ ও সেটিংস', screens: ['reports', 'audit', 'settings'], p: { secretary: 'full', treasurer: 'full', puja: 'none', catering: 'none', nursery: 'none', volunteer: 'none' } },
   ],

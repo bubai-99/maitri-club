@@ -110,6 +110,7 @@ export const contactTopics = [
 export const searchPages = [
   { href: '#home', en: 'Home', bn: 'প্রথম পাতা', k: 'club about story history' },
   { href: '#events', en: 'Events', bn: 'অনুষ্ঠান', k: 'calendar puja sports picnic what’s on' },
+  { href: '#panjika', en: 'Panjika', bn: 'পঞ্জিকা', k: 'panjika tithi nakshatra sunrise sunset bengali date calendar purnima amavasya ekadashi wedding lagna তিথি নক্ষত্র বিয়ের দিন লগ্ন' },
   { href: '#notices', en: 'Notices', bn: 'নোটিস', k: 'news notice board announcements' },
   { href: '#catering', en: 'Maitree Serving (catering)', bn: 'মৈত্রী পরিবেশন (ক্যাটারিং)', k: 'catering serving wedding annaprashan quote ক্যাটারিং পরিবেশন বিয়ে' },
   { href: '#nursery', en: 'Maitree Nursery', bn: 'মৈত্রী নার্সারি', k: 'plants nursery garden গাছ' },
