@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Placeholder domain: change it when the club's real address is bought. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://gedemaitreeclub.org/</loc>
+    <changefreq>weekly</changefreq>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gedemaitreeclub.org/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="bn" href="https://gedemaitreeclub.org/?lang=bn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gedemaitreeclub.org/" />
+  </url>
+</urlset>

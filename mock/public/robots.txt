@@ -1,0 +1,9 @@
+# Gede Maitree Club website. Placeholder domain: change it when the club's real address is bought.
+User-agent: *
+Disallow: /console.html
+Disallow: /admin-login.html
+Disallow: /scan.html
+Disallow: /app.html
+Disallow: /login.html
+
+Sitemap: https://gedemaitreeclub.org/sitemap.xml

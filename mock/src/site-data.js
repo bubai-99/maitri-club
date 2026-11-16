@@ -179,3 +179,42 @@ export const reviewSets = {
     ],
   },
 };
+
+/* ---------- Search & sharing (SEO) ---------- */
+// Default search title and description per website page. The committee can change them in the console (Website › SEO).
+// [screen, page label EN, BN, title EN, BN, description EN, BN]
+export const SEO_PAGES = [
+  ['home', 'Home page', 'হোম পাতা', 'Gede Maitree Club · Netaji Para', 'গেদে মৈত্রী ক্লাব · নেতাজি পাড়া',
+    'Gede Maitree Club, Netaji Para, est. 2014, Reg. No. S-0027153 / 2022-23. Pujas, sports, a serving team for family occasions and a neighbourhood nursery.',
+    'গেদে মৈত্রী ক্লাব, নেতাজি পাড়া, প্রতিষ্ঠা ২০১৪, রেজি. নং S-0027153 / 2022-23। পূজা, খেলা, পারিবারিক অনুষ্ঠানে পরিবেশন আর পাড়ার নার্সারি।'],
+  ['committee', 'About page', 'আমাদের কথা', 'About the club', 'ক্লাবের কথা',
+    'Who runs Gede Maitree Club: the elected committee, our mission and values, and the story of the club since 2014.',
+    'গেদে মৈত্রী ক্লাব কারা চালান: নির্বাচিত কমিটি, আমাদের লক্ষ্য ও মূল্যবোধ, আর ২০১৪ থেকে ক্লাবের গল্প।'],
+  ['events', 'Events', 'অনুষ্ঠান', 'Events', 'অনুষ্ঠান',
+    'Pujas, sports day, the blood camp and more at Gede Maitree Club, Netaji Para. Dates, times and what to bring.',
+    'গেদে মৈত্রী ক্লাবের পূজা, ক্রীড়া দিবস, রক্তদান শিবির ও আরও অনেক কিছু। তারিখ, সময় আর কী আনবেন।'],
+  ['notices', 'Notices', 'নোটিস', 'Notices', 'নোটিস',
+    'The latest notices from Gede Maitree Club: meetings, pujas, sports and service for Netaji Para.',
+    'গেদে মৈত্রী ক্লাবের সাম্প্রতিক নোটিস: সভা, পূজা, খেলা ও পাড়ার সেবা।'],
+  ['catering', 'Serving', 'পরিবেশন', 'Maitree Serving', 'মৈত্রী পরিবেশন',
+    'Maitree Serving: the club’s serving team for weddings, annaprashan and family occasions. Rates per guest and how to book.',
+    'মৈত্রী পরিবেশন: বিয়ে, অন্নপ্রাশন ও পারিবারিক অনুষ্ঠানে ক্লাবের পরিবেশন দল। মাথাপিছু রেট আর বুকিংয়ের নিয়ম।'],
+  ['nursery', 'Nursery', 'নার্সারি', 'Maitree Nursery', 'মৈত্রী নার্সারি',
+    'Maitree Nursery by the club gate: flowering plants, seedlings and pots at fair prices. Order on WhatsApp.',
+    'ক্লাবের গেটের পাশে মৈত্রী নার্সারি: ফুলের গাছ, চারা আর টব, ন্যায্য দামে। হোয়াটসঅ্যাপে অর্ডার দিন।'],
+  ['gallery', 'Gallery', 'ছবি', 'Gallery', 'ছবি',
+    'Photos and videos from Durga Puja, Kali Puja, sports day and more at Gede Maitree Club.',
+    'গেদে মৈত্রী ক্লাবের দুর্গাপূজা, কালীপূজা, ক্রীড়া দিবস ও আরও অনেক কিছুর ছবি ও ভিডিও।'],
+  ['chanda', 'Chanda & accounts', 'চাঁদা ও হিসাব', 'Chanda & accounts', 'চাঁদা ও হিসাব',
+    'Where your chanda goes: how each ₹100 was spent at Durga Puja 2026, with audited accounts presented at the AGM.',
+    'আপনার চাঁদা কোথায় যায়: দুর্গাপূজা ২০২৬-এ প্রতি ₹১০০-র হিসাব, অডিট করা খাতা এজিএম-এ পেশ।'],
+  ['contact', 'Contact', 'যোগাযোগ', 'Contact & directions', 'যোগাযোগ ও পথ',
+    'Find the Gede Maitree Club room on Netaji Subhas Road, Netaji Para, Kolkata 700084. Open 6 to 9 pm every day.',
+    'নেতাজি সুভাষ রোড, নেতাজি পাড়া, কলকাতা ৭০০০৮৪-এ গেদে মৈত্রী ক্লাব ঘর। রোজ সন্ধ্যা ৬টা থেকে ৯টা খোলা।'],
+  ['join', 'Become a member', 'সদস্য হোন', 'Become a member', 'সদস্য হোন',
+    'Join Gede Maitree Club for ₹100 a month. Open to every family in Netaji Para.',
+    'মাসে ₹১০০-তে গেদে মৈত্রী ক্লাবের সদস্য হোন। নেতাজি পাড়ার সব পরিবারের জন্য খোলা।'],
+  ['volunteer', 'Get involved', 'হাত লাগান', 'Get involved', 'হাত লাগান',
+    'Lend a hand at Gede Maitree Club: open duties for the coming pujas and events, and regular roles. Sign up in a minute.',
+    'গেদে মৈত্রী ক্লাবে হাত লাগান: সামনের পূজা ও অনুষ্ঠানের খালি দায়িত্ব আর নিয়মিত কাজ। এক মিনিটে নাম দিন।'],
+];

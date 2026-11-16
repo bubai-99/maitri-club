@@ -1,6 +1,6 @@
 import { boot, t, inr, dn, seal, router, applyLang, refreshIcons, toast, lang, setLang, demo } from './shared.js';
 import { PHOTOS, ALBUMS, GALLERY, photo, credit } from './photos.js';
-import './site-cms.js'; // the committee's edits from the console, applied before anything is drawn
+import { applySeo } from './site-cms.js'; // the committee's edits from the console, applied before anything is drawn
 import { serversFor, memberRate, events, pastEvents, cateringPackages, plants, plantCats, committee, club } from './data.js';
 import { publicNotices, askAbout, pastWhenBn, pastAlbum, eventInfo, plantInfo, pujaSpend } from './site-data.js';
 import { mountReviews } from './site-reviews.js';
@@ -1000,10 +1000,13 @@ const TITLES = {
   notfound: ['Page not found', 'পাতা পাওয়া যায়নি'], event: ['Event', 'অনুষ্ঠান'], notice: ['Notice', 'নোটিস'],
 };
 const current = { screen: 'home', param: undefined, title: () => null };
+// Title, description and share tags for each page: the committee can change them in the console (Website › SEO)
 function setTitle(screen, extra) {
-  if (screen === 'home') { document.title = TITLES.home[lang === 'bn' ? 1 : 0]; return; }
-  const base = extra || (TITLES[screen] || TITLES.home)[lang === 'bn' ? 1 : 0];
-  document.title = `${base} · ${lang === 'bn' ? 'গেদে মৈত্রী ক্লাব' : 'Gede Maitree Club'}`;
+  const bn = lang === 'bn';
+  let desc = null;
+  if (screen === 'notice') { const n = publicNotices.find((x) => x.id === current.param); if (n) desc = bn ? n.bodyBn || n.body : n.body; }
+  if (screen === 'event') { const i = eventInfo[current.param]; if (i) desc = bn ? i.aboutBn || i.about : i.about; }
+  applySeo(screen, lang, { title: extra || null, desc, fallback: TITLES[screen] });
 }
 function activate(name) {
   $$('[data-screen]').forEach((s) => s.classList.toggle('is-active', s.dataset.screen === name));

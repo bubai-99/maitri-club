@@ -5,6 +5,9 @@ import QRCode from 'qrcode';
 /* ---------- Language ---------- */
 const LS_KEY = 'maitri-lang';
 export let lang = (() => {
+  // ?lang=bn / ?lang=en (the links search engines get for each language) wins over the saved choice
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'bn' || q === 'en') { try { localStorage.setItem(LS_KEY, q); } catch { /* blocked */ } return q; }
   try { return localStorage.getItem(LS_KEY) || 'en'; } catch { return 'en'; }
 })();
 
